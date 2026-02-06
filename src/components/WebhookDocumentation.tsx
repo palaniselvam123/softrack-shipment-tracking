@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { Book, Code, Copy, Check, Globe, Key, Shield, Zap } from 'lucide-react';
+import { Book, Code, Copy, Check, Globe, Key, Shield, Zap, ArrowLeft } from 'lucide-react';
 
-const WebhookDocumentation: React.FC = () => {
+interface WebhookDocumentationProps {
+  onBack: () => void;
+}
+
+const WebhookDocumentation: React.FC<WebhookDocumentationProps> = ({ onBack }) => {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   const copyToClipboard = async (text: string, id: string) => {
@@ -119,6 +123,13 @@ if __name__ == '__main__':
         <div className="bg-white rounded-lg shadow-sm">
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex items-center space-x-3">
+              <button
+                onClick={onBack}
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Back</span>
+              </button>
               <Book className="w-6 h-6 text-blue-600" />
               <div>
                 <h1 className="text-2xl font-semibold text-gray-900">Webhook Documentation</h1>

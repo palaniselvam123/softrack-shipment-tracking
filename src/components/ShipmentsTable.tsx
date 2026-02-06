@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Download, Filter, Settings, Star, Truck, Plane, Ship, MessageCircle, Loader2 } from 'lucide-react';
+import { Search, Download, Filter, Settings, Star, Truck, Plane, Ship, MessageCircle, Loader2, ArrowLeft } from 'lucide-react';
 import { supabase, type SupabaseShipment } from '../lib/supabase';
 import ColumnCustomizer from './ColumnCustomizer';
 
 interface ShipmentsTableProps {
   onViewShipment: (shipmentNo: string) => void;
+  onBack: () => void;
 }
 
 interface Column {
@@ -30,7 +31,7 @@ interface Shipment {
   eta?: string;
 }
 
-const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
+const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
@@ -269,6 +270,9 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
     return (
       <div className="p-8 bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen">
         <div className="mb-8">
+          <button onClick={onBack} className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors mb-2">
+            <ArrowLeft className="w-5 h-5" /><span>Back</span>
+          </button>
           <h1 className="text-3xl font-bold text-gray-900">Shipments</h1>
         </div>
         <div className="card">
@@ -287,6 +291,9 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
     return (
       <div className="p-8 bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen">
         <div className="mb-8">
+          <button onClick={onBack} className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors mb-2">
+            <ArrowLeft className="w-5 h-5" /><span>Back</span>
+          </button>
           <h1 className="text-3xl font-bold text-gray-900">Shipments</h1>
         </div>
         <div className="card">
@@ -314,6 +321,15 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
     <>
       <div className="p-8 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 min-h-screen">
         <div className="mb-8">
+          <div className="flex items-center space-x-4 mb-1">
+            <button
+              onClick={onBack}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span>Back</span>
+            </button>
+          </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Shipments</h1>
           <p className="text-gray-600 mt-2 text-lg">Track and manage all your shipments in one place</p>
         </div>

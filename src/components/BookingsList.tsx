@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Search, FileSpreadsheet, FileText, ChevronDown, Filter, Settings2, Truck, Plane, Ship } from 'lucide-react';
+import { Search, FileSpreadsheet, FileText, ChevronDown, Filter, Settings2, Truck, Plane, Ship, ArrowLeft } from 'lucide-react';
 import ColumnCustomizer from './ColumnCustomizer';
 
 interface BookingsListProps {
   onViewBooking: (bookingNo: string) => void;
   onNewBooking: () => void;
+  onBack: () => void;
 }
 
 interface Column {
@@ -25,7 +26,7 @@ interface Booking {
   cosignee: string;
 }
 
-const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking }) => {
+const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking, onBack }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
 
@@ -270,7 +271,16 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
       <div className="flex flex-col p-4 bg-gray-50 min-h-screen">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="px-6 py-5 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-900">Book</h1>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={onBack}
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Back</span>
+              </button>
+              <h1 className="text-2xl font-bold text-gray-900">Bookings</h1>
+            </div>
           </div>
 
           <div className="px-6 py-4 border-b border-gray-200 bg-white">

@@ -51,9 +51,10 @@ import LocationSelector from './LocationSelector';
 
 interface BookingWizardProps {
   bookingNo?: string;
+  onBack: () => void;
 }
 
-const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
+const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo, onBack }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showTemplates, setShowTemplates] = useState(false);
   const [bookingData, setBookingData] = useState<BookingData>({
@@ -1422,6 +1423,13 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
+          <button
+            onClick={onBack}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors mb-3"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back</span>
+          </button>
           <h1 className="text-3xl font-bold text-gray-900">
             {(() => {
               const urlParams = new URLSearchParams(window.location.search);

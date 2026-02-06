@@ -17,7 +17,8 @@ import {
   X,
   BarChart3,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  ArrowLeft
 } from 'lucide-react';
 import TicketDetailModal, { type TicketData } from './TicketDetailModal';
 
@@ -121,7 +122,11 @@ const INITIAL_TICKETS: TicketData[] = [
 const CATEGORY_OPTIONS = ['Damage Claim', 'Documentation', 'Customs', 'Billing', 'Delivery', 'Technical', 'General'];
 const ASSIGNEE_OPTIONS = ['John Smith', 'Mike Chen', 'David Brown', 'Anna Martinez', 'James Anderson', 'Kevin Lee', 'Sarah Johnson'];
 
-const TicketingPortal: React.FC = () => {
+interface TicketingPortalProps {
+  onBack: () => void;
+}
+
+const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
   const [tickets, setTickets] = useState<TicketData[]>(INITIAL_TICKETS);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -250,6 +255,15 @@ const TicketingPortal: React.FC = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="mb-4">
+        <button
+          onClick={onBack}
+          className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back</span>
+        </button>
+      </div>
       <div className="grid grid-cols-4 gap-4 mb-6">
         {[
           { label: 'Open', count: statusCounts.open, color: 'blue', icon: AlertTriangle },

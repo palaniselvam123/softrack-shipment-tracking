@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Download, Filter, Settings, Star, Calendar, DollarSign, Eye, FileText, ChevronUp, ChevronDown, Mail, AlertTriangle } from 'lucide-react';
+import { Search, Download, Filter, Settings, Star, Calendar, DollarSign, Eye, FileText, ChevronUp, ChevronDown, Mail, AlertTriangle, ArrowLeft } from 'lucide-react';
 import ColumnCustomizer from './ColumnCustomizer';
 import InvoiceDetailModal from './InvoiceDetailModal';
 import SendMailModal from './SendMailModal';
@@ -36,7 +36,11 @@ interface Column {
   width?: string;
 }
 
-const InvoiceListPage: React.FC = () => {
+interface InvoiceListPageProps {
+  onBack: () => void;
+}
+
+const InvoiceListPage: React.FC<InvoiceListPageProps> = ({ onBack }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(new Set(['IDDEC026748', 'IDDIC006490']));
   const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
@@ -684,7 +688,16 @@ startxref
       <div className="p-6">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h1 className="text-2xl font-semibold text-gray-900">Invoices</h1>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={onBack}
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Back</span>
+              </button>
+              <h1 className="text-2xl font-semibold text-gray-900">Invoices</h1>
+            </div>
           </div>
           
           <div className="px-6 py-4 border-b border-gray-200">

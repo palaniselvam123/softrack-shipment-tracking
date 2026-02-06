@@ -13,7 +13,8 @@ import {
   Eye,
   Upload,
   LayoutGrid,
-  List
+  List,
+  ArrowLeft
 } from 'lucide-react';
 
 interface CustomsDeclaration {
@@ -50,7 +51,11 @@ interface Column {
 
 type ViewType = 'dashboard' | 'list';
 
-const CustomsPage: React.FC = () => {
+interface CustomsPageProps {
+  onBack: () => void;
+}
+
+const CustomsPage: React.FC<CustomsPageProps> = ({ onBack }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
@@ -583,7 +588,14 @@ const CustomsPage: React.FC = () => {
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between mb-4">
-            <div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={onBack}
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Back</span>
+              </button>
               <h1 className="text-2xl font-semibold text-gray-900">Customs Jobs & Milestones</h1>
             </div>
             <div className="flex items-center space-x-3">

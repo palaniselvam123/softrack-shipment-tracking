@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Edit, Globe, Key, Eye, EyeOff, Copy, Check } from 'lucide-react';
+import { Plus, Trash2, Edit, Globe, Key, Eye, EyeOff, Copy, Check, ArrowLeft } from 'lucide-react';
 import { WebhookConfig, WebhookService, WEBHOOK_EVENTS, webhookService } from '../api/webhooks';
 
-const WebhookManager: React.FC = () => {
+interface WebhookManagerProps {
+  onBack: () => void;
+}
+
+const WebhookManager: React.FC<WebhookManagerProps> = ({ onBack }) => {
   const [webhooks, setWebhooks] = useState<WebhookConfig[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -109,9 +113,18 @@ const WebhookManager: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm">
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Webhook Management</h1>
-              <p className="text-sm text-gray-600 mt-1">Configure webhooks to receive real-time notifications</p>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={onBack}
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Back</span>
+              </button>
+              <div>
+                <h1 className="text-2xl font-semibold text-gray-900">Webhook Management</h1>
+                <p className="text-sm text-gray-600 mt-1">Configure webhooks to receive real-time notifications</p>
+              </div>
             </div>
             <button
               onClick={() => setShowAddForm(true)}

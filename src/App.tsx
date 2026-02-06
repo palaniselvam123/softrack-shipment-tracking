@@ -213,9 +213,7 @@ function App() {
       ) : currentView === 'booking' ? (
         <BookingWizard
           bookingNo={selectedBooking || undefined}
-          onDashboard={handleDashboardNavigation}
-          onShipments={handleShipmentsNavigation}
-          onBookings={handleBookingsNavigation}
+          onBack={handleDashboardNavigation}
         />
       ) : currentView === 'bookings' ? (
         <BookingsList
@@ -224,29 +222,30 @@ function App() {
             setShowBookingDetails(true);
           }}
           onNewBooking={handleBookingNavigation}
+          onBack={handleDashboardNavigation}
         />
       ) : currentView === 'table' ? (
-        <ShipmentsTable onViewShipment={handleViewShipment} />
+        <ShipmentsTable onViewShipment={handleViewShipment} onBack={handleDashboardNavigation} />
       ) : currentView === 'map-view' ? (
-        <ShipmentsMapView onViewShipment={handleViewShipment} />
+        <ShipmentsMapView onViewShipment={handleViewShipment} onBack={handleDashboardNavigation} />
       ) : currentView === 'tracking' ? (
-        <TrackingPage />        
+        <TrackingPage onBack={handleDashboardNavigation} />
       ) : currentView === 'invoices' ? (
-        <InvoiceListPage />
+        <InvoiceListPage onBack={handleDashboardNavigation} />
       ) : currentView === 'communication' ? (
-        <CommunicationHub />
+        <CommunicationHub onBack={handleDashboardNavigation} />
       ) : currentView === 'tickets' ? (
-        <TicketingPortal />
+        <TicketingPortal onBack={handleDashboardNavigation} />
       ) : currentView === 'webhooks' ? (
-        <WebhookManager />
+        <WebhookManager onBack={handleDashboardNavigation} />
       ) : currentView === 'webhook-docs' ? (
-        <WebhookDocumentation />
+        <WebhookDocumentation onBack={handleDashboardNavigation} />
       ) : currentView === 'customs' ? (
-        <CustomsPage />
+        <CustomsPage onBack={handleDashboardNavigation} />
       ) : currentView === 'inquiry' ? (
         <InquiryForm onBack={handleDashboardNavigation} />
       ) : currentView === 'leads' ? (
-        <LeadList />
+        <LeadList onBack={handleDashboardNavigation} />
       ) : (
         <ShipmentDetails
           shipmentNo={selectedShipment!}

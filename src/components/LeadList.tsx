@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter, Eye, User, Building, Calendar, Package, DollarSign, Star, Settings } from 'lucide-react';
+import { Search, Filter, Eye, User, Building, Calendar, Package, DollarSign, Star, Settings, ArrowLeft } from 'lucide-react';
 import ColumnCustomizer from './ColumnCustomizer';
 import LeadDetailModal from './LeadDetailModal';
 
@@ -30,7 +30,11 @@ interface Column {
   width?: string;
 }
 
-const LeadList: React.FC = () => {
+interface LeadListProps {
+  onBack: () => void;
+}
+
+const LeadList: React.FC<LeadListProps> = ({ onBack }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
@@ -230,9 +234,18 @@ const LeadList: React.FC = () => {
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Lead Management</h1>
-              <p className="text-sm text-gray-600 mt-1">Manage leads generated from customer inquiries</p>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={onBack}
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Back</span>
+              </button>
+              <div>
+                <h1 className="text-2xl font-semibold text-gray-900">Lead Management</h1>
+                <p className="text-sm text-gray-600 mt-1">Manage leads generated from customer inquiries</p>
+              </div>
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-500">Sales View</span>

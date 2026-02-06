@@ -15,6 +15,7 @@ Icon.Default.mergeOptions({
 
 interface ShipmentsMapViewProps {
   onViewShipment: (shipmentNo: string) => void;
+  onBack: () => void;
 }
 
 // Country center coordinates for grouping
@@ -113,7 +114,7 @@ const locationCoordinates: { [key: string]: [number, number] } = {
   'Port of Melbourne': [-37.8136, 144.9631]
 };
 
-const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) => {
+const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment, onBack }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedTransport, setSelectedTransport] = useState('');
@@ -472,9 +473,18 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Shipments Overview</h1>
-              <p className="text-sm text-gray-600 mt-1">Global shipment tracking with location-based grouping</p>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={onBack}
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Back</span>
+              </button>
+              <div>
+                <h1 className="text-2xl font-semibold text-gray-900">Shipments Overview</h1>
+                <p className="text-sm text-gray-600 mt-1">Global shipment tracking with location-based grouping</p>
+              </div>
             </div>
             <div className="flex items-center space-x-3">
               <div className="flex items-center bg-gray-100 rounded-lg p-1">
