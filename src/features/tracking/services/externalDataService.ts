@@ -1,57 +1,47 @@
-const WEATHER_API = import.meta.env.VITE_WEATHER_API_URL;
-const NEWS_API = import.meta.env.VITE_NEWS_API_URL;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export interface ExternalFacts {
-  weather?: {
-    description?: string;
-    severity?: string;
-    temp_c?: number;
-  };
-  news?: {
-    title: string;
-    source?: string;
-  }[];
+export interface WeatherResult {
+  location: string;
+  temp_c: number | null;
+  description: string;
+  icon: string;
+  humidity: number | null;
+  wind_speed: number | null;
+  wind_dir: string;
+  feels_like: number | null;
+  visibility: number | null;
+  conditions_code: number | null;
+  severity: 'calm' | 'moderate' | 'severe';
 }
 
-export async function fetchExternalFacts(route: any): Promise<ExternalFacts> {
-  const facts: ExternalFacts = {};
+export interface WeatherPair {
+  origin: WeatherResult | null;
+  destination: WeatherResult | null;
+}
 
-  /* ---------- WEATHER ---------- */
+export async function fetchWeatherForRoute(
+  origin: { lat: number; lon: number; name: string } | null,
+  destination: { lat: number; lon: number; name: string } | null
+): Promise<WeatherPair> {
+  const fallback: WeatherPair = { origin: null, destination: null };
+
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return fallback;
+  if (!origin && !destination) return fallback;
+
   try {
-    if (WEATHER_API && route["Load Port"]) {
-      const res = await fetch(
-        `${WEATHER_API}?port=${encodeURIComponent(route["Load Port"])}`
-      );
-      if (res.ok) {
-        const w = await res.json();
-        facts.weather = {
-          description: w.description,
-          severity: w.severity,
-          temp_c: w.temp_c
-        };
-      }
-    }
-  } catch (e) {
-    console.warn("Weather fetch failed", e);
-  }
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/weather-data`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ origin, destination }),
+    });
 
-  /* ---------- NEWS ---------- */
-  try {
-    if (NEWS_API && route["Load Port"]) {
-      const res = await fetch(
-        `${NEWS_API}?q=${encodeURIComponent(route["Load Port"])}`
-      );
-      if (res.ok) {
-        const n = await res.json();
-        facts.news = (n.articles || []).slice(0, 3).map((a: any) => ({
-          title: a.title,
-          source: a.source?.name
-        }));
-      }
-    }
-  } catch (e) {
-    console.warn("News fetch failed", e);
+    if (!res.ok) return fallback;
+    return await res.json();
+  } catch {
+    return fallback;
   }
-
-  return facts;
 }
