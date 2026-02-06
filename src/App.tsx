@@ -43,6 +43,7 @@ function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const [selectedShipment, setSelectedShipment] = useState<string | null>(null);
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
+  const [showBookingDetails, setShowBookingDetails] = useState(false);
 
   /* 🔹 URL → VIEW MAPPING */
   React.useEffect(() => {
@@ -218,7 +219,10 @@ function App() {
         />
       ) : currentView === 'bookings' ? (
         <BookingsList
-          onViewBooking={setSelectedBooking}
+          onViewBooking={(bookingNo) => {
+            setSelectedBooking(bookingNo);
+            setShowBookingDetails(true);
+          }}
           onNewBooking={handleBookingNavigation}
         />
       ) : currentView === 'table' ? (
@@ -247,6 +251,20 @@ function App() {
         <ShipmentDetails
           shipmentNo={selectedShipment!}
           onBack={handleBackToTable}
+        />
+      )}
+
+      {showBookingDetails && selectedBooking && (
+        <BookingDetailsModal
+          bookingNo={selectedBooking}
+          onClose={() => {
+            setShowBookingDetails(false);
+            setSelectedBooking(null);
+          }}
+          onEdit={() => {
+            setShowBookingDetails(false);
+            setCurrentView('booking');
+          }}
         />
       )}
     </div>
