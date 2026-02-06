@@ -1,63 +1,132 @@
-interface RouteLeg {
-  load_port?: string;
-  discharge_port?: string;
-  origin?: string;
-  destination?: string;
-  ["Load Port"]?: string;
-  ["Discharge Port"]?: string;
+import { useEffect, useState } from 'react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+
+import SideMenu from './SideMenu';
+import ShipmentOverview from './ShipmentOverview';
+import DocumentsList from './DocumentsList';
+import NotesList from './NotesList';
+import InvoicesList from './InvoicesList';
+import ActivityList from './ActivityList';
+
+import VesselTracker from '../features/tracking/components/VesselTracker';
+
+interface ShipmentDetailsProps {
+  shipmentNo: string;
+  onBack: () => void;
 }
 
-interface Props {
-  shipment: any;
-  routes: RouteLeg[];
-}
+const ShipmentDetails = ({ shipmentNo, onBack }: ShipmentDetailsProps) => {
+  const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'notes' | 'invoices' | 'activity'>('overview');
+  const [shipment, setShipment] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-function getRouteSummary(routes: RouteLeg[]) {
-  if (!routes || routes.length === 0) {
-    return "N/A → N/A";
-  }
+  useEffect(() => {
+    loadShipment();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shipmentNo]);
 
-  const first = routes[0];
-  const last = routes[routes.length - 1];
+  const loadShipment = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  const origin =
-    first.load_port ||
-    first.origin ||
-    first["Load Port"] ||
-    "N/A";
+      const { data, error } = await supabase
+        .from('shipments')
+        .select('*')
+        .eq('Shipment Number', shipmentNo)
+        .single();
 
-  const destination =
-    last.discharge_port ||
-    last.destination ||
-    last["Discharge Port"] ||
-    "N/A";
+      if (error || !data) {
+        throw new Error('Shipment not found');
+      }
 
-  return `${origin} → ${destination}`;
-}
+      setShipment(data);
+    } catch (err: any) {
+      console.error('ShipmentDetails error:', err);
+      setError(err.message || 'Failed to load shipment');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-export default function ShipmentDetails({ shipment, routes }: Props) {
-  const routeText = getRouteSummary(routes);
+  const renderMainContent = () => {
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center h-full">
+          <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
+        </div>
+      );
+    }
+
+    if (error || !shipment) {
+      return (
+        <div className="text-center py-16">
+          <p className="text-red-600 font-medium mb-2">{error}</p>
+          <button
+            onClick={loadShipment}
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Retry
+          </button>
+        </div>
+      );
+    }
+
+    switch (activeTab) {
+      case 'documents':
+        return <DocumentsList shipmentNo={shipmentNo} />;
+      case 'notes':
+        return <NotesList shipmentNo={shipmentNo} />;
+      case 'invoices':
+        return <InvoicesList shipmentNo={shipmentNo} />;
+      case 'activity':
+        return <ActivityList shipmentNo={shipmentNo} />;
+      default:
+        return <ShipmentOverview shipmentNo={shipmentNo} shipmentData={shipment} />;
+    }
+  };
 
   return (
-    <div className="border rounded-lg bg-white p-4">
-      <h3 className="font-semibold mb-3">Shipment Details</h3>
+    <div className="min-h-screen bg-slate-50 flex">
+      {/* Left Menu */}
+      <SideMenu activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <div className="grid grid-cols-2 gap-y-3 text-sm">
-        <div className="text-slate-500">Route</div>
-        <div className="font-medium">{routeText}</div>
+      {/* Main + Map Layout */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Main Content */}
+        <div className="flex-1 p-6 overflow-y-auto">
+          <div className="flex items-center mb-6 gap-3">
+            <button
+              onClick={onBack}
+              className="p-2 rounded hover:bg-slate-200"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-xl font-semibold">
+              Shipment {shipmentNo}
+            </h1>
+          </div>
 
-        <div className="text-slate-500">Type</div>
-        <div>{shipment?.type ?? "N/A"}</div>
+          {renderMainContent()}
+        </div>
 
-        <div className="text-slate-500">Shipper</div>
-        <div>{shipment?.shipper ?? "N/A"}</div>
-
-        <div className="text-slate-500">Consignee</div>
-        <div>{shipment?.consignee ?? "N/A"}</div>
-
-        <div className="text-slate-500">Primary Mode</div>
-        <div>{shipment?.primary_mode ?? "N/A"}</div>
+        {/* Right Side – BIG MAP */}
+        <div
+          className={
+            activeTab === 'overview'
+              ? 'w-[65%] p-4 border-l bg-white'
+              : 'w-[45%] p-4 border-l bg-white'
+          }
+        >
+          {shipment && (
+            <VesselTracker shipmentNo={shipmentNo} />
+          )}
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default ShipmentDetails;
