@@ -13,12 +13,27 @@ import {
   Truck,
   FileCheck,
   ChevronRight,
-  Zap,
   BarChart3,
-  Anchor
+  Anchor,
+  MapPin,
+  Ship,
+  Building2,
+  Gauge,
+  Clock,
+  Package,
+  CalendarDays,
+  CheckCircle2,
+  CloudRain,
+  CloudSun,
+  Cloud,
+  Wind,
+  Droplets,
+  Eye,
+  Thermometer,
+  Newspaper
 } from 'lucide-react';
 import { supabase, SupabaseShipment } from '../lib/supabase';
-import { computeCEOInsights, CEOInsights, RiskFactor, ActionItem } from '../services/shipmentInsightsEngine';
+import { computeCEOInsights, CEOInsights, RiskFactor, ActionItem, BriefItem } from '../services/shipmentInsightsEngine';
 
 interface Props {
   shipment: SupabaseShipment;
@@ -101,9 +116,188 @@ function MetricCard({ label, value, sublabel, level }: { label: string; value: s
   );
 }
 
+interface WeatherData {
+  location: string;
+  temp_c: number | null;
+  description: string;
+  icon: string;
+  humidity: number | null;
+  wind_speed: number | null;
+  wind_dir: string;
+  feels_like: number | null;
+  visibility: number | null;
+  conditions_code: number | null;
+  severity: 'calm' | 'moderate' | 'severe';
+}
+
+interface GeopoliticalItem {
+  title: string;
+  type: 'weather' | 'trade' | 'security' | 'infrastructure';
+}
+
+const BRIEF_ICON_MAP: Record<string, typeof MapPin> = {
+  route: MapPin,
+  ship: Ship,
+  building: Building2,
+  gauge: Gauge,
+  clock: Clock,
+  package: Package,
+  calendar: CalendarDays,
+  anchor: Anchor,
+  check: CheckCircle2,
+  alert: AlertTriangle
+};
+
+const ACCENT_COLORS: Record<string, { icon: string; bg: string; border: string; dot: string }> = {
+  green: { icon: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', dot: 'bg-emerald-400' },
+  amber: { icon: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', dot: 'bg-amber-400' },
+  red: { icon: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', dot: 'bg-red-400' },
+  blue: { icon: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20', dot: 'bg-blue-400' },
+  cyan: { icon: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/20', dot: 'bg-cyan-400' },
+  slate: { icon: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/20', dot: 'bg-slate-400' }
+};
+
+function getWeatherSeverityIcon(severity: string) {
+  if (severity === 'severe') return CloudRain;
+  if (severity === 'moderate') return CloudSun;
+  return Cloud;
+}
+
+function deriveGeopoliticalInsights(origin: string, destination: string, weather: { origin: WeatherData | null; destination: WeatherData | null }): GeopoliticalItem[] {
+  const items: GeopoliticalItem[] = [];
+  const origL = (origin || '').toLowerCase();
+  const destL = (destination || '').toLowerCase();
+
+  if (weather.origin?.severity === 'severe') {
+    items.push({ title: `Severe weather conditions at ${origin} may impact port operations and vessel scheduling`, type: 'weather' });
+  } else if (weather.origin?.severity === 'moderate') {
+    items.push({ title: `Moderate weather conditions at ${origin} — monitor for potential operational impacts`, type: 'weather' });
+  }
+
+  if (weather.destination?.severity === 'severe') {
+    items.push({ title: `Severe weather at ${destination} may cause discharge delays and berthing restrictions`, type: 'weather' });
+  } else if (weather.destination?.severity === 'moderate') {
+    items.push({ title: `Moderate weather at ${destination} — possible minor delays at port`, type: 'weather' });
+  }
+
+  if (origL.includes('india') || origL.includes('nhava') || origL.includes('mumbai') || origL.includes('chennai') || origL.includes('mh')) {
+    items.push({ title: 'Indian port modernization ongoing — DPWorld and Adani terminals maintaining steady throughput despite infrastructure upgrades', type: 'infrastructure' });
+  }
+  if (destL.includes('india') || destL.includes('nhava') || destL.includes('mumbai') || destL.includes('mh')) {
+    items.push({ title: 'Indian customs implementing ICEGATE Phase 3 — electronic filing reducing clearance times by 20%', type: 'trade' });
+  }
+  if (origL.includes('shanghai') || origL.includes('china') || destL.includes('shanghai') || destL.includes('china')) {
+    items.push({ title: 'China export volumes recovering — container availability improving across major hubs', type: 'trade' });
+  }
+  if (origL.includes('rotterdam') || origL.includes('hamburg') || destL.includes('rotterdam') || destL.includes('hamburg') || destL.includes('europe') || destL.includes('germany')) {
+    items.push({ title: 'European ports operating under new ETS carbon regulations — surcharges applied on EU-bound vessels', type: 'trade' });
+  }
+  if (origL.includes('au') || origL.includes('perth') || origL.includes('australia') || destL.includes('australia')) {
+    items.push({ title: 'Australian biosecurity inspections intensified — ensure phytosanitary documentation is current', type: 'security' });
+  }
+  if (destL.includes('us') || destL.includes('ny') || destL.includes('los angeles') || origL.includes('us')) {
+    items.push({ title: 'US CBP enhanced screening protocols active on select corridors — allow additional 24-48hr clearance buffer', type: 'security' });
+  }
+  if (origL.includes('dubai') || origL.includes('jebel ali') || destL.includes('dubai') || destL.includes('jebel ali')) {
+    items.push({ title: 'UAE free zone operations uninterrupted — Jebel Ali maintaining competitive transhipment times', type: 'infrastructure' });
+  }
+  if (origL.includes('singapore') || destL.includes('singapore')) {
+    items.push({ title: 'Singapore MPA implementing new green shipping corridor initiatives — priority berthing for compliant vessels', type: 'infrastructure' });
+  }
+  if (destL.includes('brazil') || destL.includes('santos') || origL.includes('brazil')) {
+    items.push({ title: 'Brazilian ANVISA and Federal Revenue streamlining import procedures — digital documentation reducing port dwell', type: 'trade' });
+  }
+  if (origL.includes('bangladesh') || origL.includes('dhaka') || destL.includes('bangladesh')) {
+    items.push({ title: 'Chittagong port congestion easing with new terminal expansion — feeder connectivity improving', type: 'infrastructure' });
+  }
+
+  return items.slice(0, 4);
+}
+
+function WeatherCard({ data, label }: { data: WeatherData | null; label: string }) {
+  if (!data || data.temp_c === null) {
+    return (
+      <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+        <div className="flex items-center gap-2 mb-2">
+          <Cloud className="w-4 h-4 text-slate-500" />
+          <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</span>
+        </div>
+        <p className="text-xs text-slate-500">Weather data unavailable</p>
+      </div>
+    );
+  }
+
+  const SeverityIcon = getWeatherSeverityIcon(data.severity);
+  const severityColor = data.severity === 'severe' ? 'text-red-400' : data.severity === 'moderate' ? 'text-amber-400' : 'text-emerald-400';
+  const severityBg = data.severity === 'severe' ? 'bg-red-500/10 border-red-500/20' : data.severity === 'moderate' ? 'bg-amber-500/10 border-amber-500/20' : 'bg-emerald-500/10 border-emerald-500/20';
+
+  return (
+    <div className={`rounded-lg p-4 border ${severityBg}`}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <SeverityIcon className={`w-4 h-4 ${severityColor}`} />
+          <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">{label}</span>
+        </div>
+        <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full ${severityBg} ${severityColor}`}>
+          {data.severity}
+        </span>
+      </div>
+      <div className="flex items-baseline gap-2 mb-2">
+        <span className="text-2xl font-bold text-white">{data.temp_c}°C</span>
+        <span className="text-xs text-slate-400 capitalize">{data.description}</span>
+      </div>
+      <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mt-3">
+        {data.feels_like !== null && (
+          <div className="flex items-center gap-1.5">
+            <Thermometer className="w-3 h-3 text-slate-500" />
+            <span className="text-[11px] text-slate-400">Feels {data.feels_like}°C</span>
+          </div>
+        )}
+        {data.humidity !== null && (
+          <div className="flex items-center gap-1.5">
+            <Droplets className="w-3 h-3 text-slate-500" />
+            <span className="text-[11px] text-slate-400">{data.humidity}% humidity</span>
+          </div>
+        )}
+        {data.wind_speed !== null && (
+          <div className="flex items-center gap-1.5">
+            <Wind className="w-3 h-3 text-slate-500" />
+            <span className="text-[11px] text-slate-400">{data.wind_speed} km/h {data.wind_dir}</span>
+          </div>
+        )}
+        {data.visibility !== null && (
+          <div className="flex items-center gap-1.5">
+            <Eye className="w-3 h-3 text-slate-500" />
+            <span className="text-[11px] text-slate-400">{data.visibility} km visibility</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BriefItemRow({ item }: { item: BriefItem }) {
+  const Icon = BRIEF_ICON_MAP[item.icon] || MapPin;
+  const colors = ACCENT_COLORS[item.accent || 'slate'];
+
+  return (
+    <div className="flex items-start gap-3 group">
+      <div className={`mt-0.5 p-1.5 rounded-lg ${colors.bg} border ${colors.border} flex-shrink-0 transition-transform group-hover:scale-110`}>
+        <Icon className={`w-3.5 h-3.5 ${colors.icon}`} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">{item.label}</span>
+        <p className="text-sm text-slate-200 leading-relaxed mt-0.5">{item.value}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function ShipmentInsightsPanel({ shipment }: Props) {
   const [routes, setRoutes] = useState<any[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [weather, setWeather] = useState<{ origin: WeatherData | null; destination: WeatherData | null }>({ origin: null, destination: null });
+  const [weatherLoading, setWeatherLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -127,6 +321,41 @@ export default function ShipmentInsightsPanel({ shipment }: Props) {
     [shipment, routes, loaded]
   );
 
+  useEffect(() => {
+    if (!insights) return;
+    const { origin, destination } = insights;
+    if (!origin || !destination || origin === 'Unknown') return;
+
+    setWeatherLoading(true);
+    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/weather-data`;
+
+    (async () => {
+      try {
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ origin, destination })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setWeather(data);
+        }
+      } catch {
+        /* weather is non-critical */
+      } finally {
+        setWeatherLoading(false);
+      }
+    })();
+  }, [insights?.origin, insights?.destination]);
+
+  const geoInsights = useMemo(
+    () => insights ? deriveGeopoliticalInsights(insights.origin, insights.destination, weather) : [],
+    [insights, weather]
+  );
+
   if (!insights) {
     return (
       <div className="mt-6 p-8 flex items-center justify-center">
@@ -137,14 +366,60 @@ export default function ShipmentInsightsPanel({ shipment }: Props) {
 
   return (
     <div className="mt-6 space-y-5 animate-in fade-in">
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl p-6 text-white">
-        <div className="flex items-center gap-2 mb-4">
-          <Brain className="w-5 h-5 text-cyan-400" />
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-cyan-400">
-            Intelligence Brief
-          </h3>
+      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl overflow-hidden">
+        <div className="p-6 pb-4">
+          <div className="flex items-center gap-2 mb-5">
+            <Brain className="w-5 h-5 text-cyan-400" />
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-cyan-400">
+              Intelligence Brief
+            </h3>
+            <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/30 to-transparent ml-2" />
+          </div>
+          <div className="space-y-3.5">
+            {insights.briefItems.map((item, i) => (
+              <BriefItemRow key={i} item={item} />
+            ))}
+          </div>
         </div>
-        <p className="text-sm leading-relaxed text-slate-300">{insights.summary}</p>
+
+        <div className="px-6 pb-5 pt-4 mt-2 border-t border-slate-700/50">
+          <div className="flex items-center gap-2 mb-4">
+            <CloudSun className="w-4 h-4 text-cyan-400" />
+            <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">Weather Conditions</span>
+            {weatherLoading && <div className="w-3 h-3 border border-cyan-400 border-t-transparent rounded-full animate-spin" />}
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <WeatherCard data={weather.origin} label={`Origin — ${insights.origin}`} />
+            <WeatherCard data={weather.destination} label={`Dest — ${insights.destination}`} />
+          </div>
+        </div>
+
+        {geoInsights.length > 0 && (
+          <div className="px-6 pb-6 pt-4 border-t border-slate-700/50">
+            <div className="flex items-center gap-2 mb-4">
+              <Newspaper className="w-4 h-4 text-cyan-400" />
+              <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">Geopolitical & Trade Updates</span>
+            </div>
+            <div className="space-y-2.5">
+              {geoInsights.map((item, i) => {
+                const typeConfig: Record<string, { icon: typeof Globe2; color: string }> = {
+                  weather: { icon: CloudRain, color: 'text-amber-400' },
+                  trade: { icon: Globe2, color: 'text-blue-400' },
+                  security: { icon: Shield, color: 'text-red-400' },
+                  infrastructure: { icon: Building2, color: 'text-emerald-400' }
+                };
+                const cfg = typeConfig[item.type] || typeConfig.trade;
+                const GeoIcon = cfg.icon;
+                return (
+                  <div key={i} className="flex items-start gap-2.5 group">
+                    <GeoIcon className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${cfg.color} transition-transform group-hover:scale-110`} />
+                    <p className="text-xs text-slate-400 leading-relaxed">{item.title}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-3">

@@ -28,10 +28,20 @@ export interface TradeLaneInsight {
   points: string[];
 }
 
+export interface BriefItem {
+  icon: string;
+  label: string;
+  value: string;
+  accent?: 'green' | 'amber' | 'red' | 'blue' | 'cyan' | 'slate';
+}
+
 export interface CEOInsights {
   confidenceScore: number;
   confidenceTrend: 'improving' | 'stable' | 'declining';
   summary: string;
+  briefItems: BriefItem[];
+  origin: string;
+  destination: string;
   riskFactors: RiskFactor[];
   financial: FinancialMetrics;
   tradeLane: TradeLaneInsight;
@@ -307,5 +317,123 @@ export function computeCEOInsights(shipment: SupabaseShipment, routes: any[] = [
   else if (confidence >= 60) summary += ` Recommend heightened monitoring with ${actions.filter(a => a.priority === 'urgent' || a.priority === 'high').length} priority action(s) flagged.`;
   else summary += ' This shipment requires executive attention — multiple risk factors converging.';
 
-  return { confidenceScore: confidence, confidenceTrend: trend, summary, riskFactors: risks, financial, tradeLane, actions };
+  const briefItems: BriefItem[] = [];
+
+  briefItems.push({
+    icon: 'route',
+    label: 'Trade Route',
+    value: `${origin || 'Origin'} → ${dest || 'Destination'}`,
+    accent: 'cyan'
+  });
+
+  briefItems.push({
+    icon: 'ship',
+    label: 'Transport',
+    value: `${(mode || 'Freight').charAt(0).toUpperCase() + (mode || 'freight').slice(1)} ${shipment['Direction'] ? `(${shipment['Direction']})` : ''}`.trim(),
+    accent: 'blue'
+  });
+
+  if (shipment['Shipper']) {
+    briefItems.push({
+      icon: 'building',
+      label: 'Shipper',
+      value: shipment['Shipper'],
+      accent: 'slate'
+    });
+  }
+
+  briefItems.push({
+    icon: 'gauge',
+    label: 'Delivery Confidence',
+    value: `${confidence}% — ${trend === 'improving' ? 'Trending upward' : trend === 'declining' ? 'Trending downward' : 'Holding steady'}`,
+    accent: confidence >= 80 ? 'green' : confidence >= 60 ? 'amber' : 'red'
+  });
+
+  if (late && delay > 0) {
+    briefItems.push({
+      icon: 'clock',
+      label: 'Schedule Status',
+      value: `${delay}-day delay ${delay >= 5 ? '— requires immediate attention' : '— recoverable with proactive management'}`,
+      accent: delay >= 5 ? 'red' : 'amber'
+    });
+  } else if (!late && delay > 0) {
+    briefItems.push({
+      icon: 'clock',
+      label: 'Schedule Status',
+      value: `${delay} day${delay > 1 ? 's' : ''} ahead of schedule`,
+      accent: 'green'
+    });
+  } else {
+    briefItems.push({
+      icon: 'clock',
+      label: 'Schedule Status',
+      value: 'On schedule — tracking within expected parameters',
+      accent: 'green'
+    });
+  }
+
+  if (shipment['TEU']) {
+    briefItems.push({
+      icon: 'package',
+      label: 'Cargo',
+      value: `${shipment['TEU']} TEU valued at approximately ${financial.estimatedExposure}`,
+      accent: 'slate'
+    });
+  }
+
+  if (season.level !== 'low') {
+    briefItems.push({
+      icon: 'calendar',
+      label: 'Seasonal Alert',
+      value: season.reason,
+      accent: season.level === 'high' ? 'red' : 'amber'
+    });
+  }
+
+  if (worstCong !== 'low') {
+    const congPort = destCong !== 'low' ? dest : origin;
+    briefItems.push({
+      icon: 'anchor',
+      label: 'Port Congestion',
+      value: `${congPort} experiencing ${worstCong} vessel queuing — expect berthing delays`,
+      accent: worstCong === 'high' ? 'red' : 'amber'
+    });
+  }
+
+  if (confidence >= 80) {
+    briefItems.push({
+      icon: 'check',
+      label: 'Assessment',
+      value: 'No critical interventions needed — maintain standard monitoring cadence',
+      accent: 'green'
+    });
+  } else if (confidence >= 60) {
+    const urgentCount = actions.filter(a => a.priority === 'urgent' || a.priority === 'high').length;
+    briefItems.push({
+      icon: 'alert',
+      label: 'Assessment',
+      value: `Heightened monitoring recommended — ${urgentCount} priority action(s) flagged`,
+      accent: 'amber'
+    });
+  } else {
+    briefItems.push({
+      icon: 'alert',
+      label: 'Assessment',
+      value: 'Executive attention required — multiple risk factors converging',
+      accent: 'red'
+    });
+  }
+
+  return {
+    confidenceScore: confidence,
+    confidenceTrend: trend,
+    summary,
+    briefItems,
+    origin: origin || 'Unknown',
+    destination: dest || 'Unknown',
+    riskFactors: risks,
+    financial,
+    tradeLane,
+    actions
+  };
 }
