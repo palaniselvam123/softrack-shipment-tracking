@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { supabase, SupabaseShipment } from '../lib/supabase';
 import { computeCEOInsights, CEOInsights, RiskFactor, ActionItem, BriefItem } from '../services/shipmentInsightsEngine';
+import { getPortCoordinates } from '../data/portCoordinates';
 
 interface Props {
   shipment: SupabaseShipment;
@@ -326,6 +327,10 @@ export default function ShipmentInsightsPanel({ shipment }: Props) {
     const { origin, destination } = insights;
     if (!origin || !destination || origin === 'Unknown') return;
 
+    const originCoords = getPortCoordinates(origin);
+    const destCoords = getPortCoordinates(destination);
+    if (!originCoords && !destCoords) return;
+
     setWeatherLoading(true);
     const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/weather-data`;
 
@@ -337,7 +342,10 @@ export default function ShipmentInsightsPanel({ shipment }: Props) {
             'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ origin, destination })
+          body: JSON.stringify({
+            origin: originCoords ? { lat: originCoords.lat, lon: originCoords.lon, name: origin } : null,
+            destination: destCoords ? { lat: destCoords.lat, lon: destCoords.lon, name: destination } : null
+          })
         });
         if (res.ok) {
           const data = await res.json();

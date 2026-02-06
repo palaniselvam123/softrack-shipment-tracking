@@ -23,6 +23,12 @@ interface WeatherResult {
   severity: "calm" | "moderate" | "severe";
 }
 
+interface LocationInput {
+  lat: number;
+  lon: number;
+  name: string;
+}
+
 function classifySeverity(code: number | null): WeatherResult["severity"] {
   if (!code) return "calm";
   if (code >= 200 && code < 300) return "severe";
@@ -38,9 +44,9 @@ function windDirection(deg: number): string {
   return dirs[Math.round(deg / 45) % 8];
 }
 
-async function fetchWeather(location: string): Promise<WeatherResult> {
+async function fetchWeatherByCoords(location: LocationInput): Promise<WeatherResult> {
   const fallback: WeatherResult = {
-    location,
+    location: location.name,
     temp_c: null,
     description: "Weather data unavailable",
     icon: "01d",
@@ -55,20 +61,9 @@ async function fetchWeather(location: string): Promise<WeatherResult> {
 
   try {
     if (!WEATHER_API_KEY) return fallback;
+    if (!location.lat || !location.lon) return fallback;
 
-    const cleanLocation = location
-      .replace(/\b(port|terminal|hub|zone|free zone)\b/gi, "")
-      .replace(/,\s*(mh|au|in|uk|us|de|ae|sg|br|bd|vn|be|fr)\s*$/i, (_, code) => {
-        const map: Record<string, string> = {
-          mh: ",IN", au: ",AU", in: ",IN", uk: ",GB", us: ",US",
-          de: ",DE", ae: ",AE", sg: ",SG", br: ",BR", bd: ",BD",
-          vn: ",VN", be: ",BE", fr: ",FR",
-        };
-        return map[code.toLowerCase()] || `,${code}`;
-      })
-      .trim();
-
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cleanLocation)}&appid=${WEATHER_API_KEY}&units=metric`;
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${WEATHER_API_KEY}&units=metric`;
     const res = await fetch(url);
 
     if (!res.ok) return fallback;
@@ -76,7 +71,7 @@ async function fetchWeather(location: string): Promise<WeatherResult> {
     const data = await res.json();
 
     return {
-      location,
+      location: location.name,
       temp_c: Math.round(data.main?.temp ?? 0),
       description: data.weather?.[0]?.description || "Unknown",
       icon: data.weather?.[0]?.icon || "01d",
@@ -99,11 +94,16 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { origin, destination } = await req.json();
+    const body = await req.json();
+    const { origin, destination } = body;
 
     const [originWeather, destinationWeather] = await Promise.all([
-      origin ? fetchWeather(origin) : Promise.resolve(null),
-      destination ? fetchWeather(destination) : Promise.resolve(null),
+      origin?.lat && origin?.lon
+        ? fetchWeatherByCoords(origin)
+        : Promise.resolve(null),
+      destination?.lat && destination?.lon
+        ? fetchWeatherByCoords(destination)
+        : Promise.resolve(null),
     ]);
 
     return new Response(
