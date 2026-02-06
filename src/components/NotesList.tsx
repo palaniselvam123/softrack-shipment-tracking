@@ -17,7 +17,7 @@ const NotesList: React.FC<NotesListProps> = ({ shipmentNo }) => {
       content: 'Customs clearance pending additional documentation. Shipper has been notified to provide missing commercial invoice amendments.',
       type: 'warning',
       author: 'Sarah Johnson',
-      createdAt: '2026-11-15 14:30',
+      createdAt: '2025-11-15 14:30',
       priority: 'high'
     },
     {
@@ -26,7 +26,7 @@ const NotesList: React.FC<NotesListProps> = ({ shipmentNo }) => {
       content: 'Container BKSU9898988 has been successfully loaded at Nhava Sheva port. All 260 packages accounted for and secured.',
       type: 'success',
       author: 'Mike Chen',
-      createdAt: '2026-11-14 09:15',
+      createdAt: '2025-11-14 09:15',
       priority: 'medium'
     },
     {
@@ -35,7 +35,7 @@ const NotesList: React.FC<NotesListProps> = ({ shipmentNo }) => {
       content: 'Fragile items in packages 45-67 require special handling. Destination port has been notified of temperature-sensitive cargo.',
       type: 'info',
       author: 'Emma Wilson',
-      createdAt: '2026-11-13 16:45',
+      createdAt: '2025-11-13 16:45',
       priority: 'medium'
     }
   ];

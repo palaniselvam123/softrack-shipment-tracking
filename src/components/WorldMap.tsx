@@ -254,7 +254,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ shipmentNo, isModal = false, onClos
           <div className="text-xs text-gray-600 space-y-1">
             <div>Speed: 18.5 knots</div>
             <div>Course: 285°</div>
-            <div>ETA Mumbai: 29-Jan-2026</div>
+            <div>ETA Mumbai: 29-Nov-2025</div>
           </div>
         </div>
       </div>

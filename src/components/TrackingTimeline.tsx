@@ -13,7 +13,7 @@ const TrackingTimeline = () => {
     {
       status: 'Port of Loading',
       location: 'Auckland - NZAKL',
-      date: '09-Oct-2026 10:40',
+      date: '09-Oct-2025 10:40',
       time: 'On-Time',
       completed: true,
       current: false,
@@ -26,8 +26,8 @@ const TrackingTimeline = () => {
         mode: 'Sea',
         carrier: 'MEDITERRANEAN SHIPPING COMPANY',
         voyage: 'KE340R',
-        departure: '09-Oct-2026 10:40',
-        arrival: '29-Nov-2026 20:00'
+        departure: '09-Oct-2025 10:40',
+        arrival: '29-Nov-2025 20:00'
       },
       completed: false,
       current: true,
@@ -36,7 +36,7 @@ const TrackingTimeline = () => {
     {
       status: 'Port of Discharge',
       location: 'Nhava Sheva Port/Mumbai - INJNP',
-      date: '29-Jan-2026 20:00',
+      date: '29-Nov-2025 20:00',
       completed: false,
       current: false,
       icon: 'port'
@@ -78,7 +78,7 @@ const TrackingTimeline = () => {
             <Clock className="w-4 h-4" />
             <span className="text-sm font-medium">Estimated Delivery to Destination Port</span>
           </div>
-          <p className="text-lg font-semibold">Wed, 29 November 2026</p>
+          <p className="text-lg font-semibold">Wed, 29 November 2025</p>
         </div>
       </div>
       

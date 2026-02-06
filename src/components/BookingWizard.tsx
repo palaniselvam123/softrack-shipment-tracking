@@ -84,7 +84,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
     console.log('getBookingData called with:', bookingNo);
 
     const mockBookingData: { [key: string]: any } = {
-      'BKG/2026/001': {
+      'BKG/2025/001': {
         serviceProvider: 'Maersk Line',
         transportMode: 'sea',
         shipmentType: 'Export',
@@ -96,8 +96,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'export@ausfinewines.com.au',
         originLocation: 'East Perth, AU',
         destinationLocation: 'Mumbai, IN',
-        pickupDate: '2026-01-10',
-        deliveryDate: '2026-01-29',
+        pickupDate: '2025-10-10',
+        deliveryDate: '2025-10-29',
         cargoType: 'General Cargo',
         movementType: 'FCL (Full Container Load)',
         goods: [
@@ -135,8 +135,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'imports@14square.in',
         originLocation: 'Shanghai, CN',
         destinationLocation: 'Mumbai, IN',
-        pickupDate: '2026-08-01',
-        deliveryDate: '2026-08-20',
+        pickupDate: '2025-10-01',
+        deliveryDate: '2025-10-20',
         cargoType: 'General Cargo',
         movementType: 'FCL (Full Container Load)',
         goods: [
@@ -163,8 +163,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'operations@mumbaiimports.com',
         originLocation: 'Hamburg, DE',
         destinationLocation: 'Mumbai, IN',
-        pickupDate: '2026-08-02',
-        deliveryDate: '2026-08-22',
+        pickupDate: '2025-10-02',
+        deliveryDate: '2025-10-22',
         cargoType: 'General Cargo',
         movementType: 'FCL (Full Container Load)',
         goods: [
@@ -191,8 +191,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'info@bangaloretrading.in',
         originLocation: 'Rotterdam, NL',
         destinationLocation: 'Bangalore, IN',
-        pickupDate: '2026-08-03',
-        deliveryDate: '2026-08-25',
+        pickupDate: '2025-10-03',
+        deliveryDate: '2025-10-25',
         cargoType: 'General Cargo',
         movementType: 'FCL (Full Container Load)',
         goods: [
@@ -219,8 +219,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'logistics@techsolutions.in',
         originLocation: 'London, GB',
         destinationLocation: 'Delhi, IN',
-        pickupDate: '2026-09-01',
-        deliveryDate: '2026-09-02',
+        pickupDate: '2025-11-01',
+        deliveryDate: '2025-11-02',
         cargoType: 'Electronics',
         movementType: 'Air Express',
         goods: [
@@ -247,8 +247,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'imports@dubaitech.ae',
         originLocation: 'Bangalore, IN',
         destinationLocation: 'Dubai, AE',
-        pickupDate: '2026-09-15',
-        deliveryDate: '2026-09-16',
+        pickupDate: '2025-11-15',
+        deliveryDate: '2025-11-16',
         cargoType: 'Electronics',
         movementType: 'Air Express',
         goods: [
@@ -275,8 +275,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'imports@intltradingco.com',
         originLocation: 'Mumbai, IN',
         destinationLocation: 'New York, US',
-        pickupDate: '2026-08-11',
-        deliveryDate: '2026-09-05',
+        pickupDate: '2025-10-11',
+        deliveryDate: '2025-11-05',
         cargoType: 'General Cargo',
         movementType: 'FCL (Full Container Load)',
         goods: [
@@ -303,8 +303,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'logistics@globallogsg.com',
         originLocation: 'Chennai, IN',
         destinationLocation: 'Singapore, SG',
-        pickupDate: '2026-08-15',
-        deliveryDate: '2026-08-28',
+        pickupDate: '2025-10-15',
+        deliveryDate: '2025-10-28',
         cargoType: 'General Cargo',
         movementType: 'LCL (Less than Container Load)',
         goods: [
@@ -331,8 +331,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'logistics@chennaimotors.in',
         originLocation: 'New York, US',
         destinationLocation: 'Chennai, IN',
-        pickupDate: '2026-09-05',
-        deliveryDate: '2026-09-07',
+        pickupDate: '2025-11-05',
+        deliveryDate: '2025-11-07',
         cargoType: 'Automotive Parts',
         movementType: 'Air Express',
         goods: [
@@ -359,8 +359,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'imports@delhidist.in',
         originLocation: 'Kathmandu, NP',
         destinationLocation: 'Delhi, IN',
-        pickupDate: '2026-08-20',
-        deliveryDate: '2026-08-27',
+        pickupDate: '2025-10-20',
+        deliveryDate: '2025-10-27',
         cargoType: 'General Cargo',
         movementType: 'Door-to-Door',
         goods: [
@@ -387,8 +387,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'imports@mumbaifashion.in',
         originLocation: 'Dhaka, BD',
         destinationLocation: 'Mumbai, IN',
-        pickupDate: '2026-08-25',
-        deliveryDate: '2026-09-02',
+        pickupDate: '2025-10-25',
+        deliveryDate: '2025-11-02',
         cargoType: 'Textiles',
         movementType: 'Door-to-Door',
         goods: [
@@ -415,8 +415,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'imports@srielec.lk',
         originLocation: 'Bangalore, IN',
         destinationLocation: 'Colombo, LK',
-        pickupDate: '2026-09-01',
-        deliveryDate: '2026-09-08',
+        pickupDate: '2025-11-01',
+        deliveryDate: '2025-11-08',
         cargoType: 'Electronics',
         movementType: 'Door-to-Door',
         goods: [
@@ -443,8 +443,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
         consigneeEmail: 'imports@colombotrading.lk',
         originLocation: 'Chennai, IN',
         destinationLocation: 'Colombo, LK',
-        pickupDate: '2026-09-03',
-        deliveryDate: '2026-09-10',
+        pickupDate: '2025-11-03',
+        deliveryDate: '2025-11-10',
         cargoType: 'Manufacturing Goods',
         movementType: 'Door-to-Door',
         goods: [
@@ -597,7 +597,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
       id: 'MUM/SE/SHP/0024',
       consignee: 'Global Trading Company',
       route: 'Mumbai → New York',
-      date: '2026-11-15',
+      date: '2025-11-15',
       data: {
         serviceProvider: 'Maersk Line',
         transportMode: 'sea',
@@ -618,7 +618,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
       id: 'MUM/AE/SHP/0013',
       consignee: 'ANL Industries',
       route: 'Chennai → Hanoi',
-      date: '2026-11-10',
+      date: '2025-11-10',
       data: {
         serviceProvider: 'MSC Mediterranean Shipping',
         transportMode: 'air',

@@ -41,11 +41,11 @@ const TicketingPortal: React.FC = () => {
   const [selectedPriority, setSelectedPriority] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set(['TKT-2026-001', 'TKT-2026-005']));
+  const [favorites, setFavorites] = useState<Set<string>>(new Set(['TKT-2025-001', 'TKT-2025-005']));
 
   const tickets: TicketData[] = [
     {
-      id: 'TKT-2026-001',
+      id: 'TKT-2025-001',
       title: 'Container Damage Report - MEDU6997206',
       description: 'Container arrived with visible damage to the exterior. Need immediate inspection and damage assessment.',
       priority: 'high',
@@ -53,15 +53,15 @@ const TicketingPortal: React.FC = () => {
       category: 'Damage Claim',
       assignee: 'John Smith',
       reporter: 'Sarah Johnson',
-      created: '2026-11-20 09:30',
-      updated: '2026-11-20 14:45',
-      dueDate: '2026-11-22',
+      created: '2025-11-20 09:30',
+      updated: '2025-11-20 14:45',
+      dueDate: '2025-11-22',
       shipmentRef: 'MUM/SE/SHP/0001',
       attachments: 3,
       comments: 5
     },
     {
-      id: 'TKT-2026-002',
+      id: 'TKT-2025-002',
       title: 'Missing Documentation - Bill of Lading',
       description: 'Original Bill of Lading not received for shipment. Customer requesting duplicate.',
       priority: 'medium',
@@ -69,15 +69,15 @@ const TicketingPortal: React.FC = () => {
       category: 'Documentation',
       assignee: 'Mike Chen',
       reporter: 'Emma Wilson',
-      created: '2026-11-19 15:20',
-      updated: '2026-11-20 10:15',
-      dueDate: '2026-11-23',
+      created: '2025-11-19 15:20',
+      updated: '2025-11-20 10:15',
+      dueDate: '2025-11-23',
       shipmentRef: 'MUM/AE/SHP/0009',
       attachments: 1,
       comments: 3
     },
     {
-      id: 'TKT-2026-003',
+      id: 'TKT-2025-003',
       title: 'Customs Clearance Delay',
       description: 'Shipment held at customs due to incomplete documentation. Need to provide additional certificates.',
       priority: 'urgent',
@@ -85,15 +85,15 @@ const TicketingPortal: React.FC = () => {
       category: 'Customs',
       assignee: 'David Brown',
       reporter: 'Lisa Garcia',
-      created: '2026-11-20 11:45',
-      updated: '2026-11-20 16:30',
-      dueDate: '2026-11-21',
+      created: '2025-11-20 11:45',
+      updated: '2025-11-20 16:30',
+      dueDate: '2025-11-21',
       shipmentRef: 'MUM/AI/SHP/0001',
       attachments: 2,
       comments: 8
     },
     {
-      id: 'TKT-2026-004',
+      id: 'TKT-2025-004',
       title: 'Invoice Discrepancy',
       description: 'Customer reporting incorrect charges on invoice IDDEC026748. Need to review and adjust.',
       priority: 'medium',
@@ -101,14 +101,14 @@ const TicketingPortal: React.FC = () => {
       category: 'Billing',
       assignee: 'Anna Martinez',
       reporter: 'Robert Taylor',
-      created: '2026-11-18 13:20',
-      updated: '2026-11-19 09:45',
-      dueDate: '2026-11-25',
+      created: '2025-11-18 13:20',
+      updated: '2025-11-19 09:45',
+      dueDate: '2025-11-25',
       attachments: 4,
       comments: 6
     },
     {
-      id: 'TKT-2026-005',
+      id: 'TKT-2025-005',
       title: 'Delivery Address Change Request',
       description: 'Customer requesting change of delivery address for shipment in transit. Need to coordinate with carrier.',
       priority: 'high',
@@ -116,15 +116,15 @@ const TicketingPortal: React.FC = () => {
       category: 'Delivery',
       assignee: 'James Anderson',
       reporter: 'Maria Rodriguez',
-      created: '2026-11-19 08:15',
-      updated: '2026-11-20 12:30',
-      dueDate: '2026-11-22',
+      created: '2025-11-19 08:15',
+      updated: '2025-11-20 12:30',
+      dueDate: '2025-11-22',
       shipmentRef: 'MUM/SE/SHP/0020',
       attachments: 0,
       comments: 4
     },
     {
-      id: 'TKT-2026-006',
+      id: 'TKT-2025-006',
       title: 'System Access Issue',
       description: 'User unable to access tracking portal. Password reset not working.',
       priority: 'low',
@@ -132,9 +132,9 @@ const TicketingPortal: React.FC = () => {
       category: 'Technical',
       assignee: 'Kevin Lee',
       reporter: 'Jennifer White',
-      created: '2026-11-17 16:45',
-      updated: '2026-11-18 14:20',
-      dueDate: '2026-11-24',
+      created: '2025-11-17 16:45',
+      updated: '2025-11-18 14:20',
+      dueDate: '2025-11-24',
       attachments: 1,
       comments: 2
     }

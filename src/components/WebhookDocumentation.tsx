@@ -16,7 +16,7 @@ const WebhookDocumentation: React.FC = () => {
 
   const samplePayload = `{
   "event": "shipment.status_changed",
-  "timestamp": "2026-01-25T10:30:00Z",
+  "timestamp": "2025-01-25T10:30:00Z",
   "data": {
     "shipment_no": "MUM/SE/SHP/0001",
     "status": "In Transit",
@@ -25,8 +25,8 @@ const WebhookDocumentation: React.FC = () => {
     "consignee": "South Asia Trading Company",
     "departure": "East Perth, AU",
     "arrival_port": "Nhava Sheva Port, MH",
-    "etd": "09-Oct-2026",
-    "eta": "29-Jan-2026",
+    "etd": "09-Oct-2025",
+    "eta": "29-Jan-2025",
     "transport": "Sea",
     "type": "Export"
   }

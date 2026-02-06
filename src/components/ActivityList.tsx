@@ -12,7 +12,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
       title: 'Shipment Status Updated',
       description: 'Status changed from "In Transit" to "Customs Clearance"',
       type: 'status_update',
-      timestamp: '2026-11-15 14:30:00',
+      timestamp: '2025-11-15 14:30:00',
       user: 'System',
       location: 'New York Port, NY',
       icon: 'info'
@@ -22,7 +22,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
       title: 'Container Arrived at Destination',
       description: 'Container BKSU9898988 has arrived at New York Port',
       type: 'arrival',
-      timestamp: '2026-11-15 08:45:00',
+      timestamp: '2025-11-15 08:45:00',
       user: 'Port Authority',
       location: 'New York Port, NY',
       icon: 'success'
@@ -32,7 +32,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
       title: 'Customs Documentation Submitted',
       description: 'All required customs documents have been submitted for clearance',
       type: 'documentation',
-      timestamp: '2026-11-14 16:20:00',
+      timestamp: '2025-11-14 16:20:00',
       user: 'Sarah Johnson',
       location: 'New York Port, NY',
       icon: 'info'
@@ -42,7 +42,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
       title: 'Vessel Departure',
       description: 'Vessel departed from Nhava Sheva Port with container BKSU9898988',
       type: 'departure',
-      timestamp: '2026-11-10 22:15:00',
+      timestamp: '2025-11-10 22:15:00',
       user: 'Maersk Line',
       location: 'Nhava Sheva Port, MH',
       icon: 'success'
@@ -52,7 +52,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
       title: 'Container Loading Completed',
       description: 'Container successfully loaded onto vessel MSC MEDITERRANEAN',
       type: 'loading',
-      timestamp: '2026-11-10 14:30:00',
+      timestamp: '2025-11-10 14:30:00',
       user: 'Port Operations',
       location: 'Nhava Sheva Port, MH',
       icon: 'success'
@@ -62,7 +62,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
       title: 'Pre-shipment Inspection',
       description: 'Quality inspection completed for all 260 packages',
       type: 'inspection',
-      timestamp: '2026-11-09 11:45:00',
+      timestamp: '2025-11-09 11:45:00',
       user: 'Quality Team',
       location: 'Mumbai Warehouse',
       icon: 'success'
@@ -72,7 +72,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
       title: 'Export Documentation Approved',
       description: 'All export documents have been approved by customs',
       type: 'approval',
-      timestamp: '2026-11-08 15:20:00',
+      timestamp: '2025-11-08 15:20:00',
       user: 'Customs Authority',
       location: 'Mumbai Customs',
       icon: 'success'
@@ -82,7 +82,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
       title: 'Cargo Received at Warehouse',
       description: 'All packages received and verified at export warehouse',
       type: 'receipt',
-      timestamp: '2026-11-07 09:30:00',
+      timestamp: '2025-11-07 09:30:00',
       user: 'Warehouse Team',
       location: 'Mumbai Warehouse',
       icon: 'success'
@@ -92,7 +92,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
       title: 'Booking Confirmation',
       description: 'Shipping space confirmed with Maersk Line',
       type: 'booking',
-      timestamp: '2026-11-05 13:15:00',
+      timestamp: '2025-11-05 13:15:00',
       user: 'Mike Chen',
       location: 'Mumbai Office',
       icon: 'info'
@@ -102,7 +102,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
       title: 'Shipment Created',
       description: 'New shipment record created in the system',
       type: 'creation',
-      timestamp: '2026-11-01 10:00:00',
+      timestamp: '2025-11-01 10:00:00',
       user: 'Emma Wilson',
       location: 'Mumbai Office',
       icon: 'info'

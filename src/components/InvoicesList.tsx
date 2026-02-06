@@ -9,25 +9,25 @@ const InvoicesList: React.FC<InvoicesListProps> = ({ shipmentNo }) => {
   const invoices = [
     {
       id: 1,
-      invoiceNo: 'INV-2026-001',
+      invoiceNo: 'INV-2025-001',
       type: 'Freight Invoice',
       amount: 2450.00,
       currency: 'USD',
-      issueDate: '2026-11-10',
-      dueDate: '2026-12-10',
+      issueDate: '2025-11-10',
+      dueDate: '2025-12-10',
       status: 'Paid',
       vendor: 'Maersk Line',
       description: 'Ocean freight charges for container BKSU9898988',
-      paymentDate: '2026-11-08'
+      paymentDate: '2025-11-08'
     },
     {
       id: 2,
-      invoiceNo: 'INV-2026-002',
+      invoiceNo: 'INV-2025-002',
       type: 'Customs Duty',
       amount: 1200.00,
       currency: 'USD',
-      issueDate: '2026-11-12',
-      dueDate: '2026-11-27',
+      issueDate: '2025-11-12',
+      dueDate: '2025-11-27',
       status: 'Pending',
       vendor: 'US Customs',
       description: 'Import duty and taxes for shipment clearance',

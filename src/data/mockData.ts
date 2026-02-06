@@ -14,8 +14,8 @@ export const mockShipments = [
     arrivalPort: 'Nhava Sheva Port, MH',
     type: 'Export',
     status: 'Pending',
-    etd: '09-Oct-2026',
-    eta: '29-Nov-2026'
+    etd: '09-Oct-2025',
+    eta: '29-Nov-2025'
   },
   {
     shipmentNo: 'MUM/SE/SHP/0002',
@@ -32,8 +32,8 @@ export const mockShipments = [
     arrivalPort: 'Hamburg Port, Germany',
     type: 'Export',
     status: 'Delayed',
-    etd: '15-Jan-2026',
-    eta: '18-Feb-2026'
+    etd: '15-Oct-2025',
+    eta: '18-Nov-2025'
   },
   {
     shipmentNo: 'MUM/AE/SHP/0009',
@@ -50,8 +50,8 @@ export const mockShipments = [
     arrivalPort: 'Dubai International Airport, AE',
     type: 'Export',
     status: 'Delayed',
-    etd: '20-Nov-2026',
-    eta: '21-Nov-2026'
+    etd: '20-Nov-2025',
+    eta: '21-Nov-2025'
   },
   {
     shipmentNo: 'MUM/AE/SHP/0012',
@@ -68,8 +68,8 @@ export const mockShipments = [
     arrivalPort: 'Dubai International Airport, AE',
     type: 'Export',
     status: 'Delayed',
-    etd: '21-Nov-2026',
-    eta: '22-Nov-2026'
+    etd: '21-Nov-2025',
+    eta: '22-Nov-2025'
   },
   {
     shipmentNo: 'MUM/AE/SHP/0013',
@@ -86,8 +86,8 @@ export const mockShipments = [
     arrivalPort: 'Noi Bai International Airport, Hanoi',
     type: 'Export',
     status: 'Delayed',
-    etd: '16-Nov-2026',
-    eta: '17-Nov-2026'
+    etd: '16-Nov-2025',
+    eta: '17-Nov-2025'
   },
   {
     shipmentNo: 'MUM/AE/SHP/0014',
@@ -104,8 +104,8 @@ export const mockShipments = [
     arrivalPort: 'Brussels Airport, Belgium',
     type: 'Export',
     status: 'Billing',
-    etd: '10-Nov-2026',
-    eta: '11-Nov-2026'
+    etd: '10-Nov-2025',
+    eta: '11-Nov-2025'
   },
   {
     shipmentNo: 'MUM/AI/SHP/0001',
@@ -122,8 +122,8 @@ export const mockShipments = [
     arrivalPort: 'Mumbai Airport, MH',
     type: 'Import',
     status: 'Delayed',
-    etd: '18-Nov-2026',
-    eta: '20-Nov-2026'
+    etd: '18-Nov-2025',
+    eta: '20-Nov-2025'
   },
   {
     shipmentNo: 'MUM/AI/SHP/0002',
@@ -140,8 +140,8 @@ export const mockShipments = [
     arrivalPort: 'Mumbai Airport, MH',
     type: 'Import',
     status: 'Billing',
-    etd: '18-Nov-2026',
-    eta: '20-Nov-2026'
+    etd: '18-Nov-2025',
+    eta: '20-Nov-2025'
   },
   {
     shipmentNo: 'MUM/AI/SHP/0009',
@@ -158,8 +158,8 @@ export const mockShipments = [
     arrivalPort: 'Mumbai Airport, MH',
     type: 'Import',
     status: 'Billing',
-    etd: '19-Nov-2026',
-    eta: '20-Nov-2026'
+    etd: '19-Nov-2025',
+    eta: '20-Nov-2025'
   },
   {
     shipmentNo: 'MUM/LE/SHP/0002',
@@ -176,8 +176,8 @@ export const mockShipments = [
     arrivalPort: 'Delhi, India',
     type: 'Domestic',
     status: 'Delayed',
-    etd: '22-Nov-2026',
-    eta: '24-Nov-2026'
+    etd: '22-Nov-2025',
+    eta: '24-Nov-2025'
   },
   {
     shipmentNo: 'MUM/SE/SHP/0020',
@@ -194,8 +194,8 @@ export const mockShipments = [
     arrivalPort: 'Santos Port, Brazil',
     type: 'Export',
     status: 'Delayed',
-    etd: '25-Nov-2026',
-    eta: '28-Dec-2026'
+    etd: '25-Nov-2025',
+    eta: '28-Dec-2025'
   },
   {
     shipmentNo: 'MUM/SE/SHP/0023',
@@ -212,8 +212,8 @@ export const mockShipments = [
     arrivalPort: 'New York Port, NY',
     type: 'Export',
     status: 'Loaded on Vessel',
-    etd: '28-Nov-2026',
-    eta: '15-Jan-2026'
+    etd: '28-Nov-2025',
+    eta: '15-Dec-2025'
   },
   {
     shipmentNo: 'MUM/SE/SHP/0024',
@@ -230,8 +230,8 @@ export const mockShipments = [
     arrivalPort: 'New York Port, NY',
     type: 'Export',
     status: 'Billing',
-    etd: '30-Nov-2026',
-    eta: '18-Jan-2026'
+    etd: '30-Nov-2025',
+    eta: '18-Dec-2025'
   },
   {
     shipmentNo: 'DEL/AE/SHP/0001',
@@ -248,8 +248,8 @@ export const mockShipments = [
     arrivalPort: 'Charles de Gaulle Airport, Paris',
     type: 'Export',
     status: 'Export',
-    etd: '02-Dec-2026',
-    eta: '03-Dec-2026'
+    etd: '02-Dec-2025',
+    eta: '03-Dec-2025'
   },
   {
     shipmentNo: 'DEL/SE/SHP/0005',
@@ -266,8 +266,8 @@ export const mockShipments = [
     arrivalPort: 'Jebel Ali Port, Dubai',
     type: 'Export',
     status: 'Delayed',
-    etd: '28-Nov-2026',
-    eta: '05-Dec-2026'
+    etd: '28-Nov-2025',
+    eta: '05-Dec-2025'
   },
   {
     shipmentNo: 'CHN/AI/SHP/0003',
@@ -284,8 +284,8 @@ export const mockShipments = [
     arrivalPort: 'Chennai Airport, TN',
     type: 'Import',
     status: 'Delayed',
-    etd: '01-Dec-2026',
-    eta: '02-Dec-2026'
+    etd: '01-Dec-2025',
+    eta: '02-Dec-2025'
   },
   {
     shipmentNo: 'CHN/SE/SHP/0008',
@@ -302,8 +302,8 @@ export const mockShipments = [
     arrivalPort: 'Los Angeles Port, CA',
     type: 'Export',
     status: 'Vessel Departed',
-    etd: '25-Nov-2026',
-    eta: '20-Dec-2026'
+    etd: '25-Nov-2025',
+    eta: '20-Dec-2025'
   },
   {
     shipmentNo: 'KOL/SE/SHP/0012',
@@ -320,8 +320,8 @@ export const mockShipments = [
     arrivalPort: 'Rotterdam Port, Netherlands',
     type: 'Export',
     status: 'Delayed',
-    etd: '20-Nov-2026',
-    eta: '25-Dec-2026'
+    etd: '20-Nov-2025',
+    eta: '25-Dec-2025'
   },
   {
     shipmentNo: 'BLR/AE/SHP/0007',
@@ -338,8 +338,8 @@ export const mockShipments = [
     arrivalPort: 'Changi Airport, Singapore',
     type: 'Export',
     status: 'Ready for Dispatch',
-    etd: '03-Dec-2026',
-    eta: '04-Dec-2026'
+    etd: '03-Dec-2025',
+    eta: '04-Dec-2025'
   },
   {
     shipmentNo: 'HYD/LE/SHP/0004',
@@ -356,7 +356,7 @@ export const mockShipments = [
     arrivalPort: 'Kochi, Kerala',
     type: 'Domestic',
     status: 'Delayed',
-    etd: '01-Dec-2026',
-    eta: '03-Dec-2026'
+    etd: '01-Dec-2025',
+    eta: '03-Dec-2025'
   }
 ];

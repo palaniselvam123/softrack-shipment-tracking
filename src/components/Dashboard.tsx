@@ -48,7 +48,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking }) 
       status: 'In Transit',
       origin: 'Mumbai',
       destination: 'New York',
-      eta: '2026-11-29',
+      eta: '2025-11-29',
       statusColor: 'bg-blue-100 text-blue-800'
     },
     {
@@ -56,7 +56,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking }) 
       status: 'Customs Clearance',
       origin: 'Chennai',
       destination: 'Hanoi',
-      eta: '2026-11-25',
+      eta: '2025-11-25',
       statusColor: 'bg-yellow-100 text-yellow-800'
     },
     {
@@ -64,7 +64,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking }) 
       status: 'Delivered',
       origin: 'Frankfurt',
       destination: 'Mumbai',
-      eta: '2026-11-20',
+      eta: '2025-11-20',
       statusColor: 'bg-green-100 text-green-800'
     }
   ];
@@ -101,7 +101,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking }) 
 
   const recentTickets = [
     {
-      id: 'TKT-2026-001',
+      id: 'TKT-2025-001',
       title: 'Container Damage Report',
       priority: 'high',
       status: 'open',
@@ -109,7 +109,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking }) 
       created: '2 hours ago'
     },
     {
-      id: 'TKT-2026-002',
+      id: 'TKT-2025-002',
       title: 'Documentation Missing',
       priority: 'medium',
       status: 'in-progress',
@@ -117,7 +117,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking }) 
       created: '5 hours ago'
     },
     {
-      id: 'TKT-2026-003',
+      id: 'TKT-2025-003',
       title: 'Billing Inquiry',
       priority: 'low',
       status: 'resolved',

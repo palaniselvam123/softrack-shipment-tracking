@@ -13,7 +13,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       type: 'BOL',
       size: '2.4 MB',
       uploadedBy: 'John Smith',
-      uploadedDate: '2026-11-15',
+      uploadedDate: '2025-11-15',
       status: 'Approved',
       description: 'Original Bill of Lading for container BKSU9898988'
     },
@@ -23,7 +23,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       type: 'INV',
       size: '1.8 MB',
       uploadedBy: 'Sarah Johnson',
-      uploadedDate: '2026-11-14',
+      uploadedDate: '2025-11-14',
       status: 'Pending Review',
       description: 'Commercial invoice for shipment value $45,230.00'
     },
@@ -33,7 +33,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       type: 'PKL',
       size: '956 KB',
       uploadedBy: 'Mike Chen',
-      uploadedDate: '2026-11-14',
+      uploadedDate: '2025-11-14',
       status: 'Approved',
       description: 'Detailed packing list with 260 packages'
     },
@@ -43,7 +43,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       type: 'COO',
       size: '1.2 MB',
       uploadedBy: 'Emma Wilson',
-      uploadedDate: '2026-11-13',
+      uploadedDate: '2025-11-13',
       status: 'Approved',
       description: 'Certificate of Origin - Made in India'
     },
@@ -53,7 +53,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       type: 'INS',
       size: '2.1 MB',
       uploadedBy: 'David Brown',
-      uploadedDate: '2026-11-13',
+      uploadedDate: '2025-11-13',
       status: 'Approved',
       description: 'Marine cargo insurance certificate'
     },
@@ -63,7 +63,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       type: 'EXP',
       size: '1.5 MB',
       uploadedBy: 'Lisa Garcia',
-      uploadedDate: '2026-11-12',
+      uploadedDate: '2025-11-12',
       status: 'Approved',
       description: 'Export license for restricted goods'
     },
@@ -73,7 +73,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       type: 'CUS',
       size: '3.2 MB',
       uploadedBy: 'Robert Taylor',
-      uploadedDate: '2026-11-12',
+      uploadedDate: '2025-11-12',
       status: 'Processing',
       description: 'Customs declaration form with duty calculations'
     },
@@ -83,7 +83,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       type: 'SHI',
       size: '890 KB',
       uploadedBy: 'Anna Martinez',
-      uploadedDate: '2026-11-11',
+      uploadedDate: '2025-11-11',
       status: 'Approved',
       description: 'Detailed shipping instructions for carrier'
     },
@@ -93,7 +93,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       type: 'FRT',
       size: '1.3 MB',
       uploadedBy: 'James Anderson',
-      uploadedDate: '2026-11-11',
+      uploadedDate: '2025-11-11',
       status: 'Paid',
       description: 'Freight charges invoice from Maersk Line'
     },
@@ -103,7 +103,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       type: 'DEL',
       size: '756 KB',
       uploadedBy: 'Maria Rodriguez',
-      uploadedDate: '2026-11-10',
+      uploadedDate: '2025-11-10',
       status: 'Pending',
       description: 'Delivery receipt at destination port'
     },
@@ -113,7 +113,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       type: 'QUA',
       size: '2.8 MB',
       uploadedBy: 'Kevin Lee',
-      uploadedDate: '2026-11-10',
+      uploadedDate: '2025-11-10',
       status: 'Approved',
       description: 'Quality inspection certificate'
     },
@@ -123,7 +123,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       type: 'PHY',
       size: '1.7 MB',
       uploadedBy: 'Jennifer White',
-      uploadedDate: '2026-11-09',
+      uploadedDate: '2025-11-09',
       status: 'Approved',
       description: 'Plant health certificate for agricultural products'
     }

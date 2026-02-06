@@ -100,7 +100,7 @@ const CustomsPage: React.FC = () => {
 
         declarations.push({
           id: `${id++}`,
-          declarationNo: `AI/IMP/2026/${String(id).padStart(3, '0')}`,
+          declarationNo: `AI/IMP/2025/${String(id).padStart(3, '0')}`,
           shipmentRef: `MUM/AI/SHP/${String(id).padStart(4, '0')}`,
           status: isDelayed ? 'delayed' : 'pending',
           declarationType: 'import',
@@ -131,7 +131,7 @@ const CustomsPage: React.FC = () => {
 
         declarations.push({
           id: `${id++}`,
-          declarationNo: `AI/IMP/2026/${String(id).padStart(3, '0')}`,
+          declarationNo: `AI/IMP/2025/${String(id).padStart(3, '0')}`,
           shipmentRef: `MUM/AI/SHP/${String(id).padStart(4, '0')}`,
           status: 'cleared',
           declarationType: 'import',
@@ -175,7 +175,7 @@ const CustomsPage: React.FC = () => {
 
         declarations.push({
           id: `${id++}`,
-          declarationNo: `SI/IMP/2026/${String(id).padStart(3, '0')}`,
+          declarationNo: `SI/IMP/2025/${String(id).padStart(3, '0')}`,
           shipmentRef: `MUM/SE/SHP/${String(id).padStart(4, '0')}`,
           status: isDelayed ? 'delayed' : 'pending',
           declarationType: 'import',
@@ -206,7 +206,7 @@ const CustomsPage: React.FC = () => {
 
         declarations.push({
           id: `${id++}`,
-          declarationNo: `SI/IMP/2026/${String(id).padStart(3, '0')}`,
+          declarationNo: `SI/IMP/2025/${String(id).padStart(3, '0')}`,
           shipmentRef: `MUM/SE/SHP/${String(id).padStart(4, '0')}`,
           status: 'cleared',
           declarationType: 'import',
@@ -250,7 +250,7 @@ const CustomsPage: React.FC = () => {
 
         declarations.push({
           id: `${id++}`,
-          declarationNo: `AE/EXP/2026/${String(id).padStart(3, '0')}`,
+          declarationNo: `AE/EXP/2025/${String(id).padStart(3, '0')}`,
           shipmentRef: `MUM/AE/SHP/${String(id).padStart(4, '0')}`,
           status: isDelayed ? 'delayed' : 'pending',
           declarationType: 'export',
@@ -281,7 +281,7 @@ const CustomsPage: React.FC = () => {
 
         declarations.push({
           id: `${id++}`,
-          declarationNo: `AE/EXP/2026/${String(id).padStart(3, '0')}`,
+          declarationNo: `AE/EXP/2025/${String(id).padStart(3, '0')}`,
           shipmentRef: `MUM/AE/SHP/${String(id).padStart(4, '0')}`,
           status: 'cleared',
           declarationType: 'export',
@@ -325,7 +325,7 @@ const CustomsPage: React.FC = () => {
 
         declarations.push({
           id: `${id++}`,
-          declarationNo: `SE/EXP/2026/${String(id).padStart(3, '0')}`,
+          declarationNo: `SE/EXP/2025/${String(id).padStart(3, '0')}`,
           shipmentRef: `MUM/SE/SHP/${String(id).padStart(4, '0')}`,
           status: isDelayed ? 'delayed' : 'pending',
           declarationType: 'export',
@@ -356,7 +356,7 @@ const CustomsPage: React.FC = () => {
 
         declarations.push({
           id: `${id++}`,
-          declarationNo: `SE/EXP/2026/${String(id).padStart(3, '0')}`,
+          declarationNo: `SE/EXP/2025/${String(id).padStart(3, '0')}`,
           shipmentRef: `MUM/SE/SHP/${String(id).padStart(4, '0')}`,
           status: 'cleared',
           declarationType: 'export',
