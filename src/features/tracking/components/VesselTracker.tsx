@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabase';
 
 import MapDisplay from './MapDisplay';
-import AIInsightsPanel from './AIInsightsPanel';
 
 interface VesselTrackerProps {
   shipmentNo: string;
@@ -144,12 +143,6 @@ const VesselTracker = ({ shipmentNo }: VesselTrackerProps) => {
       <MapDisplay
         vessels={vessels}
         nearbyVessels={nearbyVessels}
-      />
-
-      {/* 🤖 CUSTOMER AI INSIGHTS */}
-      <AIInsightsPanel
-        shipmentNo={shipmentNo}
-        routes={routes}
       />
 
       {/* Fallback message if AIS not available */}

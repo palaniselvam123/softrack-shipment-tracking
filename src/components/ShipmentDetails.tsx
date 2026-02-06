@@ -8,6 +8,7 @@ import DocumentsList from './DocumentsList';
 import NotesList from './NotesList';
 import InvoicesList from './InvoicesList';
 import ActivityList from './ActivityList';
+import ShipmentInsightsPanel from './ShipmentInsightsPanel';
 
 import VesselTracker from '../features/tracking/components/VesselTracker';
 
@@ -112,16 +113,18 @@ const ShipmentDetails = ({ shipmentNo, onBack }: ShipmentDetailsProps) => {
           {renderMainContent()}
         </div>
 
-        {/* Right Side – BIG MAP */}
         <div
           className={
             activeTab === 'overview'
-              ? 'w-[65%] p-4 border-l bg-white'
-              : 'w-[45%] p-4 border-l bg-white'
+              ? 'w-[65%] p-4 border-l bg-slate-50 overflow-y-auto'
+              : 'w-[45%] p-4 border-l bg-slate-50 overflow-y-auto'
           }
         >
           {shipment && (
-            <VesselTracker shipmentNo={shipmentNo} />
+            <>
+              <VesselTracker shipmentNo={shipmentNo} />
+              <ShipmentInsightsPanel shipment={shipment} />
+            </>
           )}
         </div>
       </div>
