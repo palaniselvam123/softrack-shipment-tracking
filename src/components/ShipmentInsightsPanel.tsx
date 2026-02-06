@@ -331,26 +331,44 @@ export default function ShipmentInsightsPanel({ shipment }: Props) {
     const destCoords = getPortCoordinates(destination);
     if (!originCoords && !destCoords) return;
 
+    const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
+    if (!apiKey) return;
+
     setWeatherLoading(true);
-    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/weather-data`;
 
     (async () => {
       try {
-        const res = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            origin: originCoords ? { lat: originCoords.lat, lon: originCoords.lon, name: origin } : null,
-            destination: destCoords ? { lat: destCoords.lat, lon: destCoords.lon, name: destination } : null
-          })
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setWeather(data);
-        }
+        const fetchWeather = async (coords: { lat: number; lon: number }, name: string): Promise<WeatherData | null> => {
+          const url = `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&appid=${apiKey}&units=metric`;
+          const res = await fetch(url);
+          if (!res.ok) return null;
+          const d = await res.json();
+          const code = d.weather?.[0]?.id ?? null;
+          const severity: WeatherData['severity'] = (!code) ? 'calm'
+            : (code >= 200 && code < 300) || (code >= 500 && code < 600) ? 'severe'
+            : (code >= 300 && code < 400) || (code >= 600 && code < 800) ? 'moderate'
+            : 'calm';
+          const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+          return {
+            location: name,
+            temp_c: Math.round(d.main?.temp ?? 0),
+            description: d.weather?.[0]?.description || 'Unknown',
+            icon: d.weather?.[0]?.icon || '01d',
+            humidity: d.main?.humidity ?? null,
+            wind_speed: d.wind?.speed ? Math.round(d.wind.speed * 3.6) : null,
+            wind_dir: d.wind?.deg ? dirs[Math.round(d.wind.deg / 45) % 8] : '',
+            feels_like: d.main?.feels_like ? Math.round(d.main.feels_like) : null,
+            visibility: d.visibility ? Math.round(d.visibility / 1000) : null,
+            conditions_code: code,
+            severity,
+          };
+        };
+
+        const [originW, destW] = await Promise.all([
+          originCoords ? fetchWeather(originCoords, origin) : Promise.resolve(null),
+          destCoords ? fetchWeather(destCoords, destination) : Promise.resolve(null),
+        ]);
+        setWeather({ origin: originW, destination: destW });
       } catch {
         /* weather is non-critical */
       } finally {
