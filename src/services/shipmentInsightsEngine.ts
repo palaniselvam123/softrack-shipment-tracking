@@ -120,14 +120,28 @@ function estimateDemurrage(delayD: number, mode: string | null): number {
   return 300 + (delayD - 4) * 150;
 }
 
+export function deriveOriginDestination(shipment: SupabaseShipment, routes: any[]): { origin: string; destination: string } {
+  const sorted = [...routes].sort((a, b) => (a['LegNumber'] || 0) - (b['LegNumber'] || 0));
+  const firstLeg = sorted[0];
+  const lastLeg = sorted[sorted.length - 1];
+
+  const origin = firstLeg?.['Load Port'] || shipment['Origin'] || null;
+  const destination = lastLeg?.['Discharge Port'] || shipment['Destination'] || null;
+
+  return { origin: origin || 'Unknown', destination: destination || 'Unknown' };
+}
+
 export function computeCEOInsights(shipment: SupabaseShipment, routes: any[] = []): CEOInsights {
   const delay = parseDelay(shipment);
   const late = isLate(shipment);
   const ratio = transitRatio(shipment);
   const transhipments = shipment['Transhipments count'] || 0;
   const mode = shipment['Transport Mode'];
-  const origin = shipment['Origin'];
-  const dest = shipment['Destination'];
+
+  const derived = deriveOriginDestination(shipment, routes);
+  const origin = derived.origin;
+  const dest = derived.destination;
+
   const status = shipment.shipment_status?.toLowerCase() || '';
 
   let confidence = 82;

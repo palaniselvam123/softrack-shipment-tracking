@@ -37,6 +37,8 @@ const VesselTracker = ({ shipmentNo }: VesselTrackerProps) => {
           "ETD",
           "ETA",
           "LegNumber",
+          "Load Port",
+          "Discharge Port",
           "WasRolled",
           "PaymentStatus",
           "DocumentSubmitted",

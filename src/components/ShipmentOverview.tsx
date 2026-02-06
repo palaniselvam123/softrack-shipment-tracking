@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Ship, Plus, Truck, Plane } from 'lucide-react';
-import { SupabaseShipment } from '../lib/supabase';
+import { supabase, SupabaseShipment } from '../lib/supabase';
+import { deriveOriginDestination } from '../services/shipmentInsightsEngine';
 
 interface ShipmentOverviewProps {
   shipmentNo: string;
@@ -8,6 +9,22 @@ interface ShipmentOverviewProps {
 }
 
 const ShipmentOverview: React.FC<ShipmentOverviewProps> = ({ shipmentNo, shipmentData }) => {
+  const [routeOrigin, setRouteOrigin] = useState<string>('');
+  const [routeDestination, setRouteDestination] = useState<string>('');
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('routes')
+        .select('"Load Port", "Discharge Port", "LegNumber"')
+        .eq('shipment_number', shipmentNo)
+        .order('LegNumber', { ascending: true });
+
+      const derived = deriveOriginDestination(shipmentData, data || []);
+      setRouteOrigin(derived.origin);
+      setRouteDestination(derived.destination);
+    })();
+  }, [shipmentNo, shipmentData]);
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return 'N/A';
     return new Date(dateStr).toLocaleDateString('en-GB', {
@@ -65,7 +82,7 @@ const ShipmentOverview: React.FC<ShipmentOverviewProps> = ({ shipmentNo, shipmen
         </div>
         <div className="mt-2 text-sm text-gray-600">
           {shipmentData['ETA'] && `ETA: ${formatDate(shipmentData['ETA'])}`}
-          {shipmentData['Destination'] && ` • ${shipmentData['Destination']}`}
+          {routeDestination && routeDestination !== 'Unknown' && ` • ${routeDestination}`}
           {shipmentData.shipment_status && ` • ${shipmentData.shipment_status}`}
         </div>
       </div>
@@ -80,7 +97,7 @@ const ShipmentOverview: React.FC<ShipmentOverviewProps> = ({ shipmentNo, shipmen
           <div>
             <p className="text-sm text-gray-500 mb-1">Route</p>
             <p className="text-gray-900">
-              {shipmentData['Origin'] || 'N/A'} → {shipmentData['Destination'] || 'N/A'}
+              {routeOrigin || 'N/A'} → {routeDestination || 'N/A'}
             </p>
           </div>
           <div>
