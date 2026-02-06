@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid3X3, FileText, StickyNote, Receipt, Activity } from 'lucide-react';
+import { Grid3X3, FileText, StickyNote, Receipt, Activity, Milestone } from 'lucide-react';
 
 interface SideMenuProps {
   activeTab: string;
@@ -27,6 +27,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ activeTab, onTabChange }) => {
       id: 'invoices',
       label: 'Invoices',
       icon: Receipt
+    },
+    {
+      id: 'milestones',
+      label: 'Milestones',
+      icon: Milestone
     },
     {
       id: 'activity',

@@ -8,6 +8,7 @@ import DocumentsList from './DocumentsList';
 import NotesList from './NotesList';
 import InvoicesList from './InvoicesList';
 import ActivityList from './ActivityList';
+import MilestonesTimeline from './MilestonesTimeline';
 import ShipmentInsightsPanel from './ShipmentInsightsPanel';
 
 import VesselTracker from '../features/tracking/components/VesselTracker';
@@ -18,7 +19,7 @@ interface ShipmentDetailsProps {
 }
 
 const ShipmentDetails = ({ shipmentNo, onBack }: ShipmentDetailsProps) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'notes' | 'invoices' | 'activity'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'notes' | 'invoices' | 'milestones' | 'activity'>('overview');
   const [shipment, setShipment] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -82,6 +83,8 @@ const ShipmentDetails = ({ shipmentNo, onBack }: ShipmentDetailsProps) => {
         return <NotesList shipmentNo={shipmentNo} />;
       case 'invoices':
         return <InvoicesList shipmentNo={shipmentNo} />;
+      case 'milestones':
+        return <MilestonesTimeline shipmentNo={shipmentNo} shipmentData={shipment} />;
       case 'activity':
         return <ActivityList shipmentNo={shipmentNo} />;
       default:
