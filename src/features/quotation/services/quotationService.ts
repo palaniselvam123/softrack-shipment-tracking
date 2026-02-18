@@ -146,3 +146,31 @@ export async function getUserQuotations() {
   }
   return data || [];
 }
+
+export async function getUserBookings() {
+  const { data, error } = await supabase
+    .from('bookings_from_quotes')
+    .select(`
+      *,
+      quotations (
+        mode,
+        direction,
+        origin_port,
+        origin_port_name,
+        destination_port,
+        destination_port_name,
+        carrier_name,
+        etd,
+        eta,
+        transit_days,
+        total_amount_usd
+      )
+    `)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching bookings:', error);
+    return [];
+  }
+  return data || [];
+}
