@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Filter, SortAsc, AlertCircle, Search, LayoutList, BarChart2 } from 'lucide-react';
+import { ArrowLeft, Filter, SortAsc, AlertCircle, Search, LayoutList, BarChart2, Ship, Plane, ArrowRight, Sparkles, Timer } from 'lucide-react';
 import StepIndicator from '../components/StepIndicator';
 import ScheduleSearch from '../components/ScheduleSearch';
 import ScheduleCard from '../components/ScheduleCard';
@@ -170,11 +170,78 @@ const QuotationPage: React.FC<QuotationPageProps> = ({ onBack }) => {
         <StepIndicator currentStep={step} />
 
         {step === 'search' && (
-          <div className="max-w-4xl mx-auto space-y-10">
-            <ScheduleSearch
-              onSearch={handleSearch}
-              initialParams={searchParams || undefined}
-            />
+          <div className="space-y-10">
+            <div className="flex gap-4 items-start">
+              <div className="hidden lg:flex flex-col gap-3 w-52 flex-shrink-0 pt-2">
+                {[
+                  { route: 'Mumbai → Dubai', carrier: 'MSC', type: '40HC', status: 'Confirmed', statusColor: 'text-emerald-600 bg-emerald-50', transitDays: 7, rate: '$700', badge: 'Sea FCL', badgeColor: 'bg-sky-500', image: 'https://images.pexels.com/photos/823696/pexels-photo-823696.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                  { route: 'JNPT → Hamburg', carrier: 'Hapag-Lloyd', type: '20GP', status: 'In Transit', statusColor: 'text-sky-600 bg-sky-50', transitDays: 22, rate: '$950', badge: 'Sea FCL', badgeColor: 'bg-sky-500', image: 'https://images.pexels.com/photos/3639542/pexels-photo-3639542.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                  { route: 'Chennai → Singapore', carrier: 'Evergreen', type: '40GP', status: 'Departed', statusColor: 'text-amber-600 bg-amber-50', transitDays: 14, rate: '$500', badge: 'Direct', badgeColor: 'bg-emerald-500', image: 'https://images.pexels.com/photos/2265876/pexels-photo-2265876.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                ].map((card, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleSearch({ originPort: i === 0 ? 'INBOM' : 'INNSA', destinationPort: i === 0 ? 'AEDXB' : i === 1 ? 'DEHAM' : 'SGSIN', mode: 'sea_fcl', direction: 'export', etd: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0], searchedAt: new Date() })}
+                    className="group relative rounded-2xl overflow-hidden border border-gray-100 hover:border-sky-200 hover:shadow-lg transition-all text-left bg-white"
+                  >
+                    <div className="relative h-28 overflow-hidden">
+                      <img src={card.image} alt={card.route} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-gray-900/20 to-transparent" />
+                      <span className={`absolute top-2 left-2 text-xs font-bold text-white px-2 py-0.5 rounded-full ${card.badgeColor}`}>{card.badge}</span>
+                      <div className="absolute bottom-2 left-2 right-2 text-white text-xs font-bold leading-tight">{card.route}</div>
+                    </div>
+                    <div className="p-3">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${card.statusColor}`}>{card.status}</span>
+                        <span className="text-sm font-black text-gray-900">{card.rate}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-gray-400">
+                        <span>{card.carrier}</span>
+                        <span className="flex items-center gap-0.5"><Timer className="w-3 h-3" />{card.transitDays}d</span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <ScheduleSearch
+                  onSearch={handleSearch}
+                  initialParams={searchParams || undefined}
+                />
+              </div>
+
+              <div className="hidden lg:flex flex-col gap-3 w-52 flex-shrink-0 pt-2">
+                {[
+                  { route: 'Delhi → Frankfurt', carrier: 'Lufthansa Cargo', type: 'Air', status: 'Delivered', statusColor: 'text-emerald-600 bg-emerald-50', transitDays: 2, rate: '$3.2/kg', badge: 'Air Express', badgeColor: 'bg-rose-500', image: 'https://images.pexels.com/photos/358319/pexels-photo-358319.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                  { route: 'Nhava Sheva → LA', carrier: 'COSCO', type: '40HC', status: 'Booking', statusColor: 'text-sky-600 bg-sky-50', transitDays: 28, rate: '$1,250', badge: 'Sea FCL', badgeColor: 'bg-sky-500', image: 'https://images.pexels.com/photos/3641521/pexels-photo-3641521.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                  { route: 'Kolkata → Rotterdam', carrier: 'CMA CGM', type: '40GP', status: 'Confirmed', statusColor: 'text-emerald-600 bg-emerald-50', transitDays: 24, rate: '$900', badge: 'Best Rate', badgeColor: 'bg-amber-500', image: 'https://images.pexels.com/photos/1117210/pexels-photo-1117210.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                ].map((card, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleSearch({ originPort: i === 0 ? 'INDEL' : 'INNSA', destinationPort: i === 0 ? 'DEFRA' : i === 1 ? 'USLAX' : 'NLRTM', mode: i === 0 ? 'air' : 'sea_fcl', direction: 'export', etd: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0], searchedAt: new Date() })}
+                    className="group relative rounded-2xl overflow-hidden border border-gray-100 hover:border-sky-200 hover:shadow-lg transition-all text-left bg-white"
+                  >
+                    <div className="relative h-28 overflow-hidden">
+                      <img src={card.image} alt={card.route} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-gray-900/20 to-transparent" />
+                      <span className={`absolute top-2 left-2 text-xs font-bold text-white px-2 py-0.5 rounded-full ${card.badgeColor}`}>{card.badge}</span>
+                      <div className="absolute bottom-2 left-2 right-2 text-white text-xs font-bold leading-tight">{card.route}</div>
+                    </div>
+                    <div className="p-3">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${card.statusColor}`}>{card.status}</span>
+                        <span className="text-sm font-black text-gray-900">{card.rate}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-gray-400">
+                        <span>{card.carrier}</span>
+                        <span className="flex items-center gap-0.5"><Timer className="w-3 h-3" />{card.transitDays}d</span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <QuotationPromos
               onSearchNow={handleSearch}
               recentSearches={recentSearches}
