@@ -4,6 +4,7 @@ import StepIndicator from '../components/StepIndicator';
 import ScheduleSearch from '../components/ScheduleSearch';
 import ScheduleCard from '../components/ScheduleCard';
 import CarrierRateComparison from '../components/CarrierRateComparison';
+import QuotationPromos from '../components/QuotationPromos';
 import CargoDetails from '../components/CargoDetails';
 import QuotationSummary from '../components/QuotationSummary';
 import BookingForm from '../components/BookingForm';
@@ -43,15 +44,29 @@ const QuotationPage: React.FC<QuotationPageProps> = ({ onBack }) => {
   const [filterBy, setFilterBy] = useState<FilterKey>('all');
   const [viewMode, setViewMode] = useState<ViewMode>('compare');
   const [noResults, setNoResults] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<SearchParams[]>([]);
+  const [promoSearchParams, setPromoSearchParams] = useState<Partial<SearchParams> | null>(null);
 
   const handleSearch = (params: SearchParams) => {
     const results = generateSchedules(params);
-    setSearchParams(params);
+    const stamped = { ...params, searchedAt: new Date() };
+    setSearchParams(stamped);
     setSchedules(results);
     setNoResults(results.length === 0);
     setStep('results');
     setFilterBy('all');
     setSortBy('etd');
+    setPromoSearchParams(null);
+    setRecentSearches(prev => {
+      const key = `${params.originPort}-${params.destinationPort}-${params.mode}`;
+      const filtered = prev.filter(p => `${p.originPort}-${p.destinationPort}-${p.mode}` !== key);
+      return [stamped, ...filtered].slice(0, 6);
+    });
+  };
+
+  const handlePromoClick = (partial: Partial<SearchParams>) => {
+    setPromoSearchParams(partial);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSelectSchedule = (schedule: Schedule) => {
@@ -119,6 +134,7 @@ const QuotationPage: React.FC<QuotationPageProps> = ({ onBack }) => {
     setCargoDetails(null);
     setQuotation(null);
     setBookingNo(null);
+    setPromoSearchParams(null);
   };
 
   const getFilteredSortedSchedules = (): Schedule[] => {
@@ -162,22 +178,15 @@ const QuotationPage: React.FC<QuotationPageProps> = ({ onBack }) => {
         <StepIndicator currentStep={step} />
 
         {step === 'search' && (
-          <div className="max-w-4xl mx-auto">
-            <ScheduleSearch onSearch={handleSearch} initialParams={searchParams || undefined} />
-
-            <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { icon: '🚢', title: 'Sea FCL', desc: 'Full container load for large shipments. 20GP, 40GP, 40HC containers with direct & transshipment options.' },
-                { icon: '📦', title: 'Sea LCL', desc: 'Less than container load. Ideal for smaller cargo. Shared container, charged per CBM.' },
-                { icon: '✈️', title: 'Air Freight', desc: 'Fastest transit for time-sensitive cargo. Daily departures from major Indian airports.' },
-              ].map((item, i) => (
-                <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-all">
-                  <div className="text-3xl mb-3">{item.icon}</div>
-                  <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-500">{item.desc}</p>
-                </div>
-              ))}
-            </div>
+          <div className="max-w-4xl mx-auto space-y-10">
+            <ScheduleSearch
+              onSearch={handleSearch}
+              initialParams={promoSearchParams ? { ...promoSearchParams } as SearchParams : (searchParams || undefined)}
+            />
+            <QuotationPromos
+              onSearchClick={handlePromoClick}
+              recentSearches={recentSearches}
+            />
           </div>
         )}
 

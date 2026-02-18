@@ -81,6 +81,7 @@ export interface SearchParams {
   originPort: string;
   destinationPort: string;
   etd: string;
+  searchedAt?: Date;
 }
 
 export interface CargoDetails {
