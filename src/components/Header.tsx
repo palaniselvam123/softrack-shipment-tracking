@@ -16,6 +16,7 @@ interface HeaderProps {
   onCustomsClick?: () => void;
   onInquiryClick?: () => void;
   onLeadsClick?: () => void;
+  onQuotationClick?: () => void;
   currentView?: string;
 }
 
@@ -33,6 +34,7 @@ const Header: React.FC<HeaderProps> = ({
   onCustomsClick,
   onInquiryClick,
   onLeadsClick,
+  onQuotationClick,
   currentView
 }) => {
   const { user, signOut } = useAuth();
@@ -49,6 +51,7 @@ const Header: React.FC<HeaderProps> = ({
     { name: 'Shipments', active: currentView === 'table' || currentView === 'details', onClick: onShipmentsClick },
     { name: 'Map View', active: currentView === 'map-view', onClick: onMapViewClick },
     { name: 'Bookings', active: currentView === 'bookings', onClick: onBookingsClick },
+    { name: 'Quote & Book', active: currentView === 'quotation', onClick: onQuotationClick, highlight: true },
     { name: 'Customs', active: currentView === 'customs', onClick: onCustomsClick },
     { name: 'Book', active: currentView === 'booking', onClick: onBookingClick },
     { name: 'Inquiry', active: currentView === 'inquiry', onClick: onInquiryClick },
@@ -90,6 +93,8 @@ const Header: React.FC<HeaderProps> = ({
                   className={`px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${
                     item.active
                       ? 'text-sky-700 bg-sky-50 shadow-sm'
+                      : (item as { highlight?: boolean }).highlight
+                      ? 'text-sky-700 bg-sky-50 border border-sky-200 hover:bg-sky-100 font-semibold'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >

@@ -18,8 +18,8 @@ import LeadList from './components/LeadList';
 import LoginPage from './components/LoginPage';
 import { useAuth } from './contexts/AuthContext';
 
-/* 🔹 TRACKING PAGE IMPORT */
 import TrackingPage from './features/tracking/pages/TrackingPage';
+import QuotationPage from './features/quotation/pages/QuotationPage';
 
 type ViewType =
   | 'dashboard'
@@ -28,7 +28,7 @@ type ViewType =
   | 'booking'
   | 'bookings'
   | 'map-view'
-  | 'tracking'          // ✅ NEW
+  | 'tracking'
   | 'invoices'
   | 'communication'
   | 'tickets'
@@ -36,7 +36,8 @@ type ViewType =
   | 'webhook-docs'
   | 'customs'
   | 'inquiry'
-  | 'leads';
+  | 'leads'
+  | 'quotation';
 
 function App() {
   const { user, loading } = useAuth();
@@ -45,12 +46,13 @@ function App() {
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
   const [showBookingDetails, setShowBookingDetails] = useState(false);
 
-  /* 🔹 URL → VIEW MAPPING */
   React.useEffect(() => {
     const path = window.location.pathname;
 
     if (path === '/tracking') {
       setCurrentView('tracking');
+    } else if (path === '/quotation' || path === '/quote') {
+      setCurrentView('quotation');
     } else if (path === '/book') {
       setCurrentView('booking');
     } else if (path === '/bookings') {
@@ -87,6 +89,11 @@ function App() {
   const handleTrackingNavigation = () => {
     setCurrentView('tracking');
     window.history.pushState({}, '', '/tracking');
+  };
+
+  const handleQuotationNavigation = () => {
+    setCurrentView('quotation');
+    window.history.pushState({}, '', '/quotation');
   };
 
   const handleViewShipment = (shipmentNo: string) => {
@@ -202,6 +209,7 @@ function App() {
         onCustomsClick={handleCustomsNavigation}
         onInquiryClick={handleInquiryNavigation}
         onLeadsClick={handleLeadsNavigation}
+        onQuotationClick={handleQuotationNavigation}
         currentView={currentView}
       />
 
@@ -228,6 +236,8 @@ function App() {
         <ShipmentsTable onViewShipment={handleViewShipment} onBack={handleDashboardNavigation} />
       ) : currentView === 'map-view' ? (
         <ShipmentsMapView onViewShipment={handleViewShipment} onBack={handleDashboardNavigation} />
+      ) : currentView === 'quotation' ? (
+        <QuotationPage onBack={handleDashboardNavigation} />
       ) : currentView === 'tracking' ? (
         <TrackingPage onBack={handleDashboardNavigation} />
       ) : currentView === 'invoices' ? (
