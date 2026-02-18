@@ -45,7 +45,6 @@ const QuotationPage: React.FC<QuotationPageProps> = ({ onBack }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('compare');
   const [noResults, setNoResults] = useState(false);
   const [recentSearches, setRecentSearches] = useState<SearchParams[]>([]);
-  const [promoSearchParams, setPromoSearchParams] = useState<Partial<SearchParams> | null>(null);
 
   const handleSearch = (params: SearchParams) => {
     const results = generateSchedules(params);
@@ -56,17 +55,11 @@ const QuotationPage: React.FC<QuotationPageProps> = ({ onBack }) => {
     setStep('results');
     setFilterBy('all');
     setSortBy('etd');
-    setPromoSearchParams(null);
     setRecentSearches(prev => {
       const key = `${params.originPort}-${params.destinationPort}-${params.mode}`;
       const filtered = prev.filter(p => `${p.originPort}-${p.destinationPort}-${p.mode}` !== key);
       return [stamped, ...filtered].slice(0, 6);
     });
-  };
-
-  const handlePromoClick = (partial: Partial<SearchParams>) => {
-    setPromoSearchParams(partial);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSelectSchedule = (schedule: Schedule) => {
@@ -134,7 +127,6 @@ const QuotationPage: React.FC<QuotationPageProps> = ({ onBack }) => {
     setCargoDetails(null);
     setQuotation(null);
     setBookingNo(null);
-    setPromoSearchParams(null);
   };
 
   const getFilteredSortedSchedules = (): Schedule[] => {
@@ -181,10 +173,10 @@ const QuotationPage: React.FC<QuotationPageProps> = ({ onBack }) => {
           <div className="max-w-4xl mx-auto space-y-10">
             <ScheduleSearch
               onSearch={handleSearch}
-              initialParams={promoSearchParams ? { ...promoSearchParams } as SearchParams : (searchParams || undefined)}
+              initialParams={searchParams || undefined}
             />
             <QuotationPromos
-              onSearchClick={handlePromoClick}
+              onSearchNow={handleSearch}
               recentSearches={recentSearches}
             />
           </div>
