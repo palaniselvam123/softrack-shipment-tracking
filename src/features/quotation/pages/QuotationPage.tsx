@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Filter, SortAsc, AlertCircle, Search } from 'lucide-react';
+import { ArrowLeft, Filter, SortAsc, AlertCircle, Search, LayoutList, BarChart2 } from 'lucide-react';
 import StepIndicator from '../components/StepIndicator';
 import ScheduleSearch from '../components/ScheduleSearch';
 import ScheduleCard from '../components/ScheduleCard';
+import CarrierRateComparison from '../components/CarrierRateComparison';
 import CargoDetails from '../components/CargoDetails';
 import QuotationSummary from '../components/QuotationSummary';
 import BookingForm from '../components/BookingForm';
@@ -21,6 +22,7 @@ interface QuotationPageProps {
 
 type SortKey = 'etd' | 'transit' | 'price';
 type FilterKey = 'all' | 'direct' | 'transship';
+type ViewMode = 'list' | 'compare';
 
 let quoteCounter = 1000;
 function getNextQuoteNo(): string {
@@ -39,6 +41,7 @@ const QuotationPage: React.FC<QuotationPageProps> = ({ onBack }) => {
   const [submitting, setSubmitting] = useState(false);
   const [sortBy, setSortBy] = useState<SortKey>('etd');
   const [filterBy, setFilterBy] = useState<FilterKey>('all');
+  const [viewMode, setViewMode] = useState<ViewMode>('compare');
   const [noResults, setNoResults] = useState(false);
 
   const handleSearch = (params: SearchParams) => {
@@ -205,32 +208,50 @@ const QuotationPage: React.FC<QuotationPageProps> = ({ onBack }) => {
             </div>
 
             {!noResults && schedules.length > 0 && (
-              <div className="flex items-center gap-3 flex-wrap">
-                <div className="flex items-center gap-1.5">
-                  <Filter className="w-4 h-4 text-gray-400" />
-                  <span className="text-xs font-semibold text-gray-500">Filter:</span>
-                  {(['all', 'direct', 'transship'] as FilterKey[]).map(f => (
-                    <button
-                      key={f}
-                      onClick={() => setFilterBy(f)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${filterBy === f ? 'bg-sky-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-sky-300'}`}
-                    >
-                      {f === 'all' ? 'All' : f === 'direct' ? 'Direct Only' : 'Via Transshipment'}
-                    </button>
-                  ))}
+              <div className="flex items-center gap-3 flex-wrap justify-between">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-1.5">
+                    <Filter className="w-4 h-4 text-gray-400" />
+                    <span className="text-xs font-semibold text-gray-500">Filter:</span>
+                    {(['all', 'direct', 'transship'] as FilterKey[]).map(f => (
+                      <button
+                        key={f}
+                        onClick={() => setFilterBy(f)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${filterBy === f ? 'bg-sky-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-sky-300'}`}
+                      >
+                        {f === 'all' ? 'All' : f === 'direct' ? 'Direct Only' : 'Via Transshipment'}
+                      </button>
+                    ))}
+                  </div>
+                  {viewMode === 'list' && (
+                    <div className="flex items-center gap-1.5">
+                      <SortAsc className="w-4 h-4 text-gray-400" />
+                      <span className="text-xs font-semibold text-gray-500">Sort:</span>
+                      {([['etd', 'Earliest ETD'], ['transit', 'Shortest Transit'], ['price', 'Lowest Price']] as [SortKey, string][]).map(([key, label]) => (
+                        <button
+                          key={key}
+                          onClick={() => setSortBy(key)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${sortBy === key ? 'bg-slate-700 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-slate-400'}`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <SortAsc className="w-4 h-4 text-gray-400" />
-                  <span className="text-xs font-semibold text-gray-500">Sort:</span>
-                  {([['etd', 'Earliest ETD'], ['transit', 'Shortest Transit'], ['price', 'Lowest Price']] as [SortKey, string][]).map(([key, label]) => (
-                    <button
-                      key={key}
-                      onClick={() => setSortBy(key)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${sortBy === key ? 'bg-slate-700 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-slate-400'}`}
-                    >
-                      {label}
-                    </button>
-                  ))}
+                <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-xl p-1">
+                  <button
+                    onClick={() => setViewMode('compare')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${viewMode === 'compare' ? 'bg-sky-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    <BarChart2 className="w-3.5 h-3.5" /> Compare Rates
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${viewMode === 'list' ? 'bg-sky-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    <LayoutList className="w-3.5 h-3.5" /> List View
+                  </button>
                 </div>
               </div>
             )}
@@ -250,17 +271,25 @@ const QuotationPage: React.FC<QuotationPageProps> = ({ onBack }) => {
                 </button>
               </div>
             ) : (
-              <div className="space-y-3">
-                {getFilteredSortedSchedules().map(schedule => (
-                  <ScheduleCard key={schedule.id} schedule={schedule} onSelect={handleSelectSchedule} />
-                ))}
-                {getFilteredSortedSchedules().length === 0 && (
+              <>
+                {getFilteredSortedSchedules().length === 0 ? (
                   <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
                     <p className="text-gray-500">No schedules match the current filter. Try "All".</p>
                     <button onClick={() => setFilterBy('all')} className="mt-3 text-sky-600 font-semibold text-sm hover:underline">Clear filter</button>
                   </div>
+                ) : viewMode === 'compare' ? (
+                  <CarrierRateComparison
+                    schedules={getFilteredSortedSchedules()}
+                    onSelect={handleSelectSchedule}
+                  />
+                ) : (
+                  <div className="space-y-3">
+                    {getFilteredSortedSchedules().map(schedule => (
+                      <ScheduleCard key={schedule.id} schedule={schedule} onSelect={handleSelectSchedule} />
+                    ))}
+                  </div>
                 )}
-              </div>
+              </>
             )}
           </div>
         )}
