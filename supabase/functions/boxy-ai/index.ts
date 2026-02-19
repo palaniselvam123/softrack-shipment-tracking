@@ -196,6 +196,12 @@ For booking lookups use this format:
 - Keep paragraphs short — max 2 sentences
 - End responses with a helpful follow-up suggestion when appropriate, prefixed with 💬`;
 
+function isStatsQuery(text: string): boolean {
+  const lower = text.toLowerCase();
+  return /how many|count|total|number of|how much|overview|summary|stats|statistics|dashboard|breakdown/.test(lower) &&
+    /shipment|booking|transit|delayed|pending|delivery|cargo|container|invoice|customs/.test(lower);
+}
+
 function isTrackingQuery(text: string): boolean {
   const lower = text.toLowerCase();
   const trackingKeywords = ['track', 'status', 'where is', 'shipment', 'container', 'booking', 'bookings', 'reference', 'check', 'find', 'lookup', 'locate', 'eta', 'etd', 'delivery', 'how many', 'count', 'list', 'show me', 'give me', 'all bookings', 'all shipments', 'shipper', 'consignee', 'invoice', 'documents', 'docs'];
@@ -452,15 +458,76 @@ Deno.serve(async (req: Request) => {
     const searchTerms = extractSearchTerms(fullConversationText);
     const currentTerms = extractSearchTerms(userText);
     const couldBeTracking = isTrackingQuery(userText) || isTrackingQuery(fullConversationText);
+    const couldBeStats = isStatsQuery(userText);
     let shipmentContext = '';
 
     let injectedAssistantMsg: { role: string; content: string } | null = null;
     let notFoundReply: string | null = null;
 
+    if (couldBeStats) {
+      try {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL");
+        const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+        if (supabaseUrl && supabaseKey) {
+          const supabase = createClient(supabaseUrl, supabaseKey);
+
+          const { data: shipmentStats } = await supabase
+            .from('shipments')
+            .select('shipment_status, "Transport Mode", "Shipment Type"');
+
+          const { data: bookingStats } = await supabase
+            .from('bookings_from_quotes')
+            .select('status');
+
+          const statsLines: string[] = [];
+
+          if (shipmentStats && shipmentStats.length > 0) {
+            const totalShipments = shipmentStats.length;
+            const byStatus: Record<string, number> = {};
+            const byMode: Record<string, number> = {};
+            const byType: Record<string, number> = {};
+            for (const s of shipmentStats) {
+              const st = s['shipment_status'] || 'Unknown';
+              byStatus[st] = (byStatus[st] || 0) + 1;
+              const m = s['Transport Mode'] || 'Unknown';
+              byMode[m] = (byMode[m] || 0) + 1;
+              const t = s['Shipment Type'] || 'Unknown';
+              byType[t] = (byType[t] || 0) + 1;
+            }
+            statsLines.push(`LIVE SHIPMENT STATS (total: ${totalShipments}):`);
+            statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+            statsLines.push(`By Transport Mode: ${Object.entries(byMode).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+            statsLines.push(`By Type: ${Object.entries(byType).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+          }
+
+          if (bookingStats && bookingStats.length > 0) {
+            const totalBookings = bookingStats.length;
+            const byStatus: Record<string, number> = {};
+            for (const b of bookingStats) {
+              const st = b['status'] || 'Unknown';
+              byStatus[st] = (byStatus[st] || 0) + 1;
+            }
+            statsLines.push(`LIVE BOOKING STATS (total: ${totalBookings}):`);
+            statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+          }
+
+          if (statsLines.length > 0) {
+            shipmentContext = `\n\n[LIVE STATS FROM LOGITRACK DATABASE]\n${statsLines.join('\n')}`;
+            injectedAssistantMsg = {
+              role: 'assistant',
+              content: `Here are the live stats from LogiTRACK:\n${statsLines.join('\n')}\n\nLet me answer your question based on this data.`
+            };
+          }
+        }
+      } catch {
+        // fall through to normal query path
+      }
+    }
+
     const isFollowUp = messages.length > 2 && currentTerms.length === 0 && searchTerms.length > 0;
     const hasNameMatch = extractNamePhrases(fullConversationText).length > 0;
 
-    if (couldBeTracking || searchTerms.length > 0 || isFollowUp || hasNameMatch) {
+    if (!injectedAssistantMsg && (couldBeTracking || searchTerms.length > 0 || isFollowUp || hasNameMatch)) {
       const mockShipResults = lookupMockShipments(searchTerms, fullConversationText);
       const mockBookResults = lookupMockBookings(searchTerms, fullConversationText);
 
