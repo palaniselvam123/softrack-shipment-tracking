@@ -397,19 +397,33 @@ function buildAggregateSummary(bookings: typeof MOCK_BOOKINGS, label: string): s
 function formatBookingContext(bookings: typeof MOCK_BOOKINGS, userQuery: string, conversationText: string): string {
   if (bookings.length === 0) return '';
 
-  const queryForCheck = userQuery + ' ' + conversationText;
   const provider = [...new Set(bookings.map(b => b.serviceProvider))].join(', ');
 
-  if (bookings.length > 5 && isCountQuery(queryForCheck)) {
+  if (bookings.length > 5) {
     const summary = buildAggregateSummary(bookings, provider);
-    return `\n\n[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n${summary}`;
+
+    const rejectedBookings = bookings.filter(b => b.status === 'Rejected');
+    const pendingBookings = bookings.filter(b => b.status === 'Pending');
+    const approvedBookings = bookings.filter(b => b.status === 'Approved');
+
+    const fmtList = (list: typeof MOCK_BOOKINGS, cap: number) =>
+      list.slice(0, cap).map(b =>
+        `  - ${b.bookingNo} | ${b.transportMode} | Origin: ${b.origin} | Dest: ${b.destination} | Shipper: ${b.shipper} | Consignee: ${b.consignee}`
+      ).join('\n') + (list.length > cap ? `\n  ... and ${list.length - cap} more` : '');
+
+    const perStatusDetail = [
+      rejectedBookings.length > 0 ? `REJECTED (${rejectedBookings.length}):\n${fmtList(rejectedBookings, 15)}` : '',
+      pendingBookings.length > 0 ? `PENDING (${pendingBookings.length}):\n${fmtList(pendingBookings, 15)}` : '',
+      approvedBookings.length > 0 ? `APPROVED (${approvedBookings.length}):\n${fmtList(approvedBookings, 15)}` : '',
+    ].filter(Boolean).join('\n\n');
+
+    return `\n\n[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n${summary}\n\nPER-STATUS BREAKDOWN:\n${perStatusDetail}`;
   }
 
-  const lines = bookings.slice(0, 20).map(b => {
-    return `Booking: ${b.bookingNo} | Mode: ${b.transportMode} | Status: ${b.status} | Provider: ${b.serviceProvider} | Shipper: ${b.shipper} | Consignee: ${b.consignee} | Origin: ${b.origin} | Destination: ${b.destination} | Date: ${b.date}`;
-  });
-  const suffix = bookings.length > 20 ? `\n... and ${bookings.length - 20} more (total: ${bookings.length})` : '';
-  return `\n\n[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n${lines.join('\n')}${suffix}`;
+  const lines = bookings.map(b =>
+    `Booking: ${b.bookingNo} | Mode: ${b.transportMode} | Status: ${b.status} | Provider: ${b.serviceProvider} | Shipper: ${b.shipper} | Consignee: ${b.consignee} | Origin: ${b.origin} | Destination: ${b.destination} | Date: ${b.date}`
+  );
+  return `\n\n[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n${lines.join('\n')}`;
 }
 
 Deno.serve(async (req: Request) => {
