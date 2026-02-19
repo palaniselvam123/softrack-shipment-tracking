@@ -32,21 +32,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select('id, email, role, created_at, updated_at')
       .eq('id', userId)
       .maybeSingle();
 
-    if (!error && data) {
+    if (error) {
+      console.error('fetchProfile error:', error);
+      return;
+    }
+    if (data) {
       setProfile(data as UserProfile);
+    } else {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+        const { data: inserted, error: insertError } = await supabase
+          .from('profiles')
+          .insert({ id: userId, email: user.email, role: 'user' })
+          .select('id, email, role, created_at, updated_at')
+          .maybeSingle();
+        if (!insertError && inserted) {
+          setProfile(inserted as UserProfile);
+        }
+      }
     }
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id);
+        await fetchProfile(session.user.id);
       }
       setLoading(false);
     });
