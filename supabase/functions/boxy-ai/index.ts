@@ -200,6 +200,23 @@ function lookupMockShipments(terms: string[], rawText: string) {
   return results;
 }
 
+function extractNamePhrases(text: string): string[] {
+  const lower = text.toLowerCase();
+  const phrases: string[] = [];
+  for (const b of MOCK_BOOKINGS) {
+    if (lower.includes(b.shipper.toLowerCase()) || lower.includes(b.consignee.toLowerCase()) || lower.includes(b.serviceProvider.toLowerCase())) {
+      if (b.shipper.length > 3 && lower.includes(b.shipper.toLowerCase())) phrases.push(b.shipper.toLowerCase());
+      if (b.consignee.length > 3 && lower.includes(b.consignee.toLowerCase())) phrases.push(b.consignee.toLowerCase());
+      if (b.serviceProvider.length > 3 && lower.includes(b.serviceProvider.toLowerCase())) phrases.push(b.serviceProvider.toLowerCase());
+    }
+  }
+  for (const s of MOCK_SHIPMENTS) {
+    if (s.shipper.length > 3 && lower.includes(s.shipper.toLowerCase())) phrases.push(s.shipper.toLowerCase());
+    if (s.consignee.length > 3 && lower.includes(s.consignee.toLowerCase())) phrases.push(s.consignee.toLowerCase());
+  }
+  return [...new Set(phrases)];
+}
+
 function lookupMockBookings(terms: string[], rawText: string) {
   const seen = new Set<string>();
   const results: typeof MOCK_BOOKINGS = [];
@@ -211,17 +228,33 @@ function lookupMockBookings(terms: string[], rawText: string) {
     }
   };
 
+  const rawLower = rawText.toLowerCase();
+
+  for (const b of MOCK_BOOKINGS) {
+    if (
+      rawLower.includes(b.shipper.toLowerCase()) ||
+      rawLower.includes(b.consignee.toLowerCase()) ||
+      rawLower.includes(b.serviceProvider.toLowerCase())
+    ) {
+      addIfNew(b);
+    }
+  }
+
   const allTerms = terms.length > 0 ? terms : [rawText.trim()];
 
   for (const term of allTerms) {
     const normTerm = normRef(term);
+    const termLower = term.toLowerCase();
     for (const b of MOCK_BOOKINGS) {
       const normBooking = normRef(b.bookingNo);
       if (
         normBooking === normTerm ||
         normBooking.includes(normTerm) ||
         normTerm.includes(normBooking) ||
-        b.jobOrderNo === term.trim()
+        b.jobOrderNo === term.trim() ||
+        b.shipper.toLowerCase().includes(termLower) ||
+        b.consignee.toLowerCase().includes(termLower) ||
+        b.serviceProvider.toLowerCase().includes(termLower)
       ) {
         addIfNew(b);
       }
@@ -279,8 +312,9 @@ Deno.serve(async (req: Request) => {
     let notFoundReply: string | null = null;
 
     const isFollowUp = messages.length > 2 && currentTerms.length === 0 && searchTerms.length > 0;
+    const hasNameMatch = extractNamePhrases(fullConversationText).length > 0;
 
-    if (couldBeTracking || searchTerms.length > 0 || isFollowUp) {
+    if (couldBeTracking || searchTerms.length > 0 || isFollowUp || hasNameMatch) {
       const mockShipResults = lookupMockShipments(searchTerms, fullConversationText);
       const mockBookResults = lookupMockBookings(searchTerms, fullConversationText);
 
