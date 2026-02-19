@@ -173,11 +173,19 @@ Deno.serve(async (req: Request) => {
     const couldBeTracking = isTrackingQuery(userText);
     let shipmentContext = '';
 
+    let injectedAssistantMsg: { role: string; content: string } | null = null;
+    let notFoundReply: string | null = null;
+
     if (couldBeTracking || searchTerms.length > 0) {
       const mockResults = lookupMockShipments(searchTerms, userText);
       if (mockResults.length > 0) {
         shipmentContext = formatShipmentContext(mockResults);
+        injectedAssistantMsg = {
+          role: 'assistant',
+          content: `I found the following shipment data in LogiTRACK:\n${formatShipmentContext(mockResults).replace('[LIVE SHIPMENT DATA FROM LOGITRACK DATABASE]\n', '')}\n\nLet me answer your question based on this data.`
+        };
       } else {
+        let dbFound = false;
         try {
           const supabaseUrl = Deno.env.get("SUPABASE_URL");
           const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -196,6 +204,7 @@ Deno.serve(async (req: Request) => {
             }
 
             if (dbResults.length > 0) {
+              dbFound = true;
               const seen = new Set<string>();
               const unique = dbResults.filter(s => {
                 const key = String(s['Shipment Number']);
@@ -207,26 +216,49 @@ Deno.serve(async (req: Request) => {
                 `Shipment: ${s['Shipment Number']} | Status: ${s['shipment_status'] || 'N/A'} | Route: ${s['Origin']} → ${s['Destination']} | Mode: ${s['Transport Mode']} | Shipper: ${s['Shipper']} | Consignee: ${s['Consignee']} | ETD: ${s['ETD']} | ETA: ${s['ETA']}`
               );
               shipmentContext = `\n\n[LIVE SHIPMENT DATA FROM LOGITRACK DATABASE]\n${dbLines.join('\n')}`;
-            } else {
-              shipmentContext = `\n\n[NOTE: The reference "${userText.trim()}" was not found in the LogiTRACK system. Tell the user clearly that no matching shipment, container, or booking was found for this reference, and ask them to double-check the number or search manually in the Shipments section.]`;
+              injectedAssistantMsg = {
+                role: 'assistant',
+                content: `I found the following shipment data in LogiTRACK:\n${dbLines.join('\n')}\n\nLet me answer your question based on this data.`
+              };
             }
           }
         } catch {
-          shipmentContext = `\n\n[NOTE: Could not query the database at this time. Tell the user to try again or check the Shipments page directly.]`;
+          // fall through
+        }
+
+        if (!dbFound) {
+          const ref = searchTerms.length > 0 ? searchTerms[0] : userText.trim();
+          notFoundReply = `No shipment, container, or booking matching **"${ref}"** was found in LogiTRACK.\n\nPlease double-check the reference number. You can try:\n- Container number (e.g. MEDU6997206)\n- Shipment number (e.g. MUM/SE/SHP/0001)\n- Bill of Lading number\n\nIf you believe this is an error, contact your freight coordinator or check the Shipments page directly.`;
         }
       }
+    }
+
+    if (notFoundReply) {
+      return new Response(
+        JSON.stringify({ reply: notFoundReply, foundShipments: false }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const systemWithContext = SYSTEM_PROMPT + shipmentContext;
 
     const openai = new OpenAI({ apiKey });
 
+    const messagesForAI = [
+      { role: "system", content: systemWithContext },
+      ...messages,
+    ];
+
+    if (injectedAssistantMsg) {
+      const lastUserIdx = messagesForAI.map(m => m.role).lastIndexOf('user');
+      if (lastUserIdx >= 0) {
+        messagesForAI.splice(lastUserIdx, 0, injectedAssistantMsg);
+      }
+    }
+
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: systemWithContext },
-        ...messages,
-      ],
+      messages: messagesForAI as Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
       max_tokens: 700,
       temperature: 0.7,
     });
