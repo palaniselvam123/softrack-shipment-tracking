@@ -273,10 +273,14 @@ function nameMatches(entityName: string, queryText: string): boolean {
   const nameLower = entityName.toLowerCase();
   const queryLower = queryText.toLowerCase();
   if (queryLower.includes(nameLower)) return true;
-  const stopWords = new Set(['pvt', 'ltd', 'inc', 'llc', 'co', 'the', 'and', 'for', 'of', 'a']);
-  const nameWords = nameLower.split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
+  const stopWords = new Set(['pvt', 'ltd', 'inc', 'llc', 'co', 'the', 'and', 'for', 'of', 'a', 'india', 'express', 'cargo', 'logistics', 'freight', 'airways', 'airline']);
+  const nameWords = nameLower.split(/\s+/).filter(w => w.length > 1 && !stopWords.has(w));
+  const queryWords = queryLower.split(/\s+/);
+  for (const qw of queryWords) {
+    if (qw.length >= 2 && nameWords.some(nw => nw === qw || nw.startsWith(qw) || qw.startsWith(nw))) return true;
+  }
   const matchCount = nameWords.filter(w => queryLower.includes(w)).length;
-  return nameWords.length > 0 && matchCount >= Math.min(2, nameWords.length);
+  return nameWords.length > 0 && matchCount >= 1;
 }
 
 function extractNamePhrases(text: string): string[] {
