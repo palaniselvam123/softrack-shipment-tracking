@@ -477,11 +477,25 @@ Deno.serve(async (req: Request) => {
           const entityName = entityMatch ? entityMatch[1].trim() : null;
 
           if (entityName) {
-            const { data: entityShipments } = await supabase
+            const { data: shipperRows } = await supabase
               .from('shipments')
               .select('"Shipment Number", "Shipper", "Consignee", "Origin", "Destination", "Transport Mode", shipment_status, "ETA"')
-              .or(`"Shipper".ilike.%${entityName}%,"Consignee".ilike.%${entityName}%`)
+              .ilike('Shipper', `%${entityName}%`)
               .limit(200);
+
+            const { data: consigneeRows } = await supabase
+              .from('shipments')
+              .select('"Shipment Number", "Shipper", "Consignee", "Origin", "Destination", "Transport Mode", shipment_status, "ETA"')
+              .ilike('Consignee', `%${entityName}%`)
+              .limit(200);
+
+            const seen = new Set<string>();
+            const entityShipments = [...(shipperRows || []), ...(consigneeRows || [])].filter(s => {
+              const id = s['Shipment Number'];
+              if (seen.has(id)) return false;
+              seen.add(id);
+              return true;
+            });
 
             if (entityShipments && entityShipments.length > 0) {
               const byStatus: Record<string, number> = {};
