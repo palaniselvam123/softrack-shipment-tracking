@@ -200,19 +200,26 @@ function lookupMockShipments(terms: string[], rawText: string) {
   return results;
 }
 
+function nameMatches(entityName: string, queryText: string): boolean {
+  const nameLower = entityName.toLowerCase();
+  const queryLower = queryText.toLowerCase();
+  if (queryLower.includes(nameLower)) return true;
+  const stopWords = new Set(['pvt', 'ltd', 'inc', 'llc', 'co', 'the', 'and', 'for', 'of', 'a']);
+  const nameWords = nameLower.split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
+  const matchCount = nameWords.filter(w => queryLower.includes(w)).length;
+  return nameWords.length > 0 && matchCount >= Math.min(2, nameWords.length);
+}
+
 function extractNamePhrases(text: string): string[] {
-  const lower = text.toLowerCase();
   const phrases: string[] = [];
   for (const b of MOCK_BOOKINGS) {
-    if (lower.includes(b.shipper.toLowerCase()) || lower.includes(b.consignee.toLowerCase()) || lower.includes(b.serviceProvider.toLowerCase())) {
-      if (b.shipper.length > 3 && lower.includes(b.shipper.toLowerCase())) phrases.push(b.shipper.toLowerCase());
-      if (b.consignee.length > 3 && lower.includes(b.consignee.toLowerCase())) phrases.push(b.consignee.toLowerCase());
-      if (b.serviceProvider.length > 3 && lower.includes(b.serviceProvider.toLowerCase())) phrases.push(b.serviceProvider.toLowerCase());
-    }
+    if (nameMatches(b.shipper, text)) phrases.push(b.shipper.toLowerCase());
+    if (nameMatches(b.consignee, text)) phrases.push(b.consignee.toLowerCase());
+    if (nameMatches(b.serviceProvider, text)) phrases.push(b.serviceProvider.toLowerCase());
   }
   for (const s of MOCK_SHIPMENTS) {
-    if (s.shipper.length > 3 && lower.includes(s.shipper.toLowerCase())) phrases.push(s.shipper.toLowerCase());
-    if (s.consignee.length > 3 && lower.includes(s.consignee.toLowerCase())) phrases.push(s.consignee.toLowerCase());
+    if (nameMatches(s.shipper, text)) phrases.push(s.shipper.toLowerCase());
+    if (nameMatches(s.consignee, text)) phrases.push(s.consignee.toLowerCase());
   }
   return [...new Set(phrases)];
 }
@@ -232,9 +239,9 @@ function lookupMockBookings(terms: string[], rawText: string) {
 
   for (const b of MOCK_BOOKINGS) {
     if (
-      rawLower.includes(b.shipper.toLowerCase()) ||
-      rawLower.includes(b.consignee.toLowerCase()) ||
-      rawLower.includes(b.serviceProvider.toLowerCase())
+      nameMatches(b.shipper, rawText) ||
+      nameMatches(b.consignee, rawText) ||
+      nameMatches(b.serviceProvider, rawText)
     ) {
       addIfNew(b);
     }
