@@ -44,7 +44,7 @@ const NavButton: React.FC<{
 }> = ({ item, isActive }) => {
   const Icon = item.icon;
   const [hovered, setHovered] = React.useState(false);
-  const active = isActive || hovered;
+  const expanded = isActive || hovered;
 
   return (
     <button
@@ -53,23 +53,30 @@ const NavButton: React.FC<{
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        maxWidth: active ? '180px' : '44px',
-        backgroundColor: active ? item.bgColor : 'transparent',
+        maxWidth: expanded ? '190px' : '48px',
+        outlineColor: isActive ? item.iconColor : 'transparent',
+        outlineWidth: isActive ? '2px' : '0px',
+        outlineStyle: 'solid',
+        outlineOffset: '1px',
       }}
-      className={`relative flex items-center overflow-hidden transition-all duration-300 ease-in-out rounded-xl px-1.5 py-1.5 group ${item.highlight && !isActive ? 'border border-current/20' : ''}`}
+      className="relative flex items-center overflow-hidden transition-all duration-300 ease-in-out rounded-xl px-1 py-1 flex-shrink-0"
     >
       <div
-        style={{ color: active ? item.iconColor : undefined }}
-        className={`flex-shrink-0 rounded-lg p-1.5 transition-colors duration-300 ${active ? '' : 'text-gray-500'}`}
+        style={{
+          backgroundColor: item.bgColor,
+          color: item.iconColor,
+        }}
+        className="flex-shrink-0 rounded-lg p-2 transition-all duration-200"
       >
         <Icon className="w-5 h-5" />
       </div>
       <span
         style={{
           color: item.iconColor,
-          maxWidth: active ? '130px' : '0px',
-          marginLeft: active ? '4px' : '0px',
-          opacity: active ? 1 : 0,
+          maxWidth: expanded ? '140px' : '0px',
+          marginLeft: expanded ? '6px' : '0px',
+          opacity: expanded ? 1 : 0,
+          marginRight: expanded ? '4px' : '0px',
         }}
         className="text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out"
       >
