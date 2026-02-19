@@ -45,6 +45,69 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
     { key: 'cosignee', label: 'Cosignee', visible: true }
   ]);
 
+  const serviceProviders = [
+    'UPS India Pvt Ltd', 'Maersk India Ltd', 'MSC India Pvt Ltd', 'KLN India Pvt Ltd',
+    'CMA CGM India', 'Hapag Lloyd India', 'DHL Express India', 'FedEx India',
+    'Emirates SkyCargo', 'Qatar Airways Cargo', 'VRL Logistics', 'TCI Freight',
+    'Blue Dart Express', 'Gati KWE', 'OOCL India', 'Evergreen India',
+    'Yang Ming India', 'PIL India', 'Wan Hai India', 'Sinotrans India'
+  ];
+  const shippers = [
+    'Stark Private Limited', 'Global Traders Inc', 'Continental Exports', 'Transhipper Private Limited',
+    'Export Masters Ltd', 'Maritime Exports Pvt Ltd', 'European Electronics GmbH', 'American Auto Parts Inc',
+    'Pharma Exports India Ltd', 'Fresh Foods Exports', 'Nepal Trading Co', 'Bangladesh Textiles Ltd',
+    'Bangalore Tech Solutions', 'Chennai Manufacturing Ltd', 'Delhi Auto Components', 'Pune Engineering Works',
+    'Hyderabad Pharma Ltd', 'Kolkata Jute Mills', 'Ahmedabad Textile Co', 'Surat Diamond Exporters',
+    'Coimbatore Machinery Ltd', 'Nagpur Agro Exports', 'Kochi Spice Traders', 'Vizag Steel Exports',
+    'Jaipur Handicrafts', 'Ludhiana Garments Ltd', 'Amritsar Silk House', 'Kanpur Leather Works'
+  ];
+  const cosignees = [
+    '14square Private Limited', 'Mumbai Imports Ltd', 'Bangalore Trading Co', 'Stark Private Limited',
+    'International Trading Co', 'Global Logistics Singapore', 'Tech Solutions India', 'Chennai Motors Ltd',
+    'Healthcare Dubai LLC', 'Middle East Grocers', 'Delhi Distributors Pvt Ltd', 'Mumbai Fashion House',
+    'Sri Lanka Electronics', 'Colombo Trading Co', 'Hong Kong Trade Ltd', 'Singapore Imports Co',
+    'Dubai Logistics LLC', 'London Wholesale Ltd', 'Frankfurt Auto GmbH', 'Shanghai Trading Co',
+    'New York Imports Inc', 'Tokyo Electronics Ltd', 'Sydney Commerce Pty', 'Toronto Goods Inc',
+    'Paris Distribution SA', 'Amsterdam Traders BV', 'Seoul Electronics Co', 'Bangkok Commerce Ltd'
+  ];
+  const transportModes = ['Sea Import', 'Sea Export', 'Air Import', 'Air Export', 'Land Import', 'Land Export'];
+  const statuses: Booking['status'][] = ['Pending', 'Approved', 'Rejected'];
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const modePrefix: Record<string, string> = {
+    'Sea Import': 'SE-S', 'Sea Export': 'SE-E', 'Air Import': 'AI', 'Air Export': 'AE', 'Land Import': 'LI', 'Land Export': 'LE'
+  };
+
+  const generateBookings = (): Booking[] => {
+    const seed = (n: number) => {
+      let x = Math.sin(n) * 10000;
+      return x - Math.floor(x);
+    };
+    const pick = <T,>(arr: T[], n: number): T => arr[Math.floor(seed(n) * arr.length)];
+    const generated: Booking[] = [];
+    for (let i = 0; i < 200; i++) {
+      const mode = pick(transportModes, i * 7 + 1);
+      const prefix = modePrefix[mode];
+      const num = 49 + i;
+      const sub = Math.floor(seed(i * 3 + 2) * 20) + 1;
+      const dec = (Math.floor(seed(i * 5 + 3) * 9) + 1);
+      const day = Math.floor(seed(i * 11 + 4) * 28) + 1;
+      const month = months[Math.floor(seed(i * 13 + 5) * 12)];
+      const year = 2023 + Math.floor(seed(i * 17 + 6) * 2);
+      const jobNo = 69595596 + i;
+      generated.push({
+        bookingNo: `${prefix}//${String(num).padStart(4, '0')}//${sub}.${dec}`,
+        date: `${day}th ${month} ${year}`,
+        jobOrderNo: String(jobNo),
+        serviceProvider: pick(serviceProviders, i * 19 + 7),
+        transportMode: mode,
+        status: pick(statuses, i * 23 + 8),
+        shipper: pick(shippers, i * 29 + 9),
+        cosignee: pick(cosignees, i * 31 + 10),
+      });
+    }
+    return generated;
+  };
+
   const mockBookings: Booking[] = [
     { bookingNo: 'SE-S//0036//10.2', date: '8th Aug 2024', jobOrderNo: '69595583', serviceProvider: 'UPS India Pvt Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Stark Private Limited', cosignee: '14square Private Limited' },
     { bookingNo: 'SE-S//0037//11.3', date: '9th Aug 2024', jobOrderNo: '69595584', serviceProvider: 'Maersk India Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Global Traders Inc', cosignee: 'Mumbai Imports Ltd' },
@@ -64,7 +127,8 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
     { bookingNo: 'LI//0046//20.3', date: '18th Aug 2024', jobOrderNo: '69595593', serviceProvider: 'TCI Freight', transportMode: 'Land Import', status: 'Pending', shipper: 'Bangladesh Textiles Ltd', cosignee: 'Mumbai Fashion House' },
     { bookingNo: 'SE-S//0036//10.2', date: '8th Aug 2024', jobOrderNo: '69595583', serviceProvider: 'UPS India Pvt Ltd', transportMode: 'Land Import', status: 'Rejected', shipper: 'Square Space worldwide Private Limited', cosignee: 'Tranship Limited' },
     { bookingNo: 'LE//0047//21.2', date: '19th Aug 2024', jobOrderNo: '69595594', serviceProvider: 'Blue Dart Express', transportMode: 'Land Export', status: 'Pending', shipper: 'Bangalore Tech Solutions', cosignee: 'Sri Lanka Electronics' },
-    { bookingNo: 'LE//0048//22.5', date: '20th Aug 2024', jobOrderNo: '69595595', serviceProvider: 'Gati KWE', transportMode: 'Land Export', status: 'Pending', shipper: 'Chennai Manufacturing Ltd', cosignee: 'Colombo Trading Co' }
+    { bookingNo: 'LE//0048//22.5', date: '20th Aug 2024', jobOrderNo: '69595595', serviceProvider: 'Gati KWE', transportMode: 'Land Export', status: 'Pending', shipper: 'Chennai Manufacturing Ltd', cosignee: 'Colombo Trading Co' },
+    ...generateBookings()
   ];
 
   const handleSort = (key: keyof Booking) => {
