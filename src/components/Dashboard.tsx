@@ -1,16 +1,18 @@
 import React from 'react';
 import { TrendingUp, Package, Ship, Clock, DollarSign, AlertTriangle, CheckCircle, Users, MessageCircle, Ticket } from 'lucide-react';
+import type { DashboardStats } from '../App';
 
 interface DashboardProps {
   onViewShipments: () => void;
   onNewBooking: () => void;
+  liveStats?: DashboardStats | null;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, liveStats }) => {
   const stats = [
     {
       title: 'Total Shipments',
-      value: '1,247',
+      value: liveStats ? liveStats.totalShipments.toLocaleString() : '—',
       change: '+12%',
       changeType: 'positive',
       icon: Package,
@@ -18,23 +20,23 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking }) 
     },
     {
       title: 'In Transit',
-      value: '89',
+      value: liveStats ? liveStats.inTransit.toLocaleString() : '—',
       change: '+5%',
       changeType: 'positive',
       icon: Ship,
       color: 'bg-logitrack-blue-600'
     },
     {
-      title: 'Pending Bookings',
-      value: '12',
-      change: '+4%',
-      changeType: 'positive',
+      title: 'Delayed',
+      value: liveStats ? liveStats.delayed.toLocaleString() : '—',
+      change: '',
+      changeType: 'negative',
       icon: Clock,
       color: 'bg-yellow-500'
     },
     {
-      title: 'Revenue (USD)',
-      value: '$2.4M',
+      title: 'Total Bookings',
+      value: liveStats ? liveStats.totalBookings.toLocaleString() : '—',
       change: '+18%',
       changeType: 'positive',
       icon: DollarSign,
@@ -161,12 +163,14 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking }) 
                 <div className={`p-4 rounded-2xl ${stat.color} shadow-lg group-hover:scale-110 transition-transform duration-200`}>
                   <Icon className="w-7 h-7 text-white" />
                 </div>
-                <div className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm ${
-                  stat.changeType === 'positive' ? 'bg-gradient-to-r from-emerald-400 to-green-500 text-white' : 'bg-gradient-to-r from-red-400 to-red-500 text-white'
-                }`}>
-                  <TrendingUp className="w-3 h-3" />
-                  <span>{stat.change}</span>
-                </div>
+                {stat.change && (
+                  <div className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm ${
+                    stat.changeType === 'positive' ? 'bg-gradient-to-r from-emerald-400 to-green-500 text-white' : 'bg-gradient-to-r from-red-400 to-red-500 text-white'
+                  }`}>
+                    <TrendingUp className="w-3 h-3" />
+                    <span>{stat.change}</span>
+                  </div>
+                )}
               </div>
               <div>
                 <p className="text-sm font-semibold text-gray-600 mb-1">{stat.title}</p>

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Minimize2, Maximize2, RotateCcw, Bot, User, Sparkles } from 'lucide-react';
+import type { DashboardStats } from '../App';
 
 interface Message {
   id: string;
@@ -10,6 +11,7 @@ interface Message {
 
 interface BoxyAIProps {
   currentView?: string;
+  dashboardStats?: DashboardStats | null;
 }
 
 const SUGGESTED_PROMPTS = [
@@ -22,7 +24,7 @@ const SUGGESTED_PROMPTS = [
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
+const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -66,9 +68,19 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
     setInput('');
     setIsLoading(true);
 
-    const contextNote = currentView
+    let contextNote = currentView
       ? `[User is currently on the "${currentView}" page] `
       : '';
+
+    if (dashboardStats) {
+      const statusBreakdown = Object.entries(dashboardStats.byStatus)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(', ');
+      const modeBreakdown = Object.entries(dashboardStats.byMode)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(', ');
+      contextNote += `[LIVE LOGITRACK STATS — Total Shipments: ${dashboardStats.totalShipments}, In Transit: ${dashboardStats.inTransit}, Delayed: ${dashboardStats.delayed}, Delivered: ${dashboardStats.delivered}, Total Bookings: ${dashboardStats.totalBookings}, Pending Bookings: ${dashboardStats.pendingBookings}, Confirmed Bookings: ${dashboardStats.approvedBookings}. By Status: ${statusBreakdown}. By Transport Mode: ${modeBreakdown}] `;
+    }
 
     const historyForAPI = [
       ...messages

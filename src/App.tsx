@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import BoxyAI from './components/BoxyAI';
+import { supabase } from './lib/supabase';
 import ShipmentsTable from './components/ShipmentsTable';
 import ShipmentDetails from './components/ShipmentDetails';
 import BookingWizard from './components/BookingWizard';
@@ -40,12 +41,62 @@ type ViewType =
   | 'leads'
   | 'quotation';
 
+export interface DashboardStats {
+  totalShipments: number;
+  inTransit: number;
+  delayed: number;
+  delivered: number;
+  pendingBookings: number;
+  approvedBookings: number;
+  totalBookings: number;
+  byStatus: Record<string, number>;
+  byMode: Record<string, number>;
+}
+
 function App() {
   const { user, loading } = useAuth();
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const [selectedShipment, setSelectedShipment] = useState<string | null>(null);
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
   const [showBookingDetails, setShowBookingDetails] = useState(false);
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
+
+  useEffect(() => {
+    async function fetchStats() {
+      const { data: shipments } = await supabase
+        .from('shipments')
+        .select('shipment_status, "Transport Mode"');
+
+      const { data: bookings } = await supabase
+        .from('bookings_from_quotes')
+        .select('status');
+
+      if (shipments) {
+        const byStatus: Record<string, number> = {};
+        const byMode: Record<string, number> = {};
+        for (const s of shipments) {
+          const st = (s['shipment_status'] || 'Unknown').toLowerCase();
+          byStatus[st] = (byStatus[st] || 0) + 1;
+          const m = s['Transport Mode'] || 'Unknown';
+          byMode[m] = (byMode[m] || 0) + 1;
+        }
+        const pendingBookings = bookings?.filter(b => b.status === 'pending' || b.status === 'Pending').length ?? 0;
+        const approvedBookings = bookings?.filter(b => b.status === 'confirmed' || b.status === 'Confirmed').length ?? 0;
+        setDashboardStats({
+          totalShipments: shipments.length,
+          inTransit: byStatus['in transit'] || byStatus['in_transit'] || 0,
+          delayed: byStatus['delayed'] || 0,
+          delivered: byStatus['delivered'] || 0,
+          pendingBookings,
+          approvedBookings,
+          totalBookings: bookings?.length ?? 0,
+          byStatus,
+          byMode,
+        });
+      }
+    }
+    fetchStats();
+  }, []);
 
   React.useEffect(() => {
     const path = window.location.pathname;
@@ -218,6 +269,7 @@ function App() {
         <Dashboard
           onViewShipments={handleShipmentsNavigation}
           onNewBooking={handleBookingNavigation}
+          liveStats={dashboardStats}
         />
       ) : currentView === 'booking' ? (
         <BookingWizard
@@ -278,7 +330,7 @@ function App() {
         />
       )}
 
-      <BoxyAI currentView={currentView} />
+      <BoxyAI currentView={currentView} dashboardStats={dashboardStats} />
     </div>
   );
 }
