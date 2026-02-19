@@ -52,7 +52,6 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognizerRef = useRef<SpeechSDK.SpeechRecognizer | null>(null);
-  const synthesizerRef = useRef<SpeechSDK.SpeechSynthesizer | null>(null);
 
   useEffect(() => {
     if (isOpen && messagesEndRef.current) {
@@ -74,10 +73,7 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
         recognizerRef.current.close();
         recognizerRef.current = null;
       }
-      if (synthesizerRef.current) {
-        synthesizerRef.current.close();
-        synthesizerRef.current = null;
-      }
+      window.speechSynthesis?.cancel();
     };
   }, []);
 
@@ -194,54 +190,39 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
       .trim();
   };
 
-  const buildSsml = (text: string): string => {
+  const speakText = useCallback((text: string) => {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
     const clean = prepareForSpeech(text);
-    const escaped = clean
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
-    return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="en-US-AriaNeural"><prosody rate="0%" pitch="0%">${escaped}</prosody></voice></speak>`;
-  };
-
-  const speakText = useCallback(async (text: string) => {
-    if (synthesizerRef.current) {
-      synthesizerRef.current.close();
-      synthesizerRef.current = null;
+    if (!clean) return;
+    const utterance = new SpeechSynthesisUtterance(clean);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    utterance.lang = 'en-US';
+    const setVoice = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find(v =>
+        v.name.includes('Google US English') ||
+        v.name.includes('Samantha') ||
+        v.name.includes('Alex') ||
+        (v.lang === 'en-US' && v.localService)
+      ) || voices.find(v => v.lang.startsWith('en'));
+      if (preferred) utterance.voice = preferred;
+    };
+    if (window.speechSynthesis.getVoices().length > 0) {
+      setVoice();
+    } else {
+      window.speechSynthesis.addEventListener('voiceschanged', setVoice, { once: true });
     }
     setSpeakingState('speaking');
-    try {
-      const { token, region } = await getSpeechToken();
-      const speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(token, region);
-      speechConfig.speechSynthesisVoiceName = 'en-US-AriaNeural';
-      const synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
-      synthesizerRef.current = synthesizer;
-      const ssml = buildSsml(text);
-      synthesizer.speakSsmlAsync(
-        ssml,
-        () => {
-          setSpeakingState('idle');
-          synthesizer.close();
-          synthesizerRef.current = null;
-        },
-        (err) => {
-          console.warn('TTS error:', err);
-          setSpeakingState('idle');
-          synthesizer.close();
-          synthesizerRef.current = null;
-        }
-      );
-    } catch {
-      setSpeakingState('idle');
-    }
-  }, [getSpeechToken]);
+    utterance.onend = () => setSpeakingState('idle');
+    utterance.onerror = () => setSpeakingState('idle');
+    window.speechSynthesis.speak(utterance);
+  }, []);
 
   const stopSpeaking = useCallback(() => {
-    if (synthesizerRef.current) {
-      synthesizerRef.current.close();
-      synthesizerRef.current = null;
-    }
+    window.speechSynthesis?.cancel();
     setSpeakingState('idle');
   }, []);
 
