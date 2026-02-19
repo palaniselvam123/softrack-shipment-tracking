@@ -13,9 +13,9 @@ interface BoxyAIProps {
 }
 
 const SUGGESTED_PROMPTS = [
+  'Track container MEDU6997206',
   'How do I create a new booking?',
   'What does shipment status mean?',
-  'How to generate a quotation?',
   'Explain Incoterms for shipping',
 ];
 
@@ -29,7 +29,7 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
     {
       id: '0',
       role: 'assistant',
-      content: "Hi! I'm **Boxy**, your LogiTRACK AI assistant. I can help you navigate the platform, answer logistics questions, and explain any feature. What can I help you with?",
+      content: "Hi! I'm **Boxy**, your LogiTRACK AI assistant. I can help you navigate the platform, answer logistics questions, and **track shipments by container number or shipment reference**. What can I help you with?",
       timestamp: new Date(),
     },
   ]);
@@ -129,7 +129,7 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
       {
         id: '0',
         role: 'assistant',
-        content: "Hi! I'm **Boxy**, your LogiTRACK AI assistant. I can help you navigate the platform, answer logistics questions, and explain any feature. What can I help you with?",
+        content: "Hi! I'm **Boxy**, your LogiTRACK AI assistant. I can help you navigate the platform, answer logistics questions, and **track shipments by container number or shipment reference**. What can I help you with?",
         timestamp: new Date(),
       },
     ]);
@@ -302,7 +302,7 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Ask Boxy anything..."
+                    placeholder="Ask Boxy or enter a container number..."
                     rows={1}
                     className="flex-1 bg-transparent text-sm text-gray-800 placeholder-gray-400 resize-none outline-none max-h-24 leading-5"
                     style={{ minHeight: '20px' }}
