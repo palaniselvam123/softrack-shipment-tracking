@@ -23,7 +23,8 @@ const TYPE_COLORS: Record<MappingType, string> = {
 interface FormData {
   user_id: string;
   mapping_type: MappingType;
-  entity_name: string;
+  entity_names: string[];
+  entity_name_input: string;
   entity_code: string;
   notes: string;
   is_active: boolean;
@@ -45,7 +46,8 @@ export default function CustomerMappings() {
   const defaultForm: FormData = {
     user_id: '',
     mapping_type: 'customer',
-    entity_name: '',
+    entity_names: [],
+    entity_name_input: '',
     entity_code: '',
     notes: '',
     is_active: true,
@@ -64,7 +66,7 @@ export default function CustomerMappings() {
   }, []);
 
   useEffect(() => {
-    if (!form.entity_name || form.entity_name.length < 2) {
+    if (!form.entity_name_input || form.entity_name_input.length < 2) {
       setShipperSuggestions([]);
       return;
     }
@@ -72,7 +74,7 @@ export default function CustomerMappings() {
     supabase
       .from('shipments')
       .select(`"${field}"`)
-      .ilike(field, `%${form.entity_name}%`)
+      .ilike(field, `%${form.entity_name_input}%`)
       .limit(8)
       .then(({ data }) => {
         if (data) {
@@ -80,7 +82,7 @@ export default function CustomerMappings() {
           setShipperSuggestions(unique as string[]);
         }
       });
-  }, [form.entity_name, form.mapping_type]);
+  }, [form.entity_name_input, form.mapping_type]);
 
   async function fetchMappings() {
     const { data } = await supabase.from('customer_mappings').select('*').order('created_at', { ascending: false });
@@ -98,7 +100,8 @@ export default function CustomerMappings() {
     setForm({
       user_id: m.user_id,
       mapping_type: m.mapping_type,
-      entity_name: m.entity_name,
+      entity_names: [m.entity_name],
+      entity_name_input: '',
       entity_code: m.entity_code,
       notes: m.notes,
       is_active: m.is_active,
@@ -106,20 +109,59 @@ export default function CustomerMappings() {
     setShowModal(true);
   }
 
+  function addEntityTag(name: string) {
+    const trimmed = name.trim();
+    if (!trimmed || form.entity_names.includes(trimmed)) return;
+    setForm(f => ({ ...f, entity_names: [...f.entity_names, trimmed], entity_name_input: '' }));
+    setShipperSuggestions([]);
+    setShowSuggestions(false);
+  }
+
+  function removeEntityTag(name: string) {
+    setForm(f => ({ ...f, entity_names: f.entity_names.filter(n => n !== name) }));
+  }
+
   async function handleSave() {
-    if (!form.user_id || !form.entity_name) return;
+    if (!form.user_id || form.entity_names.length === 0) return;
     setSaving(true);
+    const now = new Date().toISOString();
     if (editing) {
       await supabase.from('customer_mappings').update({
-        ...form,
-        updated_at: new Date().toISOString(),
+        user_id: form.user_id,
+        mapping_type: form.mapping_type,
+        entity_name: form.entity_names[0],
+        entity_code: form.entity_code,
+        notes: form.notes,
+        is_active: form.is_active,
+        updated_at: now,
       }).eq('id', editing.id);
+      if (form.entity_names.length > 1) {
+        await supabase.from('customer_mappings').insert(
+          form.entity_names.slice(1).map(name => ({
+            user_id: form.user_id,
+            mapping_type: form.mapping_type,
+            entity_name: name,
+            entity_code: form.entity_code,
+            notes: form.notes,
+            is_active: form.is_active,
+            created_at: now,
+            updated_at: now,
+          }))
+        );
+      }
     } else {
-      await supabase.from('customer_mappings').insert({
-        ...form,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
+      await supabase.from('customer_mappings').insert(
+        form.entity_names.map(name => ({
+          user_id: form.user_id,
+          mapping_type: form.mapping_type,
+          entity_name: name,
+          entity_code: form.entity_code,
+          notes: form.notes,
+          is_active: form.is_active,
+          created_at: now,
+          updated_at: now,
+        }))
+      );
     }
     await fetchMappings();
     setShowModal(false);
@@ -338,31 +380,60 @@ export default function CustomerMappings() {
                 </div>
               </div>
               <div className="relative">
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5">Entity Name</label>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                  Entity Names
+                  <span className="ml-1.5 text-gray-400 font-normal">(type and press Enter or comma to add multiple)</span>
+                </label>
+                {form.entity_names.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {form.entity_names.map(name => (
+                      <span key={name} className="inline-flex items-center gap-1 px-2.5 py-1 bg-sky-50 border border-sky-200 text-sky-700 text-xs font-semibold rounded-lg">
+                        {name}
+                        <button
+                          type="button"
+                          onClick={() => removeEntityTag(name)}
+                          className="hover:text-red-500 transition-colors ml-0.5"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <input
-                  value={form.entity_name}
+                  value={form.entity_name_input}
                   onChange={e => {
-                    setForm(f => ({ ...f, entity_name: e.target.value }));
-                    setShowSuggestions(true);
+                    const val = e.target.value;
+                    if (val.endsWith(',')) {
+                      addEntityTag(val.slice(0, -1));
+                    } else {
+                      setForm(f => ({ ...f, entity_name_input: val }));
+                      setShowSuggestions(true);
+                    }
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addEntityTag(form.entity_name_input);
+                    }
                   }}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                   className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400"
-                  placeholder="e.g. Tata Motors Ltd"
+                  placeholder={form.entity_names.length === 0 ? 'e.g. Tata Motors Ltd' : 'Add another entity...'}
                 />
                 {showSuggestions && shipperSuggestions.length > 0 && (
                   <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-xl z-10 mt-1 max-h-48 overflow-y-auto">
-                    {shipperSuggestions.map(s => (
-                      <button
-                        key={s}
-                        onMouseDown={() => {
-                          setForm(f => ({ ...f, entity_name: s }));
-                          setShowSuggestions(false);
-                        }}
-                        className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-0"
-                      >
-                        {s}
-                      </button>
-                    ))}
+                    {shipperSuggestions
+                      .filter(s => !form.entity_names.includes(s))
+                      .map(s => (
+                        <button
+                          key={s}
+                          onMouseDown={() => addEntityTag(s)}
+                          className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-0"
+                        >
+                          {s}
+                        </button>
+                      ))}
                   </div>
                 )}
               </div>
@@ -404,7 +475,7 @@ export default function CustomerMappings() {
               </button>
               <button
                 onClick={handleSave}
-                disabled={saving || !form.user_id || !form.entity_name}
+                disabled={saving || !form.user_id || form.entity_names.length === 0}
                 className="flex items-center gap-2 px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
