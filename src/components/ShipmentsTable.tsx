@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Download, Filter, Settings, Star, Truck, Plane, Ship, MessageCircle, Loader2, ArrowLeft } from 'lucide-react';
+import { Search, Download, Filter, Settings, Star, Truck, Plane, Ship, MessageCircle, Loader2, ArrowLeft, Lock } from 'lucide-react';
 import { supabase, type SupabaseShipment } from '../lib/supabase';
 import ColumnCustomizer from './ColumnCustomizer';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ShipmentsTableProps {
   onViewShipment: (shipmentNo: string) => void;
@@ -32,6 +33,7 @@ interface Shipment {
 }
 
 const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack }) => {
+  const { isAdmin } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
@@ -446,6 +448,23 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-100">
+                {sortedShipments.length === 0 && !loading && (
+                  <tr>
+                    <td colSpan={visibleColumns.length} className="px-6 py-20 text-center">
+                      {!isAdmin ? (
+                        <div className="flex flex-col items-center space-y-3">
+                          <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center">
+                            <Lock className="w-7 h-7 text-amber-500" />
+                          </div>
+                          <p className="text-gray-700 font-semibold">No shipments assigned to your account</p>
+                          <p className="text-sm text-gray-500 max-w-sm">Your administrator needs to map your account to the relevant shippers, consignees, or agents before shipments will appear here.</p>
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 text-sm">No shipments found.</p>
+                      )}
+                    </td>
+                  </tr>
+                )}
                 {sortedShipments.map((shipment) => (
                   <tr
                     key={shipment.shipmentNo}

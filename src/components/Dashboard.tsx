@@ -1,6 +1,7 @@
 import React from 'react';
-import { TrendingUp, Package, Ship, Clock, DollarSign, AlertTriangle, CheckCircle, Users, MessageCircle, Ticket } from 'lucide-react';
+import { TrendingUp, Package, Ship, Clock, DollarSign, AlertTriangle, CheckCircle, Users, MessageCircle, Ticket, ShieldCheck } from 'lucide-react';
 import type { DashboardStats } from '../App';
+import { useAuth } from '../contexts/AuthContext';
 
 interface DashboardProps {
   onViewShipments: () => void;
@@ -9,6 +10,7 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, liveStats }) => {
+  const { isAdmin } = useAuth();
   const stats = [
     {
       title: 'Total Shipments',
@@ -152,6 +154,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">Dashboard</h1>
         <p className="text-gray-600 text-lg">Welcome back! Here's what's happening with your shipments today.</p>
       </div>
+
+      {!isAdmin && (
+        <div className="mb-6 flex items-start space-x-3 px-4 py-3 bg-sky-50 border border-sky-200 rounded-xl">
+          <ShieldCheck className="w-5 h-5 text-sky-600 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-sky-800">
+            <span className="font-semibold">Scoped access active.</span> You are viewing shipments and data assigned to your account only. Contact your administrator to adjust your access.
+          </p>
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
