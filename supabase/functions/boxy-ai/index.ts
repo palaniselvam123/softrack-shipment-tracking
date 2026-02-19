@@ -114,7 +114,7 @@ For booking lookups use this format:
 
 function isTrackingQuery(text: string): boolean {
   const lower = text.toLowerCase();
-  const trackingKeywords = ['track', 'status', 'where is', 'shipment', 'container', 'booking', 'reference', 'check', 'find', 'lookup', 'locate', 'eta', 'etd', 'delivery'];
+  const trackingKeywords = ['track', 'status', 'where is', 'shipment', 'container', 'booking', 'bookings', 'reference', 'check', 'find', 'lookup', 'locate', 'eta', 'etd', 'delivery', 'how many', 'count', 'list', 'show me', 'give me', 'all bookings', 'all shipments', 'shipper', 'consignee', 'invoice', 'documents', 'docs'];
   const hasKeyword = trackingKeywords.some(k => lower.includes(k));
   const hasRefPattern = /[A-Z0-9]{2,}[\/\-]+[A-Z0-9\/\-\.]{2,}/i.test(text) ||
     /\b[A-Z]{4}\d{6,}\b/i.test(text) ||
