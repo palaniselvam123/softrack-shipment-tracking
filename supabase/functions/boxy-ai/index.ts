@@ -21,21 +21,90 @@ const MOCK_SHIPMENTS = [
   { shipmentNo: 'MUM/AI/SHP/0002', containerNo: '', shipper: 'German Machinery Exports', consignee: 'Industrial Equipment India', transport: 'Air', departure: 'Frankfurt Airport, Germany', arrivalPort: 'Mumbai Airport, MH', type: 'Import', status: 'Billing', etd: '18-Nov-2025', eta: '20-Nov-2025', masterNo: 'LH-125-155', houseNo: 'MACH-2026-445' },
 ];
 
-const MOCK_BOOKINGS = [
-  { bookingNo: 'SE-S//0036//10.2', date: '8th Aug 2024', jobOrderNo: '69595583', serviceProvider: 'UPS India Pvt Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Stark Private Limited', consignee: '14square Private Limited', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading'], documentCount: 3 },
-  { bookingNo: 'SE-S//0037//11.3', date: '9th Aug 2024', jobOrderNo: '69595584', serviceProvider: 'Maersk India Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Global Traders Inc', consignee: 'Mumbai Imports Ltd', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading', 'Certificate of Origin'], documentCount: 4 },
-  { bookingNo: 'SE-S//0038//12.1', date: '10th Aug 2024', jobOrderNo: '69595585', serviceProvider: 'MSC India Pvt Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Continental Exports', consignee: 'Bangalore Trading Co', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
-  { bookingNo: 'SE-S//0039//13.2', date: '11th Aug 2024', jobOrderNo: '69595586', serviceProvider: 'CMA CGM India', transportMode: 'Sea Export', status: 'Pending', shipper: 'Export Masters Ltd', consignee: 'International Trading Co', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading', 'Certificate of Origin', 'Customs Declaration'], documentCount: 5 },
-  { bookingNo: 'SE-S//0040//14.5', date: '12th Aug 2024', jobOrderNo: '69595587', serviceProvider: 'Hapag Lloyd India', transportMode: 'Sea Export', status: 'Pending', shipper: 'Maritime Exports Pvt Ltd', consignee: 'Global Logistics Singapore', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading'], documentCount: 3 },
-  { bookingNo: 'AI//0041//15.1', date: '13th Aug 2024', jobOrderNo: '69595588', serviceProvider: 'DHL Express India', transportMode: 'Air Import', status: 'Pending', shipper: 'European Electronics GmbH', consignee: 'Tech Solutions India', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List'], documentCount: 3 },
-  { bookingNo: 'AI//0042//16.3', date: '14th Aug 2024', jobOrderNo: '69595589', serviceProvider: 'FedEx India', transportMode: 'Air Import', status: 'Pending', shipper: 'American Auto Parts Inc', consignee: 'Chennai Motors Ltd', documents: ['Airway Bill', 'Commercial Invoice'], documentCount: 2 },
-  { bookingNo: 'AE//0043//17.2', date: '15th Aug 2024', jobOrderNo: '69595590', serviceProvider: 'Emirates SkyCargo', transportMode: 'Air Export', status: 'Pending', shipper: 'Pharma Exports India Ltd', consignee: 'Healthcare Dubai LLC', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List', 'MSDS'], documentCount: 4 },
-  { bookingNo: 'AE//0044//18.4', date: '16th Aug 2024', jobOrderNo: '69595591', serviceProvider: 'Qatar Airways Cargo', transportMode: 'Air Export', status: 'Pending', shipper: 'Fresh Foods Exports', consignee: 'Middle East Grocers', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List', 'Phytosanitary Certificate'], documentCount: 4 },
-  { bookingNo: 'LI//0045//19.1', date: '17th Aug 2024', jobOrderNo: '69595592', serviceProvider: 'VRL Logistics', transportMode: 'Land Import', status: 'Pending', shipper: 'Nepal Trading Co', consignee: 'Delhi Distributors Pvt Ltd', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
-  { bookingNo: 'LI//0046//20.3', date: '18th Aug 2024', jobOrderNo: '69595593', serviceProvider: 'TCI Freight', transportMode: 'Land Import', status: 'Pending', shipper: 'Bangladesh Textiles Ltd', consignee: 'Mumbai Fashion House', documents: ['Commercial Invoice', 'Packing List', 'Certificate of Origin'], documentCount: 3 },
-  { bookingNo: 'LE//0047//21.2', date: '19th Aug 2024', jobOrderNo: '69595594', serviceProvider: 'Blue Dart Express', transportMode: 'Land Export', status: 'Pending', shipper: 'Bangalore Tech Solutions', consignee: 'Sri Lanka Electronics', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
-  { bookingNo: 'LE//0048//22.5', date: '20th Aug 2024', jobOrderNo: '69595595', serviceProvider: 'Gati KWE', transportMode: 'Land Export', status: 'Pending', shipper: 'Chennai Manufacturing Ltd', consignee: 'Colombo Trading Co', documents: ['Commercial Invoice', 'Packing List', 'Certificate of Origin'], documentCount: 3 },
+const _SERVICE_PROVIDERS = [
+  'UPS India Pvt Ltd', 'Maersk India Ltd', 'MSC India Pvt Ltd', 'KLN India Pvt Ltd',
+  'CMA CGM India', 'Hapag Lloyd India', 'DHL Express India', 'FedEx India',
+  'Emirates SkyCargo', 'Qatar Airways Cargo', 'VRL Logistics', 'TCI Freight',
+  'Blue Dart Express', 'Gati KWE', 'OOCL India', 'Evergreen India',
+  'Yang Ming India', 'PIL India', 'Wan Hai India', 'Sinotrans India'
 ];
+const _SHIPPERS = [
+  'Stark Private Limited', 'Global Traders Inc', 'Continental Exports', 'Transhipper Private Limited',
+  'Export Masters Ltd', 'Maritime Exports Pvt Ltd', 'European Electronics GmbH', 'American Auto Parts Inc',
+  'Pharma Exports India Ltd', 'Fresh Foods Exports', 'Nepal Trading Co', 'Bangladesh Textiles Ltd',
+  'Bangalore Tech Solutions', 'Chennai Manufacturing Ltd', 'Delhi Auto Components', 'Pune Engineering Works',
+  'Hyderabad Pharma Ltd', 'Kolkata Jute Mills', 'Ahmedabad Textile Co', 'Surat Diamond Exporters',
+  'Coimbatore Machinery Ltd', 'Nagpur Agro Exports', 'Kochi Spice Traders', 'Vizag Steel Exports',
+  'Jaipur Handicrafts', 'Ludhiana Garments Ltd', 'Amritsar Silk House', 'Kanpur Leather Works'
+];
+const _COSIGNEES = [
+  '14square Private Limited', 'Mumbai Imports Ltd', 'Bangalore Trading Co', 'Stark Private Limited',
+  'International Trading Co', 'Global Logistics Singapore', 'Tech Solutions India', 'Chennai Motors Ltd',
+  'Healthcare Dubai LLC', 'Middle East Grocers', 'Delhi Distributors Pvt Ltd', 'Mumbai Fashion House',
+  'Sri Lanka Electronics', 'Colombo Trading Co', 'Hong Kong Trade Ltd', 'Singapore Imports Co',
+  'Dubai Logistics LLC', 'London Wholesale Ltd', 'Frankfurt Auto GmbH', 'Shanghai Trading Co',
+  'New York Imports Inc', 'Tokyo Electronics Ltd', 'Sydney Commerce Pty', 'Toronto Goods Inc',
+  'Paris Distribution SA', 'Amsterdam Traders BV', 'Seoul Electronics Co', 'Bangkok Commerce Ltd'
+];
+const _TRANSPORT_MODES = ['Sea Import', 'Sea Export', 'Air Import', 'Air Export', 'Land Import', 'Land Export'];
+const _STATUSES = ['Pending', 'Approved', 'Rejected'];
+const _MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const _MODE_PREFIX: Record<string, string> = {
+  'Sea Import': 'SE-S', 'Sea Export': 'SE-E', 'Air Import': 'AI', 'Air Export': 'AE', 'Land Import': 'LI', 'Land Export': 'LE'
+};
+
+function _seed(n: number): number {
+  const x = Math.sin(n) * 10000;
+  return x - Math.floor(x);
+}
+function _pick<T>(arr: T[], n: number): T {
+  return arr[Math.floor(_seed(n) * arr.length)];
+}
+
+function buildAllBookings() {
+  type Booking = { bookingNo: string; date: string; jobOrderNo: string; serviceProvider: string; transportMode: string; status: string; shipper: string; consignee: string; documents: string[]; documentCount: number };
+  const base: Booking[] = [
+    { bookingNo: 'SE-S//0036//10.2', date: '8th Aug 2024', jobOrderNo: '69595583', serviceProvider: 'UPS India Pvt Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Stark Private Limited', consignee: '14square Private Limited', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading'], documentCount: 3 },
+    { bookingNo: 'SE-S//0037//11.3', date: '9th Aug 2024', jobOrderNo: '69595584', serviceProvider: 'Maersk India Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Global Traders Inc', consignee: 'Mumbai Imports Ltd', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading', 'Certificate of Origin'], documentCount: 4 },
+    { bookingNo: 'SE-S//0038//12.1', date: '10th Aug 2024', jobOrderNo: '69595585', serviceProvider: 'MSC India Pvt Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Continental Exports', consignee: 'Bangalore Trading Co', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
+    { bookingNo: 'SE-S//0039//13.2', date: '11th Aug 2024', jobOrderNo: '69595586', serviceProvider: 'CMA CGM India', transportMode: 'Sea Export', status: 'Pending', shipper: 'Export Masters Ltd', consignee: 'International Trading Co', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading', 'Certificate of Origin', 'Customs Declaration'], documentCount: 5 },
+    { bookingNo: 'SE-S//0040//14.5', date: '12th Aug 2024', jobOrderNo: '69595587', serviceProvider: 'Hapag Lloyd India', transportMode: 'Sea Export', status: 'Pending', shipper: 'Maritime Exports Pvt Ltd', consignee: 'Global Logistics Singapore', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading'], documentCount: 3 },
+    { bookingNo: 'AI//0041//15.1', date: '13th Aug 2024', jobOrderNo: '69595588', serviceProvider: 'DHL Express India', transportMode: 'Air Import', status: 'Pending', shipper: 'European Electronics GmbH', consignee: 'Tech Solutions India', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List'], documentCount: 3 },
+    { bookingNo: 'AI//0042//16.3', date: '14th Aug 2024', jobOrderNo: '69595589', serviceProvider: 'FedEx India', transportMode: 'Air Import', status: 'Pending', shipper: 'American Auto Parts Inc', consignee: 'Chennai Motors Ltd', documents: ['Airway Bill', 'Commercial Invoice'], documentCount: 2 },
+    { bookingNo: 'AE//0043//17.2', date: '15th Aug 2024', jobOrderNo: '69595590', serviceProvider: 'Emirates SkyCargo', transportMode: 'Air Export', status: 'Pending', shipper: 'Pharma Exports India Ltd', consignee: 'Healthcare Dubai LLC', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List', 'MSDS'], documentCount: 4 },
+    { bookingNo: 'AE//0044//18.4', date: '16th Aug 2024', jobOrderNo: '69595591', serviceProvider: 'Qatar Airways Cargo', transportMode: 'Air Export', status: 'Pending', shipper: 'Fresh Foods Exports', consignee: 'Middle East Grocers', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List', 'Phytosanitary Certificate'], documentCount: 4 },
+    { bookingNo: 'LI//0045//19.1', date: '17th Aug 2024', jobOrderNo: '69595592', serviceProvider: 'VRL Logistics', transportMode: 'Land Import', status: 'Pending', shipper: 'Nepal Trading Co', consignee: 'Delhi Distributors Pvt Ltd', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
+    { bookingNo: 'LI//0046//20.3', date: '18th Aug 2024', jobOrderNo: '69595593', serviceProvider: 'TCI Freight', transportMode: 'Land Import', status: 'Pending', shipper: 'Bangladesh Textiles Ltd', consignee: 'Mumbai Fashion House', documents: ['Commercial Invoice', 'Packing List', 'Certificate of Origin'], documentCount: 3 },
+    { bookingNo: 'LE//0047//21.2', date: '19th Aug 2024', jobOrderNo: '69595594', serviceProvider: 'Blue Dart Express', transportMode: 'Land Export', status: 'Pending', shipper: 'Bangalore Tech Solutions', consignee: 'Sri Lanka Electronics', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
+    { bookingNo: 'LE//0048//22.5', date: '20th Aug 2024', jobOrderNo: '69595595', serviceProvider: 'Gati KWE', transportMode: 'Land Export', status: 'Pending', shipper: 'Chennai Manufacturing Ltd', consignee: 'Colombo Trading Co', documents: ['Commercial Invoice', 'Packing List', 'Certificate of Origin'], documentCount: 3 },
+  ];
+  for (let i = 0; i < 200; i++) {
+    const mode = _pick(_TRANSPORT_MODES, i * 7 + 1);
+    const prefix = _MODE_PREFIX[mode];
+    const num = 49 + i;
+    const sub = Math.floor(_seed(i * 3 + 2) * 20) + 1;
+    const dec = Math.floor(_seed(i * 5 + 3) * 9) + 1;
+    const day = Math.floor(_seed(i * 11 + 4) * 28) + 1;
+    const month = _MONTHS[Math.floor(_seed(i * 13 + 5) * 12)];
+    const year = 2023 + Math.floor(_seed(i * 17 + 6) * 2);
+    const jobNo = 69595596 + i;
+    base.push({
+      bookingNo: `${prefix}//${String(num).padStart(4, '0')}//${sub}.${dec}`,
+      date: `${day}th ${month} ${year}`,
+      jobOrderNo: String(jobNo),
+      serviceProvider: _pick(_SERVICE_PROVIDERS, i * 19 + 7),
+      transportMode: mode,
+      status: _pick(_STATUSES, i * 23 + 8),
+      shipper: _pick(_SHIPPERS, i * 29 + 9),
+      consignee: _pick(_COSIGNEES, i * 31 + 10),
+      documents: ['Commercial Invoice', 'Packing List'],
+      documentCount: 2,
+    });
+  }
+  return base;
+}
+
+const MOCK_BOOKINGS = buildAllBookings();
 
 const SYSTEM_PROMPT = `You are Boxy, an intelligent AI assistant built into LogiTRACK — an enterprise freight forwarding and logistics management platform.
 
