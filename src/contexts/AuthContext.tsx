@@ -110,12 +110,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const isAdmin = profile?.role === 'admin' || user?.app_metadata?.role === 'admin';
+
   const value = {
     user,
     session,
     profile,
     loading,
-    isAdmin: profile?.role === 'admin',
+    isAdmin,
     signIn,
     signUp,
     signOut,
