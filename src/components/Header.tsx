@@ -51,14 +51,14 @@ const NavButton: React.FC<{
     <button
       onClick={item.onClick}
       title={item.label}
-      className="relative flex flex-col items-center justify-center gap-1.5 px-1.5 py-2 flex-shrink-0 transition-all duration-200 hover:scale-105 min-w-[56px] group"
+      className="relative flex flex-col items-center justify-center gap-1.5 px-2.5 py-2 flex-shrink-0 transition-all duration-200 hover:scale-105 min-w-[56px] group"
       style={{ background: 'transparent' }}
     >
       <div
         className="flex items-center justify-center transition-all duration-200"
         style={{
-          width: '54px',
-          height: '40px',
+          width: '84px',
+          height: '60px',
           borderRadius: '12px',
           background: isActive ? item.activeGradient : item.gradient,
           boxShadow: isActive
