@@ -55,9 +55,11 @@ const NavButton: React.FC<{
       style={{ background: 'transparent' }}
     >
       <div
-        className="flex items-center justify-center w-11 h-11 transition-all duration-200"
+        className="flex items-center justify-center transition-all duration-200"
         style={{
-          borderRadius: '14px',
+          width: '54px',
+          height: '40px',
+          borderRadius: '12px',
           background: isActive ? item.activeGradient : item.gradient,
           boxShadow: isActive
             ? `0 6px 16px -2px ${item.shadowColor}, 0 2px 4px -1px ${item.shadowColor}`
@@ -65,7 +67,7 @@ const NavButton: React.FC<{
           transform: isActive ? 'translateY(-1px)' : 'translateY(0)',
         }}
       >
-        <Icon className="w-5 h-5" style={{ color: '#ffffff', filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.15))' }} />
+        <Icon className="w-6 h-6" style={{ color: '#ffffff', filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.15))' }} />
       </div>
       <span
         className="text-[9px] font-semibold whitespace-nowrap leading-none tracking-wide transition-colors duration-200"
