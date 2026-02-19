@@ -24,6 +24,7 @@ import AdminPortal from './admin/AdminPortal';
 
 import TrackingPage from './features/tracking/pages/TrackingPage';
 import QuotationPage from './features/quotation/pages/QuotationPage';
+import WarehousePage from './features/warehouse/pages/WarehousePage';
 
 type ViewType =
   | 'dashboard'
@@ -42,6 +43,7 @@ type ViewType =
   | 'inquiry'
   | 'leads'
   | 'quotation'
+  | 'warehouse'
   | 'admin';
 
 export interface InvoiceStats {
@@ -166,6 +168,8 @@ function App() {
       setCurrentView('inquiry');
     } else if (path === '/leads') {
       setCurrentView('leads');
+    } else if (path === '/warehouse') {
+      setCurrentView('warehouse');
     } else {
       setCurrentView('dashboard');
     }
@@ -266,6 +270,11 @@ function App() {
     window.history.pushState({}, '', '/admin');
   };
 
+  const handleWarehouseNavigation = () => {
+    setCurrentView('warehouse');
+    window.history.pushState({}, '', '/warehouse');
+  };
+
   /* 🔹 AUTH STATES */
 
   if (loading) {
@@ -307,6 +316,7 @@ function App() {
         onLeadsClick={handleLeadsNavigation}
         onQuotationClick={handleQuotationNavigation}
         onAdminClick={handleAdminNavigation}
+        onWarehouseClick={handleWarehouseNavigation}
         currentView={currentView}
       />
 
@@ -357,6 +367,8 @@ function App() {
         <InquiryForm onBack={handleDashboardNavigation} />
       ) : currentView === 'leads' ? (
         <LeadList onBack={handleDashboardNavigation} />
+      ) : currentView === 'warehouse' ? (
+        <WarehousePage onBack={handleDashboardNavigation} />
       ) : (
         <ShipmentDetails
           shipmentNo={selectedShipment!}
