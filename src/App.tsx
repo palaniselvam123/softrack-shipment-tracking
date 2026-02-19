@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Header from './components/Header';
+import BoxyAI from './components/BoxyAI';
 import ShipmentsTable from './components/ShipmentsTable';
 import ShipmentDetails from './components/ShipmentDetails';
 import BookingWizard from './components/BookingWizard';
@@ -276,6 +277,8 @@ function App() {
           }}
         />
       )}
+
+      <BoxyAI currentView={currentView} />
     </div>
   );
 }
