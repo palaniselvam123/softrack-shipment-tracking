@@ -58,40 +58,87 @@ BEHAVIOR:
 - When shipment data is provided in context, use it to give precise, factual answers
 - If you don't know something specific to this user's data, say so and guide them to the right module`;
 
+function isTrackingQuery(text: string): boolean {
+  const lower = text.toLowerCase();
+  const trackingKeywords = ['track', 'status', 'where is', 'shipment', 'container', 'booking', 'reference', 'check', 'find', 'lookup', 'locate', 'eta', 'etd', 'delivery'];
+  const hasKeyword = trackingKeywords.some(k => lower.includes(k));
+  const hasRefPattern = /[A-Z0-9]{3,}[\/\-][A-Z0-9\/\-]{2,}/i.test(text) ||
+    /\b[A-Z]{4}\d{6,}\b/i.test(text) ||
+    /\b[A-Z]{2,6}\d{4,}\b/i.test(text);
+  return hasKeyword || hasRefPattern;
+}
+
 function extractSearchTerms(text: string): string[] {
   const terms: string[] = [];
 
-  const containerPattern = /\b[A-Z]{4}\d{7}\b/gi;
+  const containerPattern = /\b[A-Z]{4}\d{6,8}\b/gi;
   const containerMatches = text.match(containerPattern);
   if (containerMatches) terms.push(...containerMatches.map(m => m.toUpperCase()));
 
-  const shipmentPattern = /\b[A-Z]{2,5}\/[A-Z]{2}\/SHP\/\d{4}\b/gi;
+  const shipmentPattern = /\b[A-Z]{2,5}\/[A-Z]{2}\/SHP\/\d{3,6}\b/gi;
   const shipmentMatches = text.match(shipmentPattern);
   if (shipmentMatches) terms.push(...shipmentMatches.map(m => m.toUpperCase()));
 
-  const jobPattern = /\b[A-Z]{2,}-\d{4}-\d{3,}\b/gi;
-  const jobMatches = text.match(jobPattern);
-  if (jobMatches) terms.push(...jobMatches.map(m => m.toUpperCase()));
+  const looseSepPattern = /\b[A-Z]{2,6}[-\/]+[A-Z0-9][-\/A-Z0-9\.]{3,20}\b/gi;
+  const looseMatches = text.match(looseSepPattern);
+  if (looseMatches) terms.push(...looseMatches.map(m => m.toUpperCase()));
+
+  const alphanumPattern = /\b[A-Z]{2,}[\-\/]?[A-Z0-9]{3,}[\-\/]?[A-Z0-9]*\b/gi;
+  const alphaMatches = text.match(alphanumPattern);
+  if (alphaMatches) {
+    const filtered = alphaMatches
+      .map(m => m.toUpperCase())
+      .filter(m => m.length >= 5 && /\d/.test(m) && !['STATUS', 'TRACK', 'SHIPMENT', 'CONTAINER', 'BOOKING', 'REFERENCE'].includes(m));
+    terms.push(...filtered);
+  }
 
   return [...new Set(terms)];
 }
 
-function lookupMockShipments(terms: string[]) {
+function normRef(s: string): string {
+  return s.replace(/[-\/\\\s\.]+/g, '').toUpperCase();
+}
+
+function lookupMockShipments(terms: string[], rawText: string) {
   const results: typeof MOCK_SHIPMENTS = [];
+
+  const addIfNew = (s: typeof MOCK_SHIPMENTS[0]) => {
+    if (!results.some(r => r.shipmentNo === s.shipmentNo)) results.push(s);
+  };
+
   for (const term of terms) {
+    const normTerm = normRef(term);
     for (const s of MOCK_SHIPMENTS) {
-      const alreadyAdded = results.some(r => r.shipmentNo === s.shipmentNo);
-      if (alreadyAdded) continue;
       if (
-        s.containerNo.toUpperCase() === term ||
-        s.shipmentNo.toUpperCase() === term ||
-        s.masterNo.toUpperCase() === term ||
-        s.houseNo.toUpperCase() === term
+        normRef(s.containerNo) === normTerm ||
+        normRef(s.shipmentNo) === normTerm ||
+        normRef(s.masterNo) === normTerm ||
+        normRef(s.houseNo) === normTerm ||
+        normRef(s.containerNo).includes(normTerm) ||
+        normRef(s.shipmentNo).includes(normTerm) ||
+        normRef(s.masterNo).includes(normTerm) ||
+        normRef(s.houseNo).includes(normTerm) ||
+        normTerm.includes(normRef(s.containerNo)) ||
+        normTerm.includes(normRef(s.shipmentNo))
       ) {
-        results.push(s);
+        addIfNew(s);
       }
     }
   }
+
+  if (results.length === 0 && rawText.length >= 4) {
+    const normRaw = normRef(rawText.replace(/[^A-Z0-9\/\-\.]/gi, ' ').trim());
+    for (const s of MOCK_SHIPMENTS) {
+      if (
+        normRaw.includes(normRef(s.containerNo)) ||
+        normRaw.includes(normRef(s.shipmentNo).slice(0, 8)) ||
+        normRef(s.shipmentNo).includes(normRaw.slice(0, 8))
+      ) {
+        addIfNew(s);
+      }
+    }
+  }
+
   return results;
 }
 
@@ -123,10 +170,11 @@ Deno.serve(async (req: Request) => {
     const userText = lastUserMsg ? lastUserMsg.content : '';
 
     const searchTerms = extractSearchTerms(userText);
+    const couldBeTracking = isTrackingQuery(userText);
     let shipmentContext = '';
 
-    if (searchTerms.length > 0) {
-      const mockResults = lookupMockShipments(searchTerms);
+    if (couldBeTracking || searchTerms.length > 0) {
+      const mockResults = lookupMockShipments(searchTerms, userText);
       if (mockResults.length > 0) {
         shipmentContext = formatShipmentContext(mockResults);
       } else {
@@ -136,25 +184,35 @@ Deno.serve(async (req: Request) => {
           if (supabaseUrl && supabaseKey) {
             const supabase = createClient(supabaseUrl, supabaseKey);
             const dbResults: Array<Record<string, unknown>> = [];
-            for (const term of searchTerms) {
+
+            const allTerms = searchTerms.length > 0 ? searchTerms : [userText.trim()];
+            for (const term of allTerms) {
               const { data } = await supabase
                 .from('shipments')
                 .select('"Shipment Number", "Shipper", "Consignee", "Origin", "Destination", "Transport Mode", "Shipment Type", "ETD", "ETA", shipment_status, job_ref')
-                .or(`"Shipment Number".eq.${term},job_ref.eq.${term}`)
+                .or(`"Shipment Number".ilike.%${term}%,job_ref.ilike.%${term}%`)
                 .limit(5);
               if (data && data.length > 0) dbResults.push(...data);
             }
+
             if (dbResults.length > 0) {
-              const dbLines = dbResults.map((s: Record<string, unknown>) =>
+              const seen = new Set<string>();
+              const unique = dbResults.filter(s => {
+                const key = String(s['Shipment Number']);
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+              });
+              const dbLines = unique.map((s: Record<string, unknown>) =>
                 `Shipment: ${s['Shipment Number']} | Status: ${s['shipment_status'] || 'N/A'} | Route: ${s['Origin']} → ${s['Destination']} | Mode: ${s['Transport Mode']} | Shipper: ${s['Shipper']} | Consignee: ${s['Consignee']} | ETD: ${s['ETD']} | ETA: ${s['ETA']}`
               );
               shipmentContext = `\n\n[LIVE SHIPMENT DATA FROM LOGITRACK DATABASE]\n${dbLines.join('\n')}`;
             } else {
-              shipmentContext = `\n\n[NOTE: No shipment found in LogiTRACK for the reference "${searchTerms.join(', ')}". Let the user know the reference wasn't found and suggest checking the Shipments page.]`;
+              shipmentContext = `\n\n[NOTE: The reference "${userText.trim()}" was not found in the LogiTRACK system. Tell the user clearly that no matching shipment, container, or booking was found for this reference, and ask them to double-check the number or search manually in the Shipments section.]`;
             }
           }
         } catch {
-          shipmentContext = `\n\n[NOTE: Could not query database at this time.]`;
+          shipmentContext = `\n\n[NOTE: Could not query the database at this time. Tell the user to try again or check the Shipments page directly.]`;
         }
       }
     }
