@@ -8,119 +8,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-const MOCK_SHIPMENTS = [
-  { shipmentNo: 'MUM/SE/SHP/0001', containerNo: 'MEDU6997206', shipper: 'Australian Fine Wines Pty Ltd', consignee: 'South Asia Trading Company', transport: 'Sea', departure: 'East Perth, AU', arrivalPort: 'Nhava Sheva Port, MH', type: 'Export', status: 'Pending', etd: '09-Oct-2025', eta: '29-Nov-2025', masterNo: 'MEDUQL0H0829', houseNo: 'S0000154J' },
-  { shipmentNo: 'MUM/SE/SHP/0002', containerNo: 'BKSU9898988', shipper: 'Textile Exports India Ltd', consignee: 'European Fashion House', transport: 'Sea', departure: 'Nhava Sheva Port, MH', arrivalPort: 'Hamburg Port, Germany', type: 'Export', status: 'Delayed', etd: '15-Oct-2025', eta: '18-Nov-2025', masterNo: 'MAEU8547321', houseNo: 'INTL/2127' },
-  { shipmentNo: 'MUM/SE/SHP/0020', containerNo: 'CCU98765543', shipper: 'Steel Manufacturing Ltd', consignee: 'Brazilian Steel Imports', transport: 'Sea', departure: 'Nhava Sheva Port, MH', arrivalPort: 'Santos Port, Brazil', type: 'Export', status: 'Delayed', etd: '25-Nov-2025', eta: '28-Dec-2025', masterNo: 'MAEU9876543', houseNo: 'STEEL/BR/889' },
-  { shipmentNo: 'MUM/SE/SHP/0023', containerNo: 'BKSU9898988', shipper: 'Chemical Industries Pvt Ltd', consignee: 'US Chemical Distributors', transport: 'Sea', departure: 'Nhava Sheva Port, MH', arrivalPort: 'New York Port, NY', type: 'Export', status: 'Loaded on Vessel', etd: '28-Nov-2025', eta: '15-Dec-2025', masterNo: 'MAEU8547321', houseNo: 'CHEM/US/556' },
-  { shipmentNo: 'MUM/SE/SHP/0024', containerNo: 'MULTIPLE', shipper: 'Automotive Parts Export', consignee: 'Global Auto Components', transport: 'Sea', departure: 'Nhava Sheva Port, MH', arrivalPort: 'New York Port, NY', type: 'Export', status: 'Billing', etd: '30-Nov-2025', eta: '18-Dec-2025', masterNo: 'HLCUBO9876', houseNo: 'AUTO/INTL/778' },
-  { shipmentNo: 'DEL/SE/SHP/0005', containerNo: 'TEMU4567890', shipper: 'Rice Export Corporation', consignee: 'Middle East Food Trading', transport: 'Sea', departure: 'Kandla Port, Gujarat', arrivalPort: 'Jebel Ali Port, Dubai', type: 'Export', status: 'Delayed', etd: '28-Nov-2025', eta: '05-Dec-2025', masterNo: 'OOLU7654321', houseNo: 'RICE/ME/445' },
-  { shipmentNo: 'MUM/AE/SHP/0009', containerNo: '', shipper: 'Electronics Manufacturing Co', consignee: 'Tech Solutions Dubai', transport: 'Air', departure: 'Mumbai Airport, MH', arrivalPort: 'Dubai International Airport, AE', type: 'Export', status: 'Delayed', etd: '20-Nov-2025', eta: '21-Nov-2025', masterNo: 'EK-542', houseNo: 'AIR/2026/1156' },
-  { shipmentNo: 'MUM/AE/SHP/0012', containerNo: '', shipper: 'Pharmaceutical Exports Ltd', consignee: 'HealthCare International', transport: 'Air', departure: 'Mumbai Airport, MH', arrivalPort: 'Dubai International Airport, AE', type: 'Export', status: 'Delayed', etd: '21-Nov-2025', eta: '22-Nov-2025', masterNo: 'AI-127', houseNo: 'MED/INTL/889' },
-  { shipmentNo: 'MUM/AI/SHP/0001', containerNo: '', shipper: 'American Tech Solutions', consignee: 'Indian Technology Hub', transport: 'Air', departure: 'John F Kennedy Airport, NY', arrivalPort: 'Mumbai Airport, MH', type: 'Import', status: 'Delayed', etd: '18-Nov-2025', eta: '20-Nov-2025', masterNo: 'UA-887', houseNo: 'TECH/IMP/334' },
-  { shipmentNo: 'MUM/AI/SHP/0002', containerNo: '', shipper: 'German Machinery Exports', consignee: 'Industrial Equipment India', transport: 'Air', departure: 'Frankfurt Airport, Germany', arrivalPort: 'Mumbai Airport, MH', type: 'Import', status: 'Billing', etd: '18-Nov-2025', eta: '20-Nov-2025', masterNo: 'LH-125-155', houseNo: 'MACH-2026-445' },
-];
-
-const _ORIGINS = [
-  'Nhava Sheva Port, MH', 'Mumbai Airport, MH', 'Chennai Port, TN', 'Kolkata Port, WB',
-  'Kandla Port, Gujarat', 'Mundra Port, Gujarat', 'Bangalore, KA', 'Delhi, NCR',
-  'Indira Gandhi Airport, Delhi', 'Kempegowda Airport, Bangalore', 'Chennai Airport, TN', 'JNPT, Mumbai'
-];
-const _DESTINATIONS = [
-  'Jebel Ali Port, Dubai', 'Hamburg Port, Germany', 'Rotterdam Port, Netherlands', 'Singapore Port',
-  'Shanghai Port, China', 'Los Angeles Port, CA', 'New York Port, NY', 'Felixstowe Port, UK',
-  'Dubai International Airport, AE', 'Heathrow Airport, London', 'Frankfurt Airport, Germany', 'Changi Airport, Singapore',
-  'Hong Kong Port', 'Tokyo Port, Japan', 'Sydney Port, Australia', 'Colombo Port, Sri Lanka',
-  'Bandar Abbas Port, Iran', 'Karachi Port, Pakistan', 'Chittagong Port, Bangladesh', 'Colombo Airport, Sri Lanka'
-];
-
-const _SERVICE_PROVIDERS = [
-  'UPS India Pvt Ltd', 'Maersk India Ltd', 'MSC India Pvt Ltd', 'KLN India Pvt Ltd',
-  'CMA CGM India', 'Hapag Lloyd India', 'DHL Express India', 'FedEx India',
-  'Emirates SkyCargo', 'Qatar Airways Cargo', 'VRL Logistics', 'TCI Freight',
-  'Blue Dart Express', 'Gati KWE', 'OOCL India', 'Evergreen India',
-  'Yang Ming India', 'PIL India', 'Wan Hai India', 'Sinotrans India'
-];
-const _SHIPPERS = [
-  'Stark Private Limited', 'Global Traders Inc', 'Continental Exports', 'Transhipper Private Limited',
-  'Export Masters Ltd', 'Maritime Exports Pvt Ltd', 'European Electronics GmbH', 'American Auto Parts Inc',
-  'Pharma Exports India Ltd', 'Fresh Foods Exports', 'Nepal Trading Co', 'Bangladesh Textiles Ltd',
-  'Bangalore Tech Solutions', 'Chennai Manufacturing Ltd', 'Delhi Auto Components', 'Pune Engineering Works',
-  'Hyderabad Pharma Ltd', 'Kolkata Jute Mills', 'Ahmedabad Textile Co', 'Surat Diamond Exporters',
-  'Coimbatore Machinery Ltd', 'Nagpur Agro Exports', 'Kochi Spice Traders', 'Vizag Steel Exports',
-  'Jaipur Handicrafts', 'Ludhiana Garments Ltd', 'Amritsar Silk House', 'Kanpur Leather Works'
-];
-const _COSIGNEES = [
-  '14square Private Limited', 'Mumbai Imports Ltd', 'Bangalore Trading Co', 'Stark Private Limited',
-  'International Trading Co', 'Global Logistics Singapore', 'Tech Solutions India', 'Chennai Motors Ltd',
-  'Healthcare Dubai LLC', 'Middle East Grocers', 'Delhi Distributors Pvt Ltd', 'Mumbai Fashion House',
-  'Sri Lanka Electronics', 'Colombo Trading Co', 'Hong Kong Trade Ltd', 'Singapore Imports Co',
-  'Dubai Logistics LLC', 'London Wholesale Ltd', 'Frankfurt Auto GmbH', 'Shanghai Trading Co',
-  'New York Imports Inc', 'Tokyo Electronics Ltd', 'Sydney Commerce Pty', 'Toronto Goods Inc',
-  'Paris Distribution SA', 'Amsterdam Traders BV', 'Seoul Electronics Co', 'Bangkok Commerce Ltd'
-];
-const _TRANSPORT_MODES = ['Sea Import', 'Sea Export', 'Air Import', 'Air Export', 'Land Import', 'Land Export'];
-const _STATUSES = ['Pending', 'Approved', 'Rejected'];
-const _MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const _MODE_PREFIX: Record<string, string> = {
-  'Sea Import': 'SE-S', 'Sea Export': 'SE-E', 'Air Import': 'AI', 'Air Export': 'AE', 'Land Import': 'LI', 'Land Export': 'LE'
-};
-
-function _seed(n: number): number {
-  const x = Math.sin(n) * 10000;
-  return x - Math.floor(x);
-}
-function _pick<T>(arr: T[], n: number): T {
-  return arr[Math.floor(_seed(n) * arr.length)];
-}
-
-function buildAllBookings() {
-  type Booking = { bookingNo: string; date: string; jobOrderNo: string; serviceProvider: string; transportMode: string; status: string; shipper: string; consignee: string; origin: string; destination: string; documents: string[]; documentCount: number };
-  const base: Booking[] = [
-    { bookingNo: 'SE-S//0036//10.2', date: '8th Aug 2024', jobOrderNo: '69595583', serviceProvider: 'UPS India Pvt Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Stark Private Limited', consignee: '14square Private Limited', origin: 'Singapore Port', destination: 'Nhava Sheva Port, MH', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading'], documentCount: 3 },
-    { bookingNo: 'SE-S//0037//11.3', date: '9th Aug 2024', jobOrderNo: '69595584', serviceProvider: 'Maersk India Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Global Traders Inc', consignee: 'Mumbai Imports Ltd', origin: 'Hamburg Port, Germany', destination: 'Nhava Sheva Port, MH', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading', 'Certificate of Origin'], documentCount: 4 },
-    { bookingNo: 'SE-S//0038//12.1', date: '10th Aug 2024', jobOrderNo: '69595585', serviceProvider: 'MSC India Pvt Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Continental Exports', consignee: 'Bangalore Trading Co', origin: 'Rotterdam Port, Netherlands', destination: 'Chennai Port, TN', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
-    { bookingNo: 'SE-S//0039//13.2', date: '11th Aug 2024', jobOrderNo: '69595586', serviceProvider: 'CMA CGM India', transportMode: 'Sea Export', status: 'Pending', shipper: 'Export Masters Ltd', consignee: 'International Trading Co', origin: 'Nhava Sheva Port, MH', destination: 'Singapore Port', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading', 'Certificate of Origin', 'Customs Declaration'], documentCount: 5 },
-    { bookingNo: 'SE-S//0040//14.5', date: '12th Aug 2024', jobOrderNo: '69595587', serviceProvider: 'Hapag Lloyd India', transportMode: 'Sea Export', status: 'Pending', shipper: 'Maritime Exports Pvt Ltd', consignee: 'Global Logistics Singapore', origin: 'Nhava Sheva Port, MH', destination: 'Singapore Port', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading'], documentCount: 3 },
-    { bookingNo: 'AI//0041//15.1', date: '13th Aug 2024', jobOrderNo: '69595588', serviceProvider: 'DHL Express India', transportMode: 'Air Import', status: 'Pending', shipper: 'European Electronics GmbH', consignee: 'Tech Solutions India', origin: 'Frankfurt Airport, Germany', destination: 'Mumbai Airport, MH', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List'], documentCount: 3 },
-    { bookingNo: 'AI//0042//16.3', date: '14th Aug 2024', jobOrderNo: '69595589', serviceProvider: 'FedEx India', transportMode: 'Air Import', status: 'Pending', shipper: 'American Auto Parts Inc', consignee: 'Chennai Motors Ltd', origin: 'Heathrow Airport, London', destination: 'Chennai Airport, TN', documents: ['Airway Bill', 'Commercial Invoice'], documentCount: 2 },
-    { bookingNo: 'AE//0043//17.2', date: '15th Aug 2024', jobOrderNo: '69595590', serviceProvider: 'Emirates SkyCargo', transportMode: 'Air Export', status: 'Pending', shipper: 'Pharma Exports India Ltd', consignee: 'Healthcare Dubai LLC', origin: 'Mumbai Airport, MH', destination: 'Dubai International Airport, AE', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List', 'MSDS'], documentCount: 4 },
-    { bookingNo: 'AE//0044//18.4', date: '16th Aug 2024', jobOrderNo: '69595591', serviceProvider: 'Qatar Airways Cargo', transportMode: 'Air Export', status: 'Pending', shipper: 'Fresh Foods Exports', consignee: 'Middle East Grocers', origin: 'Indira Gandhi Airport, Delhi', destination: 'Dubai International Airport, AE', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List', 'Phytosanitary Certificate'], documentCount: 4 },
-    { bookingNo: 'LI//0045//19.1', date: '17th Aug 2024', jobOrderNo: '69595592', serviceProvider: 'VRL Logistics', transportMode: 'Land Import', status: 'Pending', shipper: 'Nepal Trading Co', consignee: 'Delhi Distributors Pvt Ltd', origin: 'Kathmandu, Nepal', destination: 'Delhi, NCR', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
-    { bookingNo: 'LI//0046//20.3', date: '18th Aug 2024', jobOrderNo: '69595593', serviceProvider: 'TCI Freight', transportMode: 'Land Import', status: 'Pending', shipper: 'Bangladesh Textiles Ltd', consignee: 'Mumbai Fashion House', origin: 'Chittagong Port, Bangladesh', destination: 'Kolkata Port, WB', documents: ['Commercial Invoice', 'Packing List', 'Certificate of Origin'], documentCount: 3 },
-    { bookingNo: 'LE//0047//21.2', date: '19th Aug 2024', jobOrderNo: '69595594', serviceProvider: 'Blue Dart Express', transportMode: 'Land Export', status: 'Pending', shipper: 'Bangalore Tech Solutions', consignee: 'Sri Lanka Electronics', origin: 'Bangalore, KA', destination: 'Colombo Port, Sri Lanka', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
-    { bookingNo: 'LE//0048//22.5', date: '20th Aug 2024', jobOrderNo: '69595595', serviceProvider: 'Gati KWE', transportMode: 'Land Export', status: 'Pending', shipper: 'Chennai Manufacturing Ltd', consignee: 'Colombo Trading Co', origin: 'Chennai Port, TN', destination: 'Colombo Port, Sri Lanka', documents: ['Commercial Invoice', 'Packing List', 'Certificate of Origin'], documentCount: 3 },
-  ];
-  for (let i = 0; i < 200; i++) {
-    const mode = _pick(_TRANSPORT_MODES, i * 7 + 1);
-    const prefix = _MODE_PREFIX[mode];
-    const num = 49 + i;
-    const sub = Math.floor(_seed(i * 3 + 2) * 20) + 1;
-    const dec = Math.floor(_seed(i * 5 + 3) * 9) + 1;
-    const day = Math.floor(_seed(i * 11 + 4) * 28) + 1;
-    const month = _MONTHS[Math.floor(_seed(i * 13 + 5) * 12)];
-    const year = 2023 + Math.floor(_seed(i * 17 + 6) * 2);
-    const jobNo = 69595596 + i;
-    base.push({
-      bookingNo: `${prefix}//${String(num).padStart(4, '0')}//${sub}.${dec}`,
-      date: `${day}th ${month} ${year}`,
-      jobOrderNo: String(jobNo),
-      serviceProvider: _pick(_SERVICE_PROVIDERS, i * 19 + 7),
-      transportMode: mode,
-      status: _pick(_STATUSES, i * 23 + 8),
-      shipper: _pick(_SHIPPERS, i * 29 + 9),
-      consignee: _pick(_COSIGNEES, i * 31 + 10),
-      origin: _pick(_ORIGINS, i * 37 + 11),
-      destination: _pick(_DESTINATIONS, i * 41 + 12),
-      documents: ['Commercial Invoice', 'Packing List'],
-      documentCount: 2,
-    });
-  }
-  return base;
-}
-
-const MOCK_BOOKINGS = buildAllBookings();
-
 const SYSTEM_PROMPT = `You are Boxy, an intelligent AI assistant built into LogiTRACK — an enterprise freight forwarding and logistics management platform.
 
 You have deep knowledge of the entire LogiTRACK system:
@@ -157,7 +44,8 @@ BEHAVIOR:
 - Keep responses focused and actionable
 - When shipment data is provided in context, use it to give precise, factual answers
 - If you don't know something specific to this user's data, say so and guide them to the right module
-- ALWAYS maintain context from earlier in the conversation — if a booking or shipment was already discussed, use that data to answer follow-up questions without asking the user to repeat themselves
+- ALWAYS maintain context from earlier in the conversation
+- NEVER say "0 shipments" unless the database context explicitly confirms zero results
 
 FORMATTING RULES — ALWAYS follow these:
 - Use emojis to make responses visually clear and scannable
@@ -166,17 +54,14 @@ FORMATTING RULES — ALWAYS follow these:
 📦 **Shipment Details**
 ━━━━━━━━━━━━━━━━━━━━
 🔖 **Reference:** [shipmentNo]
-🚢 **Container:** [containerNo]
 📍 **Status:** [status]
-🛫 **Origin:** [departure]
-🛬 **Destination:** [arrivalPort]
-🚛 **Mode:** [transport] ([type])
+🛫 **Origin:** [origin]
+🛬 **Destination:** [destination]
+🚛 **Mode:** [mode]
 👤 **Shipper:** [shipper]
 📬 **Consignee:** [consignee]
 📅 **ETD:** [etd]
 📅 **ETA:** [eta]
-📄 **MBL:** [masterNo]
-📄 **HBL:** [houseNo]
 
 For booking lookups use this format:
 📋 **Booking Details**
@@ -190,8 +75,8 @@ For booking lookups use this format:
 👤 **Shipper:** [shipper]
 📬 **Consignee:** [consignee]
 
-- For follow-up questions about a previously discussed record, answer directly and concisely using the same emoji style
-- For general questions, use bullet points with relevant emojis (📌, ✅, ⚠️, 💡, 🔍, etc.)
+- For follow-up questions about a previously discussed record, answer directly and concisely
+- For general questions, use bullet points with relevant emojis
 - Use **bold** for key values and labels
 - Keep paragraphs short — max 2 sentences
 - End responses with a helpful follow-up suggestion when appropriate, prefixed with 💬`;
@@ -214,23 +99,15 @@ function isTrackingQuery(text: string): boolean {
 
 function extractSearchTerms(text: string): string[] {
   const terms: string[] = [];
-
   const containerPattern = /\b[A-Z]{4}\d{6,8}\b/gi;
   const containerMatches = text.match(containerPattern);
   if (containerMatches) terms.push(...containerMatches.map(m => m.toUpperCase()));
-
   const shipmentPattern = /\b[A-Z]{2,5}\/[A-Z]{2}\/SHP\/\d{3,6}\b/gi;
   const shipmentMatches = text.match(shipmentPattern);
   if (shipmentMatches) terms.push(...shipmentMatches.map(m => m.toUpperCase()));
-
   const bookingPattern = /\b[A-Z]{2}(?:-[A-Z])?\/\/\d{4}\/\/[\d.]+\b/gi;
   const bookingMatches = text.match(bookingPattern);
   if (bookingMatches) terms.push(...bookingMatches.map(m => m.toUpperCase()));
-
-  const doubleSepPattern = /\b[A-Z]{2,6}[-\/]{1,2}[A-Z0-9][-\/A-Z0-9\.]{2,25}\b/gi;
-  const doubleSepMatches = text.match(doubleSepPattern);
-  if (doubleSepMatches) terms.push(...doubleSepMatches.map(m => m.toUpperCase()));
-
   const alphanumPattern = /\b[A-Z]{2,}[\-\/]?[A-Z0-9]{3,}[\-\/]?[A-Z0-9]*\b/gi;
   const alphaMatches = text.match(alphanumPattern);
   if (alphaMatches) {
@@ -239,7 +116,6 @@ function extractSearchTerms(text: string): string[] {
       .filter(m => m.length >= 5 && /\d/.test(m) && !['STATUS', 'TRACK', 'SHIPMENT', 'CONTAINER', 'BOOKING', 'REFERENCE'].includes(m));
     terms.push(...filtered);
   }
-
   return [...new Set(terms)];
 }
 
@@ -247,189 +123,28 @@ function normRef(s: string): string {
   return s.replace(/[-\/\\\s\.]+/g, '').toUpperCase();
 }
 
-function lookupMockShipments(terms: string[], rawText: string) {
-  const results: typeof MOCK_SHIPMENTS = [];
-
-  const addIfNew = (s: typeof MOCK_SHIPMENTS[0]) => {
-    if (!results.some(r => r.shipmentNo === s.shipmentNo)) results.push(s);
-  };
-
-  for (const term of terms) {
-    const normTerm = normRef(term);
-    for (const s of MOCK_SHIPMENTS) {
-      if (
-        normRef(s.containerNo) === normTerm ||
-        normRef(s.shipmentNo) === normTerm ||
-        normRef(s.masterNo) === normTerm ||
-        normRef(s.houseNo) === normTerm ||
-        normRef(s.containerNo).includes(normTerm) ||
-        normRef(s.shipmentNo).includes(normTerm) ||
-        normRef(s.masterNo).includes(normTerm) ||
-        normRef(s.houseNo).includes(normTerm) ||
-        normTerm.includes(normRef(s.containerNo)) ||
-        normTerm.includes(normRef(s.shipmentNo))
-      ) {
-        addIfNew(s);
+function extractEntityName(text: string): string | null {
+  const patterns = [
+    /(?:for|of|by)\s+([A-Z][a-zA-Z0-9\s&'.,-]{2,50?)(?:\s*\?|$)/i,
+    /(?:created\s+for|belongs?\s+to|related\s+to)\s+([A-Z][a-zA-Z0-9\s&'.,-]{2,50?})(?:\s*\?|$)/i,
+    /([A-Z][a-zA-Z0-9\s&'.,-]{3,40?})(?:\s+shipments?|\s+bookings?)(?:\s+count|\s+total|\s+summary|\s+stats?)?/i,
+    /shipments?\s+(?:of|for|by|from)\s+([A-Z][a-zA-Z0-9\s&'.,-]{2,40?})(?:\s*\?|$)/i,
+  ];
+  for (const pat of patterns) {
+    const m = text.match(pat);
+    if (m && m[1]) {
+      const name = m[1].trim().replace(/\s*\?$/, '').replace(/[.,\s]+$/, '');
+      if (name.length >= 3 && !/^(how|what|when|where|why|which|the|this|that|these|those|are|is|was|were|has|have)$/i.test(name)) {
+        return name;
       }
     }
   }
-
-  if (results.length === 0 && rawText.length >= 4) {
-    const normRaw = normRef(rawText.replace(/[^A-Z0-9\/\-\.]/gi, ' ').trim());
-    for (const s of MOCK_SHIPMENTS) {
-      if (
-        normRaw.includes(normRef(s.containerNo)) ||
-        normRaw.includes(normRef(s.shipmentNo).slice(0, 8)) ||
-        normRef(s.shipmentNo).includes(normRaw.slice(0, 8))
-      ) {
-        addIfNew(s);
-      }
-    }
+  const wordsInOrder = text.match(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+(?:\s+(?:Ltd|LLP|LLC|Pvt|Co|Corp|Inc|GmbH|Exports?|Imports?|Trading|Industries?|Motors?|Pharma|Tech|Solutions?|Logistics?|Agro|Steel|Textiles?|Chemicals?|Auto|Electronics?|Manufacturing|Traders?|Works?))?)\b/g);
+  if (wordsInOrder && wordsInOrder.length > 0) {
+    const longest = wordsInOrder.reduce((a, b) => a.length >= b.length ? a : b, '');
+    if (longest.length >= 4) return longest;
   }
-
-  return results;
-}
-
-function nameMatches(entityName: string, queryText: string): boolean {
-  const nameLower = entityName.toLowerCase();
-  const queryLower = queryText.toLowerCase();
-  if (queryLower.includes(nameLower)) return true;
-  const stopWords = new Set(['pvt', 'ltd', 'inc', 'llc', 'co', 'the', 'and', 'for', 'of', 'a', 'india', 'express', 'cargo', 'logistics', 'freight', 'airways', 'airline']);
-  const nameWords = nameLower.split(/\s+/).filter(w => w.length > 1 && !stopWords.has(w));
-  const queryWords = queryLower.split(/\s+/);
-  for (const qw of queryWords) {
-    if (qw.length >= 2 && nameWords.some(nw => nw === qw || nw.startsWith(qw) || qw.startsWith(nw))) return true;
-  }
-  const matchCount = nameWords.filter(w => queryLower.includes(w)).length;
-  return nameWords.length > 0 && matchCount >= 1;
-}
-
-function extractNamePhrases(text: string): string[] {
-  const phrases: string[] = [];
-  for (const b of MOCK_BOOKINGS) {
-    if (nameMatches(b.shipper, text)) phrases.push(b.shipper.toLowerCase());
-    if (nameMatches(b.consignee, text)) phrases.push(b.consignee.toLowerCase());
-    if (nameMatches(b.serviceProvider, text)) phrases.push(b.serviceProvider.toLowerCase());
-  }
-  for (const s of MOCK_SHIPMENTS) {
-    if (nameMatches(s.shipper, text)) phrases.push(s.shipper.toLowerCase());
-    if (nameMatches(s.consignee, text)) phrases.push(s.consignee.toLowerCase());
-  }
-  return [...new Set(phrases)];
-}
-
-function lookupMockBookings(terms: string[], rawText: string) {
-  const seen = new Set<string>();
-  const results: typeof MOCK_BOOKINGS = [];
-
-  const addIfNew = (b: typeof MOCK_BOOKINGS[0]) => {
-    if (!seen.has(b.bookingNo)) {
-      seen.add(b.bookingNo);
-      results.push(b);
-    }
-  };
-
-  const rawLower = rawText.toLowerCase();
-
-  for (const b of MOCK_BOOKINGS) {
-    if (
-      nameMatches(b.shipper, rawText) ||
-      nameMatches(b.consignee, rawText) ||
-      nameMatches(b.serviceProvider, rawText)
-    ) {
-      addIfNew(b);
-    }
-  }
-
-  const allTerms = terms.length > 0 ? terms : [rawText.trim()];
-
-  for (const term of allTerms) {
-    const normTerm = normRef(term);
-    const termLower = term.toLowerCase();
-    for (const b of MOCK_BOOKINGS) {
-      const normBooking = normRef(b.bookingNo);
-      if (
-        normBooking === normTerm ||
-        normBooking.includes(normTerm) ||
-        normTerm.includes(normBooking) ||
-        b.jobOrderNo === term.trim() ||
-        b.shipper.toLowerCase().includes(termLower) ||
-        b.consignee.toLowerCase().includes(termLower) ||
-        b.serviceProvider.toLowerCase().includes(termLower)
-      ) {
-        addIfNew(b);
-      }
-    }
-  }
-
-  return results;
-}
-
-function formatShipmentContext(shipments: typeof MOCK_SHIPMENTS): string {
-  if (shipments.length === 0) return '';
-  const lines = shipments.map(s => {
-    return `Shipment: ${s.shipmentNo} | Container: ${s.containerNo || 'N/A (Air/Road)'} | Status: ${s.status} | Route: ${s.departure} → ${s.arrivalPort} | Mode: ${s.transport} | Type: ${s.type} | Shipper: ${s.shipper} | Consignee: ${s.consignee} | ETD: ${s.etd} | ETA: ${s.eta} | MBL: ${s.masterNo} | HBL: ${s.houseNo}`;
-  });
-  return `\n\n[LIVE SHIPMENT DATA FROM LOGITRACK DATABASE]\n${lines.join('\n')}`;
-}
-
-function isCountQuery(text: string): boolean {
-  return /how many|count|total|number of|how much|how often|unique|distinct/.test(text.toLowerCase());
-}
-
-function buildAggregateSummary(bookings: typeof MOCK_BOOKINGS, label: string): string {
-  const pending = bookings.filter(b => b.status === 'Pending').length;
-  const approved = bookings.filter(b => b.status === 'Approved').length;
-  const rejected = bookings.filter(b => b.status === 'Rejected').length;
-  const byMode: Record<string, number> = {};
-  for (const b of bookings) byMode[b.transportMode] = (byMode[b.transportMode] || 0) + 1;
-  const modeBreakdown = Object.entries(byMode).map(([m, c]) => `${m}: ${c}`).join(', ');
-  const uniqueDestinations = [...new Set(bookings.map(b => b.destination))];
-  const uniqueOrigins = [...new Set(bookings.map(b => b.origin))];
-  const uniqueShippers = [...new Set(bookings.map(b => b.shipper))];
-  const uniqueConsignees = [...new Set(bookings.map(b => b.consignee))];
-  return [
-    `AGGREGATE SUMMARY for "${label}":`,
-    `Total bookings = ${bookings.length}`,
-    `Status: Pending = ${pending}, Approved = ${approved}, Rejected = ${rejected}`,
-    `Transport modes: ${modeBreakdown}`,
-    `Unique destinations (${uniqueDestinations.length}): ${uniqueDestinations.join(', ')}`,
-    `Unique origins (${uniqueOrigins.length}): ${uniqueOrigins.join(', ')}`,
-    `Unique shippers (${uniqueShippers.length}): ${uniqueShippers.join(', ')}`,
-    `Unique consignees (${uniqueConsignees.length}): ${uniqueConsignees.join(', ')}`,
-  ].join('\n');
-}
-
-function formatBookingContext(bookings: typeof MOCK_BOOKINGS, userQuery: string, conversationText: string): string {
-  if (bookings.length === 0) return '';
-
-  const provider = [...new Set(bookings.map(b => b.serviceProvider))].join(', ');
-
-  if (bookings.length > 5) {
-    const summary = buildAggregateSummary(bookings, provider);
-
-    const rejectedBookings = bookings.filter(b => b.status === 'Rejected');
-    const pendingBookings = bookings.filter(b => b.status === 'Pending');
-    const approvedBookings = bookings.filter(b => b.status === 'Approved');
-
-    const fmtList = (list: typeof MOCK_BOOKINGS, cap: number) =>
-      list.slice(0, cap).map(b =>
-        `  - ${b.bookingNo} | ${b.transportMode} | Origin: ${b.origin} | Dest: ${b.destination} | Shipper: ${b.shipper} | Consignee: ${b.consignee}`
-      ).join('\n') + (list.length > cap ? `\n  ... and ${list.length - cap} more` : '');
-
-    const perStatusDetail = [
-      rejectedBookings.length > 0 ? `REJECTED (${rejectedBookings.length}):\n${fmtList(rejectedBookings, 15)}` : '',
-      pendingBookings.length > 0 ? `PENDING (${pendingBookings.length}):\n${fmtList(pendingBookings, 15)}` : '',
-      approvedBookings.length > 0 ? `APPROVED (${approvedBookings.length}):\n${fmtList(approvedBookings, 15)}` : '',
-    ].filter(Boolean).join('\n\n');
-
-    return `\n\n[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n${summary}\n\nPER-STATUS BREAKDOWN:\n${perStatusDetail}`;
-  }
-
-  const lines = bookings.map(b =>
-    `Booking: ${b.bookingNo} | Mode: ${b.transportMode} | Status: ${b.status} | Provider: ${b.serviceProvider} | Shipper: ${b.shipper} | Consignee: ${b.consignee} | Origin: ${b.origin} | Destination: ${b.destination} | Date: ${b.date}`
-  );
-  return `\n\n[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n${lines.join('\n')}`;
+  return null;
 }
 
 Deno.serve(async (req: Request) => {
@@ -448,257 +163,205 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     const lastUserMsg = [...messages].reverse().find((m: { role: string }) => m.role === 'user');
     const userText = lastUserMsg ? lastUserMsg.content : '';
+    const fullConversationText = messages.map((m: { role: string; content: string }) => m.content).join(' ');
 
-    const fullConversationText = messages
-      .map((m: { role: string; content: string }) => m.content)
-      .join(' ');
-
-    const searchTerms = extractSearchTerms(fullConversationText);
-    const currentTerms = extractSearchTerms(userText);
-    const couldBeTracking = isTrackingQuery(userText) || isTrackingQuery(fullConversationText);
+    const searchTerms = extractSearchTerms(userText);
     const couldBeStats = isStatsQuery(userText);
+    const couldBeTracking = isTrackingQuery(userText);
     let shipmentContext = '';
-
     let injectedAssistantMsg: { role: string; content: string } | null = null;
-    let notFoundReply: string | null = null;
 
     if (couldBeStats) {
-      try {
-        const supabaseUrl = Deno.env.get("SUPABASE_URL");
-        const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-        if (supabaseUrl && supabaseKey) {
-          const supabase = createClient(supabaseUrl, supabaseKey);
-          const statsLines: string[] = [];
+      const statsLines: string[] = [];
+      const entityName = extractEntityName(userText);
 
-          const entityMatch = userText.match(/for\s+([A-Z][a-zA-Z0-9\s&'\.,-]{2,40}?)(?:\s*\?|$)/i)
-            || userText.match(/(?:of|by|from|to)\s+([A-Z][a-zA-Z0-9\s&'\.,-]{2,40}?)(?:\s*\?|$)/i);
-          const entityName = entityMatch ? entityMatch[1].trim() : null;
+      if (entityName) {
+        const { data: shipperRows, error: e1 } = await supabase
+          .from('shipments')
+          .select('"Shipment Number", "Shipper", "Consignee", "Origin", "Destination", "Transport Mode", "Shipment Type", shipment_status, "ETA"')
+          .ilike('"Shipper"', `%${entityName}%`)
+          .limit(500);
 
-          if (entityName) {
-            const { data: shipperRows } = await supabase
-              .from('shipments')
-              .select('"Shipment Number", "Shipper", "Consignee", "Origin", "Destination", "Transport Mode", shipment_status, "ETA"')
-              .ilike('Shipper', `%${entityName}%`)
-              .limit(200);
+        const { data: consigneeRows, error: e2 } = await supabase
+          .from('shipments')
+          .select('"Shipment Number", "Shipper", "Consignee", "Origin", "Destination", "Transport Mode", "Shipment Type", shipment_status, "ETA"')
+          .ilike('"Consignee"', `%${entityName}%`)
+          .limit(500);
 
-            const { data: consigneeRows } = await supabase
-              .from('shipments')
-              .select('"Shipment Number", "Shipper", "Consignee", "Origin", "Destination", "Transport Mode", shipment_status, "ETA"')
-              .ilike('Consignee', `%${entityName}%`)
-              .limit(200);
+        const { data: bookingShipperRows } = await supabase
+          .from('bookings_from_quotes')
+          .select('booking_no, shipper_name, consignee_name, transport_mode, status, origin_location, destination_location, created_at')
+          .ilike('shipper_name', `%${entityName}%`)
+          .limit(500);
 
-            const seen = new Set<string>();
-            const entityShipments = [...(shipperRows || []), ...(consigneeRows || [])].filter(s => {
-              const id = s['Shipment Number'];
-              if (seen.has(id)) return false;
-              seen.add(id);
-              return true;
-            });
+        const { data: bookingConsigneeRows } = await supabase
+          .from('bookings_from_quotes')
+          .select('booking_no, shipper_name, consignee_name, transport_mode, status, origin_location, destination_location, created_at')
+          .ilike('consignee_name', `%${entityName}%`)
+          .limit(500);
 
-            if (entityShipments && entityShipments.length > 0) {
-              const byStatus: Record<string, number> = {};
-              for (const s of entityShipments) {
-                const st = s['shipment_status'] || 'Unknown';
-                byStatus[st] = (byStatus[st] || 0) + 1;
-              }
-              statsLines.push(`LIVE SHIPMENT STATS FOR "${entityName}" (total: ${entityShipments.length}):`);
-              statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
-              const sample = entityShipments.slice(0, 5);
-              statsLines.push(`Sample shipments: ${sample.map(s => `${s['Shipment Number']} (${s['shipment_status'] || 'Unknown'}) ${s['Origin']}→${s['Destination']}`).join('; ')}`);
-            } else {
-              statsLines.push(`No shipments found for "${entityName}" in LogiTRACK.`);
-            }
-          } else {
-            const { data: shipmentStats } = await supabase
-              .from('shipments')
-              .select('shipment_status, "Transport Mode", "Shipment Type"');
+        const seenShipments = new Set<string>();
+        const entityShipments = [...(shipperRows || []), ...(consigneeRows || [])].filter(s => {
+          const id = s['Shipment Number'];
+          if (seenShipments.has(id)) return false;
+          seenShipments.add(id);
+          return true;
+        });
 
-            const { data: bookingStats } = await supabase
-              .from('bookings_from_quotes')
-              .select('status');
+        const seenBookings = new Set<string>();
+        const entityBookings = [...(bookingShipperRows || []), ...(bookingConsigneeRows || [])].filter(b => {
+          const id = b['booking_no'];
+          if (seenBookings.has(id)) return false;
+          seenBookings.add(id);
+          return true;
+        });
 
-            if (shipmentStats && shipmentStats.length > 0) {
-              const totalShipments = shipmentStats.length;
-              const byStatus: Record<string, number> = {};
-              const byMode: Record<string, number> = {};
-              const byType: Record<string, number> = {};
-              for (const s of shipmentStats) {
-                const st = s['shipment_status'] || 'Unknown';
-                byStatus[st] = (byStatus[st] || 0) + 1;
-                const m = s['Transport Mode'] || 'Unknown';
-                byMode[m] = (byMode[m] || 0) + 1;
-                const t = s['Shipment Type'] || 'Unknown';
-                byType[t] = (byType[t] || 0) + 1;
-              }
-              statsLines.push(`LIVE SHIPMENT STATS (total: ${totalShipments}):`);
-              statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
-              statsLines.push(`By Transport Mode: ${Object.entries(byMode).map(([k, v]) => `${k}=${v}`).join(', ')}`);
-              statsLines.push(`By Type: ${Object.entries(byType).map(([k, v]) => `${k}=${v}`).join(', ')}`);
-            }
-
-            if (bookingStats && bookingStats.length > 0) {
-              const totalBookings = bookingStats.length;
-              const byStatus: Record<string, number> = {};
-              for (const b of bookingStats) {
-                const st = b['status'] || 'Unknown';
-                byStatus[st] = (byStatus[st] || 0) + 1;
-              }
-              statsLines.push(`LIVE BOOKING STATS (total: ${totalBookings}):`);
-              statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
-            }
+        if (entityShipments.length > 0) {
+          const byStatus: Record<string, number> = {};
+          const byMode: Record<string, number> = {};
+          const byType: Record<string, number> = {};
+          for (const s of entityShipments) {
+            const st = (s['shipment_status'] || 'Unknown').toString();
+            byStatus[st] = (byStatus[st] || 0) + 1;
+            const m = (s['Transport Mode'] || 'Unknown').toString();
+            byMode[m] = (byMode[m] || 0) + 1;
+            const t = (s['Shipment Type'] || 'Unknown').toString();
+            byType[t] = (byType[t] || 0) + 1;
           }
-
-          if (statsLines.length > 0) {
-            shipmentContext = `\n\n[LIVE STATS FROM LOGITRACK DATABASE]\n${statsLines.join('\n')}`;
-            injectedAssistantMsg = {
-              role: 'assistant',
-              content: `Here are the live stats from LogiTRACK:\n${statsLines.join('\n')}\n\nLet me answer your question based on this data.`
-            };
-          }
+          statsLines.push(`LIVE SHIPMENT STATS FOR "${entityName}" (total: ${entityShipments.length}):`);
+          statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+          statsLines.push(`By Transport Mode: ${Object.entries(byMode).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+          statsLines.push(`By Shipment Type: ${Object.entries(byType).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+          const sample = entityShipments.slice(0, 8);
+          statsLines.push(`Sample: ${sample.map(s => `${s['Shipment Number']} (${s['shipment_status'] || 'Unknown'}) ${s['Origin']}→${s['Destination']}`).join('; ')}`);
+        } else {
+          statsLines.push(`No shipments found in the database for "${entityName}".`);
         }
-      } catch {
-        // fall through to normal query path
+
+        if (entityBookings.length > 0) {
+          const byStatus: Record<string, number> = {};
+          for (const b of entityBookings) {
+            const st = (b['status'] || 'Unknown').toString();
+            byStatus[st] = (byStatus[st] || 0) + 1;
+          }
+          statsLines.push(`LIVE BOOKING STATS FOR "${entityName}" (total: ${entityBookings.length}):`);
+          statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+        } else {
+          statsLines.push(`No bookings found for "${entityName}".`);
+        }
+      } else {
+        const { data: shipmentStats } = await supabase
+          .from('shipments')
+          .select('shipment_status, "Transport Mode", "Shipment Type"');
+        const { data: bookingStats } = await supabase
+          .from('bookings_from_quotes')
+          .select('status');
+
+        if (shipmentStats && shipmentStats.length > 0) {
+          const byStatus: Record<string, number> = {};
+          const byMode: Record<string, number> = {};
+          const byType: Record<string, number> = {};
+          for (const s of shipmentStats) {
+            const st = (s['shipment_status'] || 'Unknown').toString();
+            byStatus[st] = (byStatus[st] || 0) + 1;
+            const m = (s['Transport Mode'] || 'Unknown').toString();
+            byMode[m] = (byMode[m] || 0) + 1;
+            const t = (s['Shipment Type'] || 'Unknown').toString();
+            byType[t] = (byType[t] || 0) + 1;
+          }
+          statsLines.push(`LIVE SHIPMENT STATS (total: ${shipmentStats.length}):`);
+          statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+          statsLines.push(`By Transport Mode: ${Object.entries(byMode).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+          statsLines.push(`By Type: ${Object.entries(byType).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+        }
+        if (bookingStats && bookingStats.length > 0) {
+          const byStatus: Record<string, number> = {};
+          for (const b of bookingStats) {
+            const st = (b['status'] || 'Unknown').toString();
+            byStatus[st] = (byStatus[st] || 0) + 1;
+          }
+          statsLines.push(`LIVE BOOKING STATS (total: ${bookingStats.length}):`);
+          statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+        }
       }
-    }
 
-    const isFollowUp = messages.length > 2 && currentTerms.length === 0 && searchTerms.length > 0;
-    const hasNameMatch = extractNamePhrases(fullConversationText).length > 0;
-
-    if (!injectedAssistantMsg && (couldBeTracking || searchTerms.length > 0 || isFollowUp || hasNameMatch)) {
-      const mockShipResults = lookupMockShipments(searchTerms, fullConversationText);
-      const mockBookResults = lookupMockBookings(searchTerms, fullConversationText);
-
-      if (mockShipResults.length > 0 || mockBookResults.length > 0) {
-        const shipCtx = formatShipmentContext(mockShipResults);
-        const bookCtx = formatBookingContext(mockBookResults, userText, fullConversationText);
-        shipmentContext = shipCtx + bookCtx;
-
-        const contextLines: string[] = [];
-        if (mockShipResults.length > 0) {
-          contextLines.push(formatShipmentContext(mockShipResults).replace('[LIVE SHIPMENT DATA FROM LOGITRACK DATABASE]\n', ''));
-        }
-        if (mockBookResults.length > 0) {
-          contextLines.push(formatBookingContext(mockBookResults, userText, fullConversationText).replace('[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n', ''));
-        }
-
+      if (statsLines.length > 0) {
+        shipmentContext = `\n\n[LIVE STATS FROM LOGITRACK DATABASE]\n${statsLines.join('\n')}`;
         injectedAssistantMsg = {
           role: 'assistant',
-          content: `I found the following data in LogiTRACK:\n${contextLines.join('\n')}\n\nLet me answer your question based on this data.`
+          content: `Here is the live data from LogiTRACK:\n${statsLines.join('\n')}\n\nLet me answer your question based on this data.`
         };
-      } else {
-        let dbFound = false;
-        try {
-          const supabaseUrl = Deno.env.get("SUPABASE_URL");
-          const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-          if (supabaseUrl && supabaseKey) {
-            const supabase = createClient(supabaseUrl, supabaseKey);
-            const dbResults: Array<Record<string, unknown>> = [];
-
-            const normText = (s: string) => s.replace(/[-\/\\\s\.]+/g, '').toUpperCase();
-            const allTerms = searchTerms.length > 0 ? searchTerms : [userText.trim()];
-
-            for (const term of allTerms) {
-              const { data } = await supabase
-                .from('shipments')
-                .select('"Shipment Number", "Shipper", "Consignee", "Origin", "Destination", "Transport Mode", "Shipment Type", "ETD", "ETA", shipment_status, job_ref')
-                .or(`"Shipment Number".ilike.%${term}%,job_ref.ilike.%${term}%`)
-                .limit(5);
-              if (data && data.length > 0) dbResults.push(...data.map(r => ({ ...r, _type: 'shipment' })));
-            }
-
-            for (const term of allTerms) {
-              const normTerm = normText(term);
-              const { data } = await supabase
-                .from('bookings_from_quotes')
-                .select('booking_no, shipper_name, consignee_name, cargo_description, incoterm, status, confirmed_at, created_at, special_instructions')
-                .ilike('booking_no', `%${term}%`)
-                .limit(5);
-              if (data && data.length > 0) {
-                dbResults.push(...data.map(r => ({ ...r, _type: 'booking' })));
-              } else {
-                const { data: allBookings } = await supabase
-                  .from('bookings_from_quotes')
-                  .select('booking_no, shipper_name, consignee_name, cargo_description, incoterm, status, confirmed_at, created_at, special_instructions')
-                  .limit(200);
-                if (allBookings) {
-                  const matched = allBookings.filter(b =>
-                    normText(b.booking_no || '').includes(normTerm) ||
-                    normTerm.includes(normText(b.booking_no || ''))
-                  );
-                  if (matched.length > 0) dbResults.push(...matched.map(r => ({ ...r, _type: 'booking' })));
-                }
-              }
-            }
-
-            if (dbResults.length > 0) {
-              dbFound = true;
-              const seen = new Set<string>();
-              const unique = dbResults.filter(s => {
-                const key = String(s['Shipment Number'] || s['booking_no']);
-                if (seen.has(key)) return false;
-                seen.add(key);
-                return true;
-              });
-              const dbLines = unique.map((s: Record<string, unknown>) => {
-                if (s['_type'] === 'booking') {
-                  return `Booking: ${s['booking_no']} | Status: ${s['status'] || 'N/A'} | Shipper: ${s['shipper_name'] || 'N/A'} | Consignee: ${s['consignee_name'] || 'N/A'} | Cargo: ${s['cargo_description'] || 'N/A'} | Incoterm: ${s['incoterm'] || 'N/A'} | Confirmed: ${s['confirmed_at'] || 'Pending'} | Created: ${s['created_at']}`;
-                }
-                return `Shipment: ${s['Shipment Number']} | Status: ${s['shipment_status'] || 'N/A'} | Route: ${s['Origin']} → ${s['Destination']} | Mode: ${s['Transport Mode']} | Shipper: ${s['Shipper']} | Consignee: ${s['Consignee']} | ETD: ${s['ETD']} | ETA: ${s['ETA']}`;
-              });
-              shipmentContext = `\n\n[LIVE DATA FROM LOGITRACK DATABASE]\n${dbLines.join('\n')}`;
-              injectedAssistantMsg = {
-                role: 'assistant',
-                content: `I found the following data in LogiTRACK:\n${dbLines.join('\n')}\n\nLet me answer your question based on this data.`
-              };
-            }
-          }
-        } catch {
-          // fall through
-        }
-
-        if (!dbFound) {
-          const ref = searchTerms.length > 0 ? searchTerms[0] : userText.trim();
-          notFoundReply = `No shipment, container, or booking matching **"${ref}"** was found in LogiTRACK.\n\nPlease double-check the reference number. You can try:\n- Container number (e.g. MEDU6997206)\n- Shipment number (e.g. MUM/SE/SHP/0001)\n- Booking number (e.g. SE-S//0038//12.1)\n- Bill of Lading number\n\nIf you believe this is an error, contact your freight coordinator or check the Bookings or Shipments page directly.`;
-        }
       }
     }
 
-    if (notFoundReply) {
-      return new Response(
-        JSON.stringify({ reply: notFoundReply, foundShipments: false }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    if (!injectedAssistantMsg && (couldBeTracking || searchTerms.length > 0)) {
+      const dbLines: string[] = [];
+      const allTerms = searchTerms.length > 0 ? searchTerms : [];
+
+      for (const term of allTerms) {
+        const { data } = await supabase
+          .from('shipments')
+          .select('"Shipment Number", "Shipper", "Consignee", "Origin", "Destination", "Transport Mode", "Shipment Type", "ETD", "ETA", shipment_status, job_ref')
+          .or(`"Shipment Number".ilike.%${term}%,job_ref.ilike.%${term}%`)
+          .limit(5);
+        if (data && data.length > 0) {
+          dbLines.push(...data.map((s: Record<string, unknown>) =>
+            `Shipment: ${s['Shipment Number']} | Status: ${s['shipment_status'] || 'N/A'} | Route: ${s['Origin']} → ${s['Destination']} | Mode: ${s['Transport Mode']} | Shipper: ${s['Shipper']} | Consignee: ${s['Consignee']} | ETD: ${s['ETD']} | ETA: ${s['ETA']}`
+          ));
+        }
+        const { data: bd } = await supabase
+          .from('bookings_from_quotes')
+          .select('booking_no, shipper_name, consignee_name, transport_mode, service_provider, status, job_order_no, origin_location, destination_location, created_at')
+          .ilike('booking_no', `%${term}%`)
+          .limit(5);
+        if (bd && bd.length > 0) {
+          dbLines.push(...bd.map((b: Record<string, unknown>) =>
+            `Booking: ${b['booking_no']} | Mode: ${b['transport_mode']} | Status: ${b['status']} | Provider: ${b['service_provider']} | Shipper: ${b['shipper_name']} | Consignee: ${b['consignee_name']} | Origin: ${b['origin_location']} | Destination: ${b['destination_location']}`
+          ));
+        }
+      }
+
+      if (dbLines.length > 0) {
+        shipmentContext = `\n\n[LIVE DATA FROM LOGITRACK DATABASE]\n${dbLines.join('\n')}`;
+        injectedAssistantMsg = {
+          role: 'assistant',
+          content: `I found the following data in LogiTRACK:\n${dbLines.join('\n')}\n\nLet me answer your question based on this data.`
+        };
+      }
     }
 
-    const systemWithContext = SYSTEM_PROMPT + shipmentContext;
-
     const openai = new OpenAI({ apiKey });
+    const systemWithContext = SYSTEM_PROMPT + shipmentContext;
 
     const messagesForAI = [
       { role: "system", content: systemWithContext },
       ...messages,
-    ];
+    ] as Array<{ role: 'system' | 'user' | 'assistant'; content: string }>;
 
     if (injectedAssistantMsg) {
       const lastUserIdx = messagesForAI.map(m => m.role).lastIndexOf('user');
       if (lastUserIdx >= 0) {
-        messagesForAI.splice(lastUserIdx, 0, injectedAssistantMsg);
+        messagesForAI.splice(lastUserIdx, 0, injectedAssistantMsg as { role: 'system' | 'user' | 'assistant'; content: string });
       }
     }
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
-      messages: messagesForAI as Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
-      max_tokens: 700,
+      messages: messagesForAI,
+      max_tokens: 800,
       temperature: 0.7,
     });
 
     const reply = completion.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response.";
 
     return new Response(
-      JSON.stringify({ reply, foundShipments: searchTerms.length > 0 }),
+      JSON.stringify({ reply }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {

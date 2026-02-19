@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Minimize2, Maximize2, RotateCcw, Bot, User, Sparkles } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { MessageSquare, X, Send, Minimize2, Maximize2, RotateCcw, User, Sparkles, Mic, MicOff, Loader2 } from 'lucide-react';
 import type { DashboardStats } from '../App';
 
 interface Message {
@@ -14,8 +14,10 @@ interface BoxyAIProps {
   dashboardStats?: DashboardStats | null;
 }
 
+type RecordingState = 'idle' | 'recording' | 'transcribing';
+
 const SUGGESTED_PROMPTS = [
-  'Track container MEDU6997206',
+  'How many shipments for Tata Motors Ltd?',
   'How do I create a new booking?',
   'What does shipment status mean?',
   'Explain Incoterms for shipping',
@@ -31,15 +33,23 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
     {
       id: '0',
       role: 'assistant',
-      content: "Hi! I'm **Boxy**, your LogiTRACK AI assistant. I can help you navigate the platform, answer logistics questions, and **track shipments by container number or shipment reference**. What can I help you with?",
+      content: "Hi! I'm **Boxy**, your LogiTRACK AI assistant. I can help you navigate the platform, answer logistics questions, and **track shipments by container number or shipment reference**. You can also use the **microphone** to speak your question. What can I help you with?",
       timestamp: new Date(),
     },
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasNewMessage, setHasNewMessage] = useState(false);
+  const [recordingState, setRecordingState] = useState<RecordingState>('idle');
+  const [micError, setMicError] = useState<string | null>(null);
+  const [audioLevel, setAudioLevel] = useState(0);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const animFrameRef = useRef<number | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
 
   useEffect(() => {
     if (isOpen && messagesEndRef.current) {
@@ -53,6 +63,12 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    };
+  }, []);
 
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return;
@@ -68,25 +84,16 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
     setInput('');
     setIsLoading(true);
 
-    let contextNote = currentView
-      ? `[User is currently on the "${currentView}" page] `
-      : '';
+    let contextNote = currentView ? `[User is currently on the "${currentView}" page] ` : '';
 
     if (dashboardStats) {
-      const statusBreakdown = Object.entries(dashboardStats.byStatus)
-        .map(([k, v]) => `${k}: ${v}`)
-        .join(', ');
-      const modeBreakdown = Object.entries(dashboardStats.byMode)
-        .map(([k, v]) => `${k}: ${v}`)
-        .join(', ');
+      const statusBreakdown = Object.entries(dashboardStats.byStatus).map(([k, v]) => `${k}: ${v}`).join(', ');
+      const modeBreakdown = Object.entries(dashboardStats.byMode).map(([k, v]) => `${k}: ${v}`).join(', ');
       contextNote += `[LIVE LOGITRACK STATS — Total Shipments: ${dashboardStats.totalShipments}, In Transit: ${dashboardStats.inTransit}, Delayed: ${dashboardStats.delayed}, Delivered: ${dashboardStats.delivered}, Total Bookings: ${dashboardStats.totalBookings}, Pending Bookings: ${dashboardStats.pendingBookings}, Confirmed Bookings: ${dashboardStats.approvedBookings}. By Status: ${statusBreakdown}. By Transport Mode: ${modeBreakdown}] `;
     }
 
     const historyForAPI = [
-      ...messages
-        .filter(m => m.id !== '0')
-        .slice(-20)
-        .map(m => ({ role: m.role, content: m.content })),
+      ...messages.filter(m => m.id !== '0').slice(-20).map(m => ({ role: m.role, content: m.content })),
       { role: 'user', content: contextNote + content.trim() },
     ];
 
@@ -103,32 +110,127 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
       const data = await res.json();
       const reply = data.reply || data.error || "I'm having trouble responding right now. Please try again.";
 
-      const assistantMsg: Message = {
+      setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: reply,
         timestamp: new Date(),
-      };
+      }]);
 
-      setMessages(prev => [...prev, assistantMsg]);
-
-      if (!isOpen) {
-        setHasNewMessage(true);
-      }
+      if (!isOpen) setHasNewMessage(true);
     } catch {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: "I'm having trouble connecting right now. Please check your connection and try again.",
-          timestamp: new Date(),
-        },
-      ]);
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "I'm having trouble connecting right now. Please check your connection and try again.",
+        timestamp: new Date(),
+      }]);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const startAudioLevelMonitor = useCallback((stream: MediaStream) => {
+    const ctx = new AudioContext();
+    const source = ctx.createMediaStreamSource(stream);
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 256;
+    source.connect(analyser);
+    analyserRef.current = analyser;
+
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    const tick = () => {
+      analyser.getByteFrequencyData(data);
+      const avg = data.reduce((a, b) => a + b, 0) / data.length;
+      setAudioLevel(Math.min(100, avg * 2));
+      animFrameRef.current = requestAnimationFrame(tick);
+    };
+    animFrameRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  const stopAudioLevelMonitor = useCallback(() => {
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
+    }
+    setAudioLevel(0);
+  }, []);
+
+  const startRecording = useCallback(async () => {
+    setMicError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunksRef.current = [];
+
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/webm')
+        ? 'audio/webm'
+        : 'audio/mp4';
+
+      const recorder = new MediaRecorder(stream, { mimeType });
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        stopAudioLevelMonitor();
+        stream.getTracks().forEach(t => t.stop());
+
+        const blob = new Blob(audioChunksRef.current, { type: mimeType });
+        if (blob.size < 1000) {
+          setRecordingState('idle');
+          return;
+        }
+
+        setRecordingState('transcribing');
+        try {
+          const form = new FormData();
+          const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+          form.append('audio', blob, `recording.${ext}`);
+
+          const res = await fetch(`${SUPABASE_URL}/functions/v1/whisper-transcribe`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+            body: form,
+          });
+
+          const data = await res.json();
+          if (data.text && data.text.trim()) {
+            setInput(data.text.trim());
+            setTimeout(() => inputRef.current?.focus(), 50);
+          } else if (data.error) {
+            setMicError(data.error.includes('not configured') ? 'Voice not configured' : 'Could not transcribe audio');
+          }
+        } catch {
+          setMicError('Transcription failed. Please type instead.');
+        } finally {
+          setRecordingState('idle');
+        }
+      };
+
+      startAudioLevelMonitor(stream);
+      recorder.start(100);
+      setRecordingState('recording');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Microphone error';
+      setMicError(msg.includes('denied') ? 'Microphone access denied' : 'Could not access microphone');
+      setRecordingState('idle');
+    }
+  }, [startAudioLevelMonitor, stopAudioLevelMonitor]);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+  }, []);
+
+  const toggleRecording = useCallback(() => {
+    if (recordingState === 'idle') startRecording();
+    else if (recordingState === 'recording') stopRecording();
+  }, [recordingState, startRecording, stopRecording]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -138,14 +240,12 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
   };
 
   const resetChat = () => {
-    setMessages([
-      {
-        id: '0',
-        role: 'assistant',
-        content: "Hi! I'm **Boxy**, your LogiTRACK AI assistant. I can help you navigate the platform, answer logistics questions, and **track shipments by container number or shipment reference**. What can I help you with?",
-        timestamp: new Date(),
-      },
-    ]);
+    setMessages([{
+      id: '0',
+      role: 'assistant',
+      content: "Hi! I'm **Boxy**, your LogiTRACK AI assistant. I can help you navigate the platform, answer logistics questions, and **track shipments by container number or shipment reference**. You can also use the **microphone** to speak your question. What can I help you with?",
+      timestamp: new Date(),
+    }]);
   };
 
   const renderContent = (text: string) => {
@@ -153,10 +253,8 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
     return (
       <div className="space-y-0.5">
         {lines.map((line, i) => {
-          if (line.match(/^━+$/)) {
-            return <hr key={i} className="border-gray-200 my-1" />;
-          }
-
+          if (line.match(/^━+$/)) return <hr key={i} className="border-gray-200 my-1" />;
+          if (line.trim() === '') return <div key={i} className="h-1" />;
           const renderInline = (str: string) => {
             const parts = str.split(/(\*\*[^*]+\*\*)/g);
             return parts.map((part, j) => {
@@ -166,24 +264,24 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
               return <span key={j}>{part}</span>;
             });
           };
-
-          if (line.trim() === '') {
-            return <div key={i} className="h-1" />;
-          }
-
-          return (
-            <div key={i} className="leading-relaxed">
-              {renderInline(line)}
-            </div>
-          );
+          return <div key={i} className="leading-relaxed">{renderInline(line)}</div>;
         })}
       </div>
     );
   };
 
+  const micButtonColor = recordingState === 'recording'
+    ? 'bg-red-500 hover:bg-red-600'
+    : recordingState === 'transcribing'
+    ? 'bg-amber-500'
+    : 'bg-gray-100 hover:bg-gray-200';
+
+  const micIconColor = recordingState === 'recording' || recordingState === 'transcribing'
+    ? 'text-white'
+    : 'text-gray-500';
+
   return (
     <>
-      {/* Floating button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -200,11 +298,10 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
         </button>
       )}
 
-      {/* Chat window */}
       {isOpen && (
         <div
           className={`fixed bottom-6 right-6 z-50 flex flex-col bg-white rounded-2xl shadow-2xl border border-gray-200/80 transition-all duration-300 overflow-hidden ${
-            isMinimized ? 'h-14 w-80' : 'w-96 h-[600px]'
+            isMinimized ? 'h-14 w-80' : 'w-96 h-[620px]'
           }`}
           style={{ maxHeight: 'calc(100vh - 80px)' }}
         >
@@ -219,35 +316,19 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
                   <span className="text-white font-semibold text-sm">Boxy AI</span>
                   <Sparkles className="w-3.5 h-3.5 text-cyan-200" />
                 </div>
-                {!isMinimized && (
-                  <span className="text-cyan-100 text-xs">LogiTRACK Assistant</span>
-                )}
+                {!isMinimized && <span className="text-cyan-100 text-xs">LogiTRACK Assistant</span>}
               </div>
             </div>
             <div className="flex items-center space-x-1">
               {!isMinimized && (
-                <button
-                  onClick={resetChat}
-                  className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-                  title="Reset conversation"
-                >
+                <button onClick={resetChat} className="p-1.5 hover:bg-white/20 rounded-lg transition-colors" title="Reset conversation">
                   <RotateCcw className="w-3.5 h-3.5 text-white" />
                 </button>
               )}
-              <button
-                onClick={() => setIsMinimized(!isMinimized)}
-                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-              >
-                {isMinimized ? (
-                  <Maximize2 className="w-3.5 h-3.5 text-white" />
-                ) : (
-                  <Minimize2 className="w-3.5 h-3.5 text-white" />
-                )}
+              <button onClick={() => setIsMinimized(!isMinimized)} className="p-1.5 hover:bg-white/20 rounded-lg transition-colors">
+                {isMinimized ? <Maximize2 className="w-3.5 h-3.5 text-white" /> : <Minimize2 className="w-3.5 h-3.5 text-white" />}
               </button>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-              >
+              <button onClick={() => setIsOpen(false)} className="p-1.5 hover:bg-white/20 rounded-lg transition-colors">
                 <X className="w-3.5 h-3.5 text-white" />
               </button>
             </div>
@@ -258,36 +339,16 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
               {/* Messages */}
               <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scroll-smooth">
                 {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex items-start space-x-2.5 ${msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}
-                  >
-                    <div
-                      className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden ${
-                        msg.role === 'assistant'
-                          ? 'bg-gradient-to-br from-sky-500 to-cyan-600'
-                          : 'bg-gray-200'
-                      }`}
-                    >
-                      {msg.role === 'assistant' ? (
-                        <img src="/BoxyAi.png" alt="Boxy AI" className="w-7 h-7 object-contain" />
-                      ) : (
-                        <User className="w-4 h-4 text-gray-600" />
-                      )}
+                  <div key={msg.id} className={`flex items-start space-x-2.5 ${msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                    <div className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden ${msg.role === 'assistant' ? 'bg-gradient-to-br from-sky-500 to-cyan-600' : 'bg-gray-200'}`}>
+                      {msg.role === 'assistant'
+                        ? <img src="/BoxyAi.png" alt="Boxy AI" className="w-7 h-7 object-contain" />
+                        : <User className="w-4 h-4 text-gray-600" />
+                      }
                     </div>
-                    <div
-                      className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
-                        msg.role === 'assistant'
-                          ? 'bg-gray-50 text-gray-800 rounded-tl-sm border border-gray-100'
-                          : 'bg-gradient-to-br from-sky-500 to-cyan-600 text-white rounded-tr-sm'
-                      }`}
-                    >
+                    <div className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${msg.role === 'assistant' ? 'bg-gray-50 text-gray-800 rounded-tl-sm border border-gray-100' : 'bg-gradient-to-br from-sky-500 to-cyan-600 text-white rounded-tr-sm'}`}>
                       {renderContent(msg.content)}
-                      <div
-                        className={`text-xs mt-1 ${
-                          msg.role === 'assistant' ? 'text-gray-400' : 'text-sky-100'
-                        }`}
-                      >
+                      <div className={`text-xs mt-1 ${msg.role === 'assistant' ? 'text-gray-400' : 'text-sky-100'}`}>
                         {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
@@ -309,17 +370,12 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
                   </div>
                 )}
 
-                {/* Suggested prompts (only show initially) */}
                 {messages.length === 1 && !isLoading && (
                   <div className="pt-1">
                     <p className="text-xs text-gray-400 font-medium mb-2 px-0.5">Suggested questions</p>
                     <div className="grid grid-cols-2 gap-2">
                       {SUGGESTED_PROMPTS.map((prompt) => (
-                        <button
-                          key={prompt}
-                          onClick={() => sendMessage(prompt)}
-                          className="text-left text-xs text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-xl px-3 py-2 transition-colors duration-150 leading-snug"
-                        >
+                        <button key={prompt} onClick={() => sendMessage(prompt)} className="text-left text-xs text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-xl px-3 py-2 transition-colors duration-150 leading-snug">
                           {prompt}
                         </button>
                       ))}
@@ -330,6 +386,39 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
                 <div ref={messagesEndRef} />
               </div>
 
+              {/* Voice recording indicator */}
+              {recordingState === 'recording' && (
+                <div className="flex-shrink-0 mx-3 mb-1 px-3 py-2 bg-red-50 border border-red-200 rounded-xl flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse flex-shrink-0" />
+                  <span className="text-xs text-red-700 font-medium flex-1">Recording... tap mic to stop</span>
+                  <div className="flex items-end space-x-0.5 h-4">
+                    {[...Array(5)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-1 bg-red-400 rounded-full transition-all duration-100"
+                        style={{ height: `${Math.max(3, (audioLevel / 100) * 16 * (0.5 + Math.random() * 0.5))}px` }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {recordingState === 'transcribing' && (
+                <div className="flex-shrink-0 mx-3 mb-1 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl flex items-center space-x-2">
+                  <Loader2 className="w-3.5 h-3.5 text-amber-600 animate-spin flex-shrink-0" />
+                  <span className="text-xs text-amber-700 font-medium">Transcribing audio...</span>
+                </div>
+              )}
+
+              {micError && (
+                <div className="flex-shrink-0 mx-3 mb-1 px-3 py-1.5 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between">
+                  <span className="text-xs text-red-600">{micError}</span>
+                  <button onClick={() => setMicError(null)} className="text-red-400 hover:text-red-600 ml-2">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+
               {/* Input area */}
               <div className="flex-shrink-0 border-t border-gray-100 px-3 py-3 bg-white">
                 <div className="flex items-end space-x-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 focus-within:border-sky-400 focus-within:ring-2 focus-within:ring-sky-100 transition-all duration-150">
@@ -338,15 +427,28 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Ask Boxy or enter a container number..."
+                    placeholder={recordingState === 'recording' ? 'Listening...' : 'Ask Boxy or enter a container number...'}
                     rows={1}
                     className="flex-1 bg-transparent text-sm text-gray-800 placeholder-gray-400 resize-none outline-none max-h-24 leading-5"
                     style={{ minHeight: '20px' }}
-                    disabled={isLoading}
+                    disabled={isLoading || recordingState !== 'idle'}
                   />
                   <button
+                    onClick={toggleRecording}
+                    disabled={isLoading || recordingState === 'transcribing'}
+                    title={recordingState === 'recording' ? 'Stop recording' : 'Start voice input'}
+                    className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed ${micButtonColor}`}
+                  >
+                    {recordingState === 'transcribing'
+                      ? <Loader2 className="w-4 h-4 text-white animate-spin" />
+                      : recordingState === 'recording'
+                      ? <MicOff className="w-4 h-4 text-white" />
+                      : <Mic className={`w-4 h-4 ${micIconColor}`} />
+                    }
+                  </button>
+                  <button
                     onClick={() => sendMessage(input)}
-                    disabled={!input.trim() || isLoading}
+                    disabled={!input.trim() || isLoading || recordingState !== 'idle'}
                     className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-sky-500 to-cyan-600 rounded-lg flex items-center justify-center transition-all duration-150 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <Send className="w-4 h-4 text-white" />
