@@ -175,7 +175,7 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-sky-500 to-cyan-600 rounded-2xl shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200 group overflow-hidden"
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-white rounded-2xl shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200 group overflow-hidden"
           aria-label="Open Boxy AI"
         >
           <img src="/BoxyAi.png" alt="Boxy AI" className="w-12 h-12 object-contain" />
