@@ -136,13 +136,36 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
   };
 
   const renderContent = (text: string) => {
-    const parts = text.split(/(\*\*[^*]+\*\*)/g);
-    return parts.map((part, i) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={i}>{part.slice(2, -2)}</strong>;
-      }
-      return <span key={i}>{part}</span>;
-    });
+    const lines = text.split('\n');
+    return (
+      <div className="space-y-0.5">
+        {lines.map((line, i) => {
+          if (line.match(/^━+$/)) {
+            return <hr key={i} className="border-gray-200 my-1" />;
+          }
+
+          const renderInline = (str: string) => {
+            const parts = str.split(/(\*\*[^*]+\*\*)/g);
+            return parts.map((part, j) => {
+              if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={j} className="font-semibold">{part.slice(2, -2)}</strong>;
+              }
+              return <span key={j}>{part}</span>;
+            });
+          };
+
+          if (line.trim() === '') {
+            return <div key={i} className="h-1" />;
+          }
+
+          return (
+            <div key={i} className="leading-relaxed">
+              {renderInline(line)}
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   return (
