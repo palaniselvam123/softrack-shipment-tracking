@@ -282,6 +282,9 @@ function App() {
         <Dashboard
           onViewShipments={handleShipmentsNavigation}
           onNewBooking={handleBookingNavigation}
+          onViewBookings={handleBookingsNavigation}
+          onViewCommunication={handleCommunicationNavigation}
+          onViewTickets={handleTicketsNavigation}
           liveStats={dashboardStats}
         />
       ) : currentView === 'booking' ? (

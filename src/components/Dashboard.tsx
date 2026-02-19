@@ -6,10 +6,13 @@ import { useAuth } from '../contexts/AuthContext';
 interface DashboardProps {
   onViewShipments: () => void;
   onNewBooking: () => void;
+  onViewBookings: () => void;
+  onViewCommunication: () => void;
+  onViewTickets: () => void;
   liveStats?: DashboardStats | null;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, liveStats }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, onViewBookings, onViewCommunication, onViewTickets, liveStats }) => {
   const { isAdmin } = useAuth();
   const stats = [
     {
@@ -18,7 +21,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
       change: '+12%',
       changeType: 'positive',
       icon: Package,
-      color: 'bg-logitrack-blue-600'
+      color: 'bg-logitrack-blue-600',
+      onClick: onViewShipments,
     },
     {
       title: 'In Transit',
@@ -26,7 +30,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
       change: '+5%',
       changeType: 'positive',
       icon: Ship,
-      color: 'bg-logitrack-blue-600'
+      color: 'bg-logitrack-blue-600',
+      onClick: onViewShipments,
     },
     {
       title: 'Delayed',
@@ -34,7 +39,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
       change: '',
       changeType: 'negative',
       icon: Clock,
-      color: 'bg-yellow-500'
+      color: 'bg-yellow-500',
+      onClick: onViewShipments,
     },
     {
       title: 'Total Bookings',
@@ -42,7 +48,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
       change: '+18%',
       changeType: 'positive',
       icon: DollarSign,
-      color: 'bg-green-500'
+      color: 'bg-green-500',
+      onClick: onViewBookings,
     }
   ];
 
@@ -169,7 +176,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="stat-card group cursor-pointer shadow-xl border border-gray-200/50 hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-300">
+            <div key={index} onClick={stat.onClick} className="stat-card group cursor-pointer shadow-xl border border-gray-200/50 hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
                 <div className={`p-4 rounded-2xl ${stat.color} shadow-lg group-hover:scale-110 transition-transform duration-200`}>
                   <Icon className="w-7 h-7 text-white" />
@@ -196,7 +203,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Shipments */}
         <div className="card card-hover shadow-xl border border-gray-200/50">
-          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-cyan-500">
+          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-cyan-500 cursor-pointer" onClick={onViewShipments}>
             <h2 className="text-lg font-bold text-white flex items-center space-x-2">
               <Ship className="w-5 h-5 text-white" />
               <span>Recent Shipments</span>
@@ -205,7 +212,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
           <div className="p-6">
             <div className="space-y-4">
               {recentShipments.map((shipment) => (
-                <div key={shipment.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:shadow-md hover:border-sky-200 transition-all duration-200 group">
+                <div key={shipment.id} onClick={onViewShipments} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:shadow-md hover:border-sky-200 transition-all duration-200 group cursor-pointer">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
                       <h3 className="text-sm font-bold text-gray-900">{shipment.id}</h3>
@@ -220,18 +227,23 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
                     </p>
                     <p className="text-xs text-gray-500 mt-1.5">ETA: {shipment.eta}</p>
                   </div>
-                  <button className="text-sky-600 hover:text-sky-800 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-sky-600 hover:text-sky-800 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                     View
-                  </button>
+                  </span>
                 </div>
               ))}
+            </div>
+            <div className="mt-6 text-center">
+              <button onClick={onViewShipments} className="btn-primary w-full">
+                View All Shipments
+              </button>
             </div>
           </div>
         </div>
 
         {/* Recent Conversations */}
         <div className="card card-hover shadow-xl border border-gray-200/50">
-          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-500 to-teal-500">
+          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-500 to-teal-500 cursor-pointer" onClick={onViewCommunication}>
             <h2 className="text-lg font-bold text-white flex items-center space-x-2">
               <MessageCircle className="w-5 h-5 text-white" />
               <span>Recent Conversations</span>
@@ -240,7 +252,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
           <div className="p-6">
             <div className="space-y-4">
               {recentConversations.map((conversation) => (
-                <div key={conversation.id} className="flex items-start space-x-3 p-4 hover:bg-gray-50 rounded-xl cursor-pointer transition-all duration-200 border border-gray-100 hover:shadow-md hover:border-emerald-200 group">
+                <div key={conversation.id} onClick={onViewCommunication} className="flex items-start space-x-3 p-4 hover:bg-gray-50 rounded-xl cursor-pointer transition-all duration-200 border border-gray-100 hover:shadow-md hover:border-emerald-200 group">
                   <div className="p-2 bg-emerald-100 rounded-lg group-hover:bg-emerald-200 transition-colors">
                     <MessageCircle className="w-4 h-4 text-emerald-600" />
                   </div>
@@ -270,10 +282,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
               ))}
             </div>
             <div className="mt-6 text-center">
-              <button
-                onClick={() => window.location.href = '/communication'}
-                className="btn-primary w-full"
-              >
+              <button onClick={onViewCommunication} className="btn-primary w-full">
                 View All Conversations
               </button>
             </div>
@@ -282,7 +291,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
 
         {/* Recent Tickets */}
         <div className="card card-hover shadow-xl border border-gray-200/50">
-          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-500 to-pink-500">
+          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-500 to-pink-500 cursor-pointer" onClick={onViewTickets}>
             <h2 className="text-lg font-bold text-white flex items-center space-x-2">
               <Ticket className="w-5 h-5 text-white" />
               <span>Recent Tickets</span>
@@ -291,7 +300,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
           <div className="p-6">
             <div className="space-y-4">
               {recentTickets.map((ticket) => (
-                <div key={ticket.id} className="flex items-start space-x-3 p-4 hover:bg-gray-50 rounded-xl cursor-pointer transition-all duration-200 border border-gray-100 hover:shadow-md hover:border-violet-200 group">
+                <div key={ticket.id} onClick={onViewTickets} className="flex items-start space-x-3 p-4 hover:bg-gray-50 rounded-xl cursor-pointer transition-all duration-200 border border-gray-100 hover:shadow-md hover:border-violet-200 group">
                   <div className="p-2 bg-violet-100 rounded-lg group-hover:bg-violet-200 transition-colors">
                     <Ticket className="w-4 h-4 text-violet-600" />
                   </div>
@@ -325,10 +334,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onViewShipments, onNewBooking, li
               ))}
             </div>
             <div className="mt-6 text-center">
-              <button
-                onClick={() => window.location.href = '/tickets'}
-                className="btn-primary w-full"
-              >
+              <button onClick={onViewTickets} className="btn-primary w-full">
                 View All Tickets
               </button>
             </div>
