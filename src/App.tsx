@@ -19,6 +19,7 @@ import InquiryForm from './components/InquiryForm';
 import LeadList from './components/LeadList';
 import LoginPage from './components/LoginPage';
 import { useAuth } from './contexts/AuthContext';
+import AdminPortal from './admin/AdminPortal';
 
 import TrackingPage from './features/tracking/pages/TrackingPage';
 import QuotationPage from './features/quotation/pages/QuotationPage';
@@ -39,7 +40,8 @@ type ViewType =
   | 'customs'
   | 'inquiry'
   | 'leads'
-  | 'quotation';
+  | 'quotation'
+  | 'admin';
 
 export interface DashboardStats {
   totalShipments: number;
@@ -226,6 +228,11 @@ function App() {
     window.history.pushState({}, '', '/leads');
   };
 
+  const handleAdminNavigation = () => {
+    setCurrentView('admin');
+    window.history.pushState({}, '', '/admin');
+  };
+
   /* 🔹 AUTH STATES */
 
   if (loading) {
@@ -245,6 +252,10 @@ function App() {
 
   /* 🔹 MAIN RENDER */
 
+  if (currentView === 'admin') {
+    return <AdminPortal onBack={handleDashboardNavigation} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header
@@ -262,6 +273,7 @@ function App() {
         onInquiryClick={handleInquiryNavigation}
         onLeadsClick={handleLeadsNavigation}
         onQuotationClick={handleQuotationNavigation}
+        onAdminClick={handleAdminNavigation}
         currentView={currentView}
       />
 

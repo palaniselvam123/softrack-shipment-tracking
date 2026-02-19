@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Bell, LogOut } from 'lucide-react';
+import { User, Bell, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
@@ -17,6 +17,7 @@ interface HeaderProps {
   onInquiryClick?: () => void;
   onLeadsClick?: () => void;
   onQuotationClick?: () => void;
+  onAdminClick?: () => void;
   currentView?: string;
 }
 
@@ -35,9 +36,10 @@ const Header: React.FC<HeaderProps> = ({
   onInquiryClick,
   onLeadsClick,
   onQuotationClick,
+  onAdminClick,
   currentView
 }) => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const getMenuItemStyle = (itemName: string, isActive: boolean) => {
     if (isActive) {
@@ -126,12 +128,24 @@ const Header: React.FC<HeaderProps> = ({
                     <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Signed in as</p>
                     <p className="text-sm text-gray-900 font-semibold truncate mt-1">{user?.email}</p>
                   </div>
+                  {isAdmin && onAdminClick && (
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        onAdminClick();
+                      }}
+                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 flex items-center space-x-3 transition-all duration-200"
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span className="font-medium">Admin Portal</span>
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       setShowUserMenu(false);
                       signOut();
                     }}
-                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center space-x-3 transition-all duration-200 mt-1"
+                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center space-x-3 transition-all duration-200"
                   >
                     <LogOut className="w-4 h-4" />
                     <span className="font-medium">Sign Out</span>
