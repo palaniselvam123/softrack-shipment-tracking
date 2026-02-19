@@ -93,6 +93,13 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
       const statusBreakdown = Object.entries(dashboardStats.byStatus).map(([k, v]) => `${k}: ${v}`).join(', ');
       const modeBreakdown = Object.entries(dashboardStats.byMode).map(([k, v]) => `${k}: ${v}`).join(', ');
       contextNote += `[LIVE LOGITRACK STATS — Total Shipments: ${dashboardStats.totalShipments}, In Transit: ${dashboardStats.inTransit}, Delayed: ${dashboardStats.delayed}, Delivered: ${dashboardStats.delivered}, Total Bookings: ${dashboardStats.totalBookings}, Pending Bookings: ${dashboardStats.pendingBookings}, Confirmed Bookings: ${dashboardStats.approvedBookings}. By Status: ${statusBreakdown}. By Transport Mode: ${modeBreakdown}] `;
+
+      if (dashboardStats.invoiceStats) {
+        const inv = dashboardStats.invoiceStats;
+        const outstandingAmount = inv.totalOutstandingIDR.toLocaleString('id-ID');
+        const invoiceLines = inv.invoices.map(i => `${i.ref} | ${i.status} | ${i.currency} ${i.amount.toLocaleString()} | Due: ${i.dueDate} | Vendor: ${i.vendor} | Shipment: ${i.shipmentRef}`).join('; ');
+        contextNote += `[INVOICE DATA — Total Invoices: ${inv.total}, Open: ${inv.open}, Overdue: ${inv.overdue}, Paid: ${inv.paid}, Processing: ${inv.processing}, Disputed: ${inv.disputed}, Cancelled: ${inv.cancelled}. Total Outstanding Amount (Open+Overdue): IDR ${outstandingAmount}. Invoice List: ${invoiceLines}] `;
+      }
     }
 
     const historyForAPI = [

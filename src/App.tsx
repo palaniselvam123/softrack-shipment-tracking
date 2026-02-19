@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import BoxyAI from './components/BoxyAI';
 import { supabase } from './lib/supabase';
+import { mockInvoices } from './data/mockData';
 import ShipmentsTable from './components/ShipmentsTable';
 import ShipmentDetails from './components/ShipmentDetails';
 import BookingWizard from './components/BookingWizard';
@@ -43,6 +44,18 @@ type ViewType =
   | 'quotation'
   | 'admin';
 
+export interface InvoiceStats {
+  total: number;
+  open: number;
+  overdue: number;
+  paid: number;
+  processing: number;
+  disputed: number;
+  cancelled: number;
+  totalOutstandingIDR: number;
+  invoices: Array<{ ref: string; status: string; amount: number; currency: string; vendor: string; shipmentRef: string; dueDate: string }>;
+}
+
 export interface DashboardStats {
   totalShipments: number;
   inTransit: number;
@@ -53,6 +66,7 @@ export interface DashboardStats {
   totalBookings: number;
   byStatus: Record<string, number>;
   byMode: Record<string, number>;
+  invoiceStats?: InvoiceStats;
 }
 
 function App() {
@@ -85,6 +99,23 @@ function App() {
         }
         const pendingBookings = bookings?.filter(b => b.status === 'pending' || b.status === 'Pending').length ?? 0;
         const approvedBookings = bookings?.filter(b => b.status === 'confirmed' || b.status === 'Confirmed').length ?? 0;
+        const openInvoices = mockInvoices.filter(i => i.invoiceStatus === 'OPEN');
+        const overdueInvoices = mockInvoices.filter(i => i.invoiceStatus === 'OVERDUE');
+        const outstandingInvoices = [...openInvoices, ...overdueInvoices];
+        const totalOutstandingIDR = outstandingInvoices.reduce((sum, i) => sum + i.amount, 0);
+
+        const invoiceStats: InvoiceStats = {
+          total: mockInvoices.length,
+          open: openInvoices.length,
+          overdue: overdueInvoices.length,
+          paid: mockInvoices.filter(i => i.invoiceStatus === 'PAID').length,
+          processing: mockInvoices.filter(i => i.invoiceStatus === 'PROCESSING').length,
+          disputed: mockInvoices.filter(i => i.invoiceStatus === 'DISPUTED').length,
+          cancelled: mockInvoices.filter(i => i.invoiceStatus === 'CANCELLED').length,
+          totalOutstandingIDR,
+          invoices: mockInvoices.map(i => ({ ref: i.invoiceRef, status: i.invoiceStatus, amount: i.amount, currency: i.currency, vendor: i.vendor, shipmentRef: i.shipmentRef, dueDate: i.dueDate })),
+        };
+
         setDashboardStats({
           totalShipments: shipments.length,
           inTransit: byStatus['in transit'] || byStatus['in_transit'] || 0,
@@ -95,6 +126,7 @@ function App() {
           totalBookings: bookings?.length ?? 0,
           byStatus,
           byMode,
+          invoiceStats,
         });
       }
     }

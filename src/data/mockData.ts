@@ -360,3 +360,31 @@ export const mockShipments = [
     eta: '03-Dec-2025'
   }
 ];
+
+export interface MockInvoice {
+  id: string;
+  invoiceRef: string;
+  invoiceStatus: string;
+  invoiceDate: string;
+  amount: number;
+  currency: string;
+  dueDate: string;
+  shipmentRef: string;
+  vendor: string;
+  description: string;
+  shipper: string;
+  consignee: string;
+}
+
+export const mockInvoices: MockInvoice[] = [
+  { id: '1', invoiceRef: 'IDDEC026748', invoiceStatus: 'OPEN', invoiceDate: '28-JUL-2025', amount: 2588500, currency: 'IDR', dueDate: '27-AUG-2025', shipmentRef: 'DJA1390437', vendor: 'PT Logistics Indonesia', description: 'Ocean freight charges for FCL shipment', shipper: 'Textile Exports India Ltd', consignee: 'PT Jakarta Trading Co' },
+  { id: '2', invoiceRef: 'IDDEC026093', invoiceStatus: 'OPEN', invoiceDate: '25-JUL-2025', amount: 5523720, currency: 'IDR', dueDate: '24-AUG-2025', shipmentRef: 'DJA1388031', vendor: 'Jakarta Port Services', description: 'Port handling and customs clearance', shipper: 'Singapore Electronics Pte Ltd', consignee: 'Indonesian Tech Solutions' },
+  { id: '3', invoiceRef: 'IDDEC025953', invoiceStatus: 'OPEN', invoiceDate: '25-JUL-2025', amount: 95402465, currency: 'IDR', dueDate: '24-AUG-2025', shipmentRef: 'DJA1387686', vendor: 'Maersk Line Indonesia', description: 'Container shipping and documentation', shipper: 'Chennai Manufacturing Ltd', consignee: 'Surabaya Import House' },
+  { id: '4', invoiceRef: 'IDDEC024256', invoiceStatus: 'OPEN', invoiceDate: '18-JUL-2025', amount: 687250, currency: 'IDR', dueDate: '17-AUG-2025', shipmentRef: 'DJA1383869', vendor: 'Indonesian Customs', description: 'Import duty and taxes', shipper: 'American Steel Corp', consignee: 'Jakarta Steel Industries' },
+  { id: '5', invoiceRef: 'IDDIC006490', invoiceStatus: 'OPEN', invoiceDate: '09-JUL-2025', amount: 92311020, currency: 'IDR', dueDate: '08-AUG-2025', shipmentRef: 'AYN1257932', vendor: 'CMA CGM Indonesia', description: 'LCL consolidation and delivery', shipper: 'German Auto Parts GmbH', consignee: 'Indonesian Auto Assembly' },
+  { id: '6', invoiceRef: 'IDDEC016813', invoiceStatus: 'OVERDUE', invoiceDate: '19-JUN-2025', amount: 666000, currency: 'IDR', dueDate: '19-JUL-2025', shipmentRef: 'DJA1365665', vendor: 'Surabaya Logistics Hub', description: 'Warehousing and distribution services', shipper: 'Dutch Flower Exports BV', consignee: 'Surabaya Garden Center' },
+  { id: '7', invoiceRef: 'IDDEC014804', invoiceStatus: 'PAID', invoiceDate: '02-JUN-2025', amount: 666000, currency: 'IDR', dueDate: '02-JUL-2025', shipmentRef: 'DJA1366375', vendor: 'Bali Freight Services', description: 'Air freight and express delivery', shipper: 'Singapore Fashion House', consignee: 'Bali Boutique Collection' },
+  { id: '8', invoiceRef: 'IDDEC012456', invoiceStatus: 'PROCESSING', invoiceDate: '15-MAY-2025', amount: 1234567, currency: 'IDR', dueDate: '14-JUN-2025', shipmentRef: 'DJA1345678', vendor: 'Medan Port Authority', description: 'Terminal handling charges', shipper: 'Malaysian Palm Oil Ltd', consignee: 'Medan Oil Processing' },
+  { id: '9', invoiceRef: 'IDDEC011234', invoiceStatus: 'CANCELLED', invoiceDate: '01-MAY-2025', amount: 987654, currency: 'IDR', dueDate: '31-MAY-2025', shipmentRef: 'DJA1334567', vendor: 'Batam Shipping Co', description: 'Cancelled shipment refund', shipper: 'Singapore Machinery Pte', consignee: 'Batam Industrial Park' },
+  { id: '10', invoiceRef: 'IDDEC009876', invoiceStatus: 'DISPUTED', invoiceDate: '20-APR-2025', amount: 2345678, currency: 'IDR', dueDate: '20-MAY-2025', shipmentRef: 'DJA1323456', vendor: 'Palembang Logistics', description: 'Disputed charges under review', shipper: 'Thai Rice Exporters Co', consignee: 'Palembang Food Distributors' },
+];
