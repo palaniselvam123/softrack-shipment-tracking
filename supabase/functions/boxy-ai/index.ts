@@ -62,7 +62,7 @@ function isTrackingQuery(text: string): boolean {
   const lower = text.toLowerCase();
   const trackingKeywords = ['track', 'status', 'where is', 'shipment', 'container', 'booking', 'reference', 'check', 'find', 'lookup', 'locate', 'eta', 'etd', 'delivery'];
   const hasKeyword = trackingKeywords.some(k => lower.includes(k));
-  const hasRefPattern = /[A-Z0-9]{3,}[\/\-][A-Z0-9\/\-]{2,}/i.test(text) ||
+  const hasRefPattern = /[A-Z0-9]{2,}[\/\-]+[A-Z0-9\/\-\.]{2,}/i.test(text) ||
     /\b[A-Z]{4}\d{6,}\b/i.test(text) ||
     /\b[A-Z]{2,6}\d{4,}\b/i.test(text);
   return hasKeyword || hasRefPattern;
@@ -79,9 +79,9 @@ function extractSearchTerms(text: string): string[] {
   const shipmentMatches = text.match(shipmentPattern);
   if (shipmentMatches) terms.push(...shipmentMatches.map(m => m.toUpperCase()));
 
-  const looseSepPattern = /\b[A-Z]{2,6}[-\/]+[A-Z0-9][-\/A-Z0-9\.]{3,20}\b/gi;
-  const looseMatches = text.match(looseSepPattern);
-  if (looseMatches) terms.push(...looseMatches.map(m => m.toUpperCase()));
+  const doubleSepPattern = /\b[A-Z]{2,6}[-\/]{1,2}[A-Z0-9][-\/A-Z0-9\.]{2,25}\b/gi;
+  const doubleSepMatches = text.match(doubleSepPattern);
+  if (doubleSepMatches) terms.push(...doubleSepMatches.map(m => m.toUpperCase()));
 
   const alphanumPattern = /\b[A-Z]{2,}[\-\/]?[A-Z0-9]{3,}[\-\/]?[A-Z0-9]*\b/gi;
   const alphaMatches = text.match(alphanumPattern);
@@ -193,32 +193,61 @@ Deno.serve(async (req: Request) => {
             const supabase = createClient(supabaseUrl, supabaseKey);
             const dbResults: Array<Record<string, unknown>> = [];
 
+            const normText = (s: string) => s.replace(/[-\/\\\s\.]+/g, '').toUpperCase();
             const allTerms = searchTerms.length > 0 ? searchTerms : [userText.trim()];
+
             for (const term of allTerms) {
               const { data } = await supabase
                 .from('shipments')
                 .select('"Shipment Number", "Shipper", "Consignee", "Origin", "Destination", "Transport Mode", "Shipment Type", "ETD", "ETA", shipment_status, job_ref')
                 .or(`"Shipment Number".ilike.%${term}%,job_ref.ilike.%${term}%`)
                 .limit(5);
-              if (data && data.length > 0) dbResults.push(...data);
+              if (data && data.length > 0) dbResults.push(...data.map(r => ({ ...r, _type: 'shipment' })));
+            }
+
+            for (const term of allTerms) {
+              const normTerm = normText(term);
+              const { data } = await supabase
+                .from('bookings_from_quotes')
+                .select('booking_no, shipper_name, consignee_name, cargo_description, incoterm, status, confirmed_at, created_at, special_instructions')
+                .ilike('booking_no', `%${term}%`)
+                .limit(5);
+              if (data && data.length > 0) {
+                dbResults.push(...data.map(r => ({ ...r, _type: 'booking' })));
+              } else {
+                const { data: allBookings } = await supabase
+                  .from('bookings_from_quotes')
+                  .select('booking_no, shipper_name, consignee_name, cargo_description, incoterm, status, confirmed_at, created_at, special_instructions')
+                  .limit(200);
+                if (allBookings) {
+                  const matched = allBookings.filter(b =>
+                    normText(b.booking_no || '').includes(normTerm) ||
+                    normTerm.includes(normText(b.booking_no || ''))
+                  );
+                  if (matched.length > 0) dbResults.push(...matched.map(r => ({ ...r, _type: 'booking' })));
+                }
+              }
             }
 
             if (dbResults.length > 0) {
               dbFound = true;
               const seen = new Set<string>();
               const unique = dbResults.filter(s => {
-                const key = String(s['Shipment Number']);
+                const key = String(s['Shipment Number'] || s['booking_no']);
                 if (seen.has(key)) return false;
                 seen.add(key);
                 return true;
               });
-              const dbLines = unique.map((s: Record<string, unknown>) =>
-                `Shipment: ${s['Shipment Number']} | Status: ${s['shipment_status'] || 'N/A'} | Route: ${s['Origin']} → ${s['Destination']} | Mode: ${s['Transport Mode']} | Shipper: ${s['Shipper']} | Consignee: ${s['Consignee']} | ETD: ${s['ETD']} | ETA: ${s['ETA']}`
-              );
-              shipmentContext = `\n\n[LIVE SHIPMENT DATA FROM LOGITRACK DATABASE]\n${dbLines.join('\n')}`;
+              const dbLines = unique.map((s: Record<string, unknown>) => {
+                if (s['_type'] === 'booking') {
+                  return `Booking: ${s['booking_no']} | Status: ${s['status'] || 'N/A'} | Shipper: ${s['shipper_name'] || 'N/A'} | Consignee: ${s['consignee_name'] || 'N/A'} | Cargo: ${s['cargo_description'] || 'N/A'} | Incoterm: ${s['incoterm'] || 'N/A'} | Confirmed: ${s['confirmed_at'] || 'Pending'} | Created: ${s['created_at']}`;
+                }
+                return `Shipment: ${s['Shipment Number']} | Status: ${s['shipment_status'] || 'N/A'} | Route: ${s['Origin']} → ${s['Destination']} | Mode: ${s['Transport Mode']} | Shipper: ${s['Shipper']} | Consignee: ${s['Consignee']} | ETD: ${s['ETD']} | ETA: ${s['ETA']}`;
+              });
+              shipmentContext = `\n\n[LIVE DATA FROM LOGITRACK DATABASE]\n${dbLines.join('\n')}`;
               injectedAssistantMsg = {
                 role: 'assistant',
-                content: `I found the following shipment data in LogiTRACK:\n${dbLines.join('\n')}\n\nLet me answer your question based on this data.`
+                content: `I found the following data in LogiTRACK:\n${dbLines.join('\n')}\n\nLet me answer your question based on this data.`
               };
             }
           }
