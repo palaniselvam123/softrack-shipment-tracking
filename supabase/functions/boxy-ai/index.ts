@@ -21,6 +21,19 @@ const MOCK_SHIPMENTS = [
   { shipmentNo: 'MUM/AI/SHP/0002', containerNo: '', shipper: 'German Machinery Exports', consignee: 'Industrial Equipment India', transport: 'Air', departure: 'Frankfurt Airport, Germany', arrivalPort: 'Mumbai Airport, MH', type: 'Import', status: 'Billing', etd: '18-Nov-2025', eta: '20-Nov-2025', masterNo: 'LH-125-155', houseNo: 'MACH-2026-445' },
 ];
 
+const _ORIGINS = [
+  'Nhava Sheva Port, MH', 'Mumbai Airport, MH', 'Chennai Port, TN', 'Kolkata Port, WB',
+  'Kandla Port, Gujarat', 'Mundra Port, Gujarat', 'Bangalore, KA', 'Delhi, NCR',
+  'Indira Gandhi Airport, Delhi', 'Kempegowda Airport, Bangalore', 'Chennai Airport, TN', 'JNPT, Mumbai'
+];
+const _DESTINATIONS = [
+  'Jebel Ali Port, Dubai', 'Hamburg Port, Germany', 'Rotterdam Port, Netherlands', 'Singapore Port',
+  'Shanghai Port, China', 'Los Angeles Port, CA', 'New York Port, NY', 'Felixstowe Port, UK',
+  'Dubai International Airport, AE', 'Heathrow Airport, London', 'Frankfurt Airport, Germany', 'Changi Airport, Singapore',
+  'Hong Kong Port', 'Tokyo Port, Japan', 'Sydney Port, Australia', 'Colombo Port, Sri Lanka',
+  'Bandar Abbas Port, Iran', 'Karachi Port, Pakistan', 'Chittagong Port, Bangladesh', 'Colombo Airport, Sri Lanka'
+];
+
 const _SERVICE_PROVIDERS = [
   'UPS India Pvt Ltd', 'Maersk India Ltd', 'MSC India Pvt Ltd', 'KLN India Pvt Ltd',
   'CMA CGM India', 'Hapag Lloyd India', 'DHL Express India', 'FedEx India',
@@ -62,21 +75,21 @@ function _pick<T>(arr: T[], n: number): T {
 }
 
 function buildAllBookings() {
-  type Booking = { bookingNo: string; date: string; jobOrderNo: string; serviceProvider: string; transportMode: string; status: string; shipper: string; consignee: string; documents: string[]; documentCount: number };
+  type Booking = { bookingNo: string; date: string; jobOrderNo: string; serviceProvider: string; transportMode: string; status: string; shipper: string; consignee: string; origin: string; destination: string; documents: string[]; documentCount: number };
   const base: Booking[] = [
-    { bookingNo: 'SE-S//0036//10.2', date: '8th Aug 2024', jobOrderNo: '69595583', serviceProvider: 'UPS India Pvt Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Stark Private Limited', consignee: '14square Private Limited', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading'], documentCount: 3 },
-    { bookingNo: 'SE-S//0037//11.3', date: '9th Aug 2024', jobOrderNo: '69595584', serviceProvider: 'Maersk India Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Global Traders Inc', consignee: 'Mumbai Imports Ltd', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading', 'Certificate of Origin'], documentCount: 4 },
-    { bookingNo: 'SE-S//0038//12.1', date: '10th Aug 2024', jobOrderNo: '69595585', serviceProvider: 'MSC India Pvt Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Continental Exports', consignee: 'Bangalore Trading Co', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
-    { bookingNo: 'SE-S//0039//13.2', date: '11th Aug 2024', jobOrderNo: '69595586', serviceProvider: 'CMA CGM India', transportMode: 'Sea Export', status: 'Pending', shipper: 'Export Masters Ltd', consignee: 'International Trading Co', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading', 'Certificate of Origin', 'Customs Declaration'], documentCount: 5 },
-    { bookingNo: 'SE-S//0040//14.5', date: '12th Aug 2024', jobOrderNo: '69595587', serviceProvider: 'Hapag Lloyd India', transportMode: 'Sea Export', status: 'Pending', shipper: 'Maritime Exports Pvt Ltd', consignee: 'Global Logistics Singapore', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading'], documentCount: 3 },
-    { bookingNo: 'AI//0041//15.1', date: '13th Aug 2024', jobOrderNo: '69595588', serviceProvider: 'DHL Express India', transportMode: 'Air Import', status: 'Pending', shipper: 'European Electronics GmbH', consignee: 'Tech Solutions India', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List'], documentCount: 3 },
-    { bookingNo: 'AI//0042//16.3', date: '14th Aug 2024', jobOrderNo: '69595589', serviceProvider: 'FedEx India', transportMode: 'Air Import', status: 'Pending', shipper: 'American Auto Parts Inc', consignee: 'Chennai Motors Ltd', documents: ['Airway Bill', 'Commercial Invoice'], documentCount: 2 },
-    { bookingNo: 'AE//0043//17.2', date: '15th Aug 2024', jobOrderNo: '69595590', serviceProvider: 'Emirates SkyCargo', transportMode: 'Air Export', status: 'Pending', shipper: 'Pharma Exports India Ltd', consignee: 'Healthcare Dubai LLC', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List', 'MSDS'], documentCount: 4 },
-    { bookingNo: 'AE//0044//18.4', date: '16th Aug 2024', jobOrderNo: '69595591', serviceProvider: 'Qatar Airways Cargo', transportMode: 'Air Export', status: 'Pending', shipper: 'Fresh Foods Exports', consignee: 'Middle East Grocers', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List', 'Phytosanitary Certificate'], documentCount: 4 },
-    { bookingNo: 'LI//0045//19.1', date: '17th Aug 2024', jobOrderNo: '69595592', serviceProvider: 'VRL Logistics', transportMode: 'Land Import', status: 'Pending', shipper: 'Nepal Trading Co', consignee: 'Delhi Distributors Pvt Ltd', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
-    { bookingNo: 'LI//0046//20.3', date: '18th Aug 2024', jobOrderNo: '69595593', serviceProvider: 'TCI Freight', transportMode: 'Land Import', status: 'Pending', shipper: 'Bangladesh Textiles Ltd', consignee: 'Mumbai Fashion House', documents: ['Commercial Invoice', 'Packing List', 'Certificate of Origin'], documentCount: 3 },
-    { bookingNo: 'LE//0047//21.2', date: '19th Aug 2024', jobOrderNo: '69595594', serviceProvider: 'Blue Dart Express', transportMode: 'Land Export', status: 'Pending', shipper: 'Bangalore Tech Solutions', consignee: 'Sri Lanka Electronics', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
-    { bookingNo: 'LE//0048//22.5', date: '20th Aug 2024', jobOrderNo: '69595595', serviceProvider: 'Gati KWE', transportMode: 'Land Export', status: 'Pending', shipper: 'Chennai Manufacturing Ltd', consignee: 'Colombo Trading Co', documents: ['Commercial Invoice', 'Packing List', 'Certificate of Origin'], documentCount: 3 },
+    { bookingNo: 'SE-S//0036//10.2', date: '8th Aug 2024', jobOrderNo: '69595583', serviceProvider: 'UPS India Pvt Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Stark Private Limited', consignee: '14square Private Limited', origin: 'Singapore Port', destination: 'Nhava Sheva Port, MH', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading'], documentCount: 3 },
+    { bookingNo: 'SE-S//0037//11.3', date: '9th Aug 2024', jobOrderNo: '69595584', serviceProvider: 'Maersk India Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Global Traders Inc', consignee: 'Mumbai Imports Ltd', origin: 'Hamburg Port, Germany', destination: 'Nhava Sheva Port, MH', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading', 'Certificate of Origin'], documentCount: 4 },
+    { bookingNo: 'SE-S//0038//12.1', date: '10th Aug 2024', jobOrderNo: '69595585', serviceProvider: 'MSC India Pvt Ltd', transportMode: 'Sea Import', status: 'Pending', shipper: 'Continental Exports', consignee: 'Bangalore Trading Co', origin: 'Rotterdam Port, Netherlands', destination: 'Chennai Port, TN', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
+    { bookingNo: 'SE-S//0039//13.2', date: '11th Aug 2024', jobOrderNo: '69595586', serviceProvider: 'CMA CGM India', transportMode: 'Sea Export', status: 'Pending', shipper: 'Export Masters Ltd', consignee: 'International Trading Co', origin: 'Nhava Sheva Port, MH', destination: 'Singapore Port', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading', 'Certificate of Origin', 'Customs Declaration'], documentCount: 5 },
+    { bookingNo: 'SE-S//0040//14.5', date: '12th Aug 2024', jobOrderNo: '69595587', serviceProvider: 'Hapag Lloyd India', transportMode: 'Sea Export', status: 'Pending', shipper: 'Maritime Exports Pvt Ltd', consignee: 'Global Logistics Singapore', origin: 'Nhava Sheva Port, MH', destination: 'Singapore Port', documents: ['Commercial Invoice', 'Packing List', 'Bill of Lading'], documentCount: 3 },
+    { bookingNo: 'AI//0041//15.1', date: '13th Aug 2024', jobOrderNo: '69595588', serviceProvider: 'DHL Express India', transportMode: 'Air Import', status: 'Pending', shipper: 'European Electronics GmbH', consignee: 'Tech Solutions India', origin: 'Frankfurt Airport, Germany', destination: 'Mumbai Airport, MH', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List'], documentCount: 3 },
+    { bookingNo: 'AI//0042//16.3', date: '14th Aug 2024', jobOrderNo: '69595589', serviceProvider: 'FedEx India', transportMode: 'Air Import', status: 'Pending', shipper: 'American Auto Parts Inc', consignee: 'Chennai Motors Ltd', origin: 'Heathrow Airport, London', destination: 'Chennai Airport, TN', documents: ['Airway Bill', 'Commercial Invoice'], documentCount: 2 },
+    { bookingNo: 'AE//0043//17.2', date: '15th Aug 2024', jobOrderNo: '69595590', serviceProvider: 'Emirates SkyCargo', transportMode: 'Air Export', status: 'Pending', shipper: 'Pharma Exports India Ltd', consignee: 'Healthcare Dubai LLC', origin: 'Mumbai Airport, MH', destination: 'Dubai International Airport, AE', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List', 'MSDS'], documentCount: 4 },
+    { bookingNo: 'AE//0044//18.4', date: '16th Aug 2024', jobOrderNo: '69595591', serviceProvider: 'Qatar Airways Cargo', transportMode: 'Air Export', status: 'Pending', shipper: 'Fresh Foods Exports', consignee: 'Middle East Grocers', origin: 'Indira Gandhi Airport, Delhi', destination: 'Dubai International Airport, AE', documents: ['Airway Bill', 'Commercial Invoice', 'Packing List', 'Phytosanitary Certificate'], documentCount: 4 },
+    { bookingNo: 'LI//0045//19.1', date: '17th Aug 2024', jobOrderNo: '69595592', serviceProvider: 'VRL Logistics', transportMode: 'Land Import', status: 'Pending', shipper: 'Nepal Trading Co', consignee: 'Delhi Distributors Pvt Ltd', origin: 'Kathmandu, Nepal', destination: 'Delhi, NCR', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
+    { bookingNo: 'LI//0046//20.3', date: '18th Aug 2024', jobOrderNo: '69595593', serviceProvider: 'TCI Freight', transportMode: 'Land Import', status: 'Pending', shipper: 'Bangladesh Textiles Ltd', consignee: 'Mumbai Fashion House', origin: 'Chittagong Port, Bangladesh', destination: 'Kolkata Port, WB', documents: ['Commercial Invoice', 'Packing List', 'Certificate of Origin'], documentCount: 3 },
+    { bookingNo: 'LE//0047//21.2', date: '19th Aug 2024', jobOrderNo: '69595594', serviceProvider: 'Blue Dart Express', transportMode: 'Land Export', status: 'Pending', shipper: 'Bangalore Tech Solutions', consignee: 'Sri Lanka Electronics', origin: 'Bangalore, KA', destination: 'Colombo Port, Sri Lanka', documents: ['Commercial Invoice', 'Packing List'], documentCount: 2 },
+    { bookingNo: 'LE//0048//22.5', date: '20th Aug 2024', jobOrderNo: '69595595', serviceProvider: 'Gati KWE', transportMode: 'Land Export', status: 'Pending', shipper: 'Chennai Manufacturing Ltd', consignee: 'Colombo Trading Co', origin: 'Chennai Port, TN', destination: 'Colombo Port, Sri Lanka', documents: ['Commercial Invoice', 'Packing List', 'Certificate of Origin'], documentCount: 3 },
   ];
   for (let i = 0; i < 200; i++) {
     const mode = _pick(_TRANSPORT_MODES, i * 7 + 1);
@@ -97,6 +110,8 @@ function buildAllBookings() {
       status: _pick(_STATUSES, i * 23 + 8),
       shipper: _pick(_SHIPPERS, i * 29 + 9),
       consignee: _pick(_COSIGNEES, i * 31 + 10),
+      origin: _pick(_ORIGINS, i * 37 + 11),
+      destination: _pick(_DESTINATIONS, i * 41 + 12),
       documents: ['Commercial Invoice', 'Packing List'],
       documentCount: 2,
     });
@@ -353,29 +368,47 @@ function formatShipmentContext(shipments: typeof MOCK_SHIPMENTS): string {
 }
 
 function isCountQuery(text: string): boolean {
-  const lower = text.toLowerCase();
-  return /how many|count|total|number of|how much/.test(lower);
+  return /how many|count|total|number of|how much|how often|unique|distinct/.test(text.toLowerCase());
 }
 
-function formatBookingContext(bookings: typeof MOCK_BOOKINGS, userQuery: string): string {
+function buildAggregateSummary(bookings: typeof MOCK_BOOKINGS, label: string): string {
+  const pending = bookings.filter(b => b.status === 'Pending').length;
+  const approved = bookings.filter(b => b.status === 'Approved').length;
+  const rejected = bookings.filter(b => b.status === 'Rejected').length;
+  const byMode: Record<string, number> = {};
+  for (const b of bookings) byMode[b.transportMode] = (byMode[b.transportMode] || 0) + 1;
+  const modeBreakdown = Object.entries(byMode).map(([m, c]) => `${m}: ${c}`).join(', ');
+  const uniqueDestinations = [...new Set(bookings.map(b => b.destination))];
+  const uniqueOrigins = [...new Set(bookings.map(b => b.origin))];
+  const uniqueShippers = [...new Set(bookings.map(b => b.shipper))];
+  const uniqueConsignees = [...new Set(bookings.map(b => b.consignee))];
+  return [
+    `AGGREGATE SUMMARY for "${label}":`,
+    `Total bookings = ${bookings.length}`,
+    `Status: Pending = ${pending}, Approved = ${approved}, Rejected = ${rejected}`,
+    `Transport modes: ${modeBreakdown}`,
+    `Unique destinations (${uniqueDestinations.length}): ${uniqueDestinations.join(', ')}`,
+    `Unique origins (${uniqueOrigins.length}): ${uniqueOrigins.join(', ')}`,
+    `Unique shippers (${uniqueShippers.length}): ${uniqueShippers.join(', ')}`,
+    `Unique consignees (${uniqueConsignees.length}): ${uniqueConsignees.join(', ')}`,
+  ].join('\n');
+}
+
+function formatBookingContext(bookings: typeof MOCK_BOOKINGS, userQuery: string, conversationText: string): string {
   if (bookings.length === 0) return '';
 
-  if (isCountQuery(userQuery) && bookings.length > 5) {
-    const pending = bookings.filter(b => b.status === 'Pending').length;
-    const approved = bookings.filter(b => b.status === 'Approved').length;
-    const rejected = bookings.filter(b => b.status === 'Rejected').length;
-    const byMode: Record<string, number> = {};
-    for (const b of bookings) byMode[b.transportMode] = (byMode[b.transportMode] || 0) + 1;
-    const modeBreakdown = Object.entries(byMode).map(([m, c]) => `${m}: ${c}`).join(', ');
-    const provider = bookings[0].serviceProvider;
-    const summary = `AGGREGATE SUMMARY for "${provider}": Total bookings = ${bookings.length} | Pending = ${pending} | Approved = ${approved} | Rejected = ${rejected} | By Mode: ${modeBreakdown}`;
+  const queryForCheck = userQuery + ' ' + conversationText;
+  const provider = [...new Set(bookings.map(b => b.serviceProvider))].join(', ');
+
+  if (bookings.length > 5 && isCountQuery(queryForCheck)) {
+    const summary = buildAggregateSummary(bookings, provider);
     return `\n\n[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n${summary}`;
   }
 
   const lines = bookings.slice(0, 20).map(b => {
-    return `Booking: ${b.bookingNo} | Job Order: ${b.jobOrderNo} | Mode: ${b.transportMode} | Status: ${b.status} | Service Provider: ${b.serviceProvider} | Shipper: ${b.shipper} | Consignee: ${b.consignee} | Date: ${b.date}`;
+    return `Booking: ${b.bookingNo} | Mode: ${b.transportMode} | Status: ${b.status} | Provider: ${b.serviceProvider} | Shipper: ${b.shipper} | Consignee: ${b.consignee} | Origin: ${b.origin} | Destination: ${b.destination} | Date: ${b.date}`;
   });
-  const suffix = bookings.length > 20 ? `\n... and ${bookings.length - 20} more bookings (total: ${bookings.length})` : '';
+  const suffix = bookings.length > 20 ? `\n... and ${bookings.length - 20} more (total: ${bookings.length})` : '';
   return `\n\n[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n${lines.join('\n')}${suffix}`;
 }
 
@@ -419,7 +452,7 @@ Deno.serve(async (req: Request) => {
 
       if (mockShipResults.length > 0 || mockBookResults.length > 0) {
         const shipCtx = formatShipmentContext(mockShipResults);
-        const bookCtx = formatBookingContext(mockBookResults, userText);
+        const bookCtx = formatBookingContext(mockBookResults, userText, fullConversationText);
         shipmentContext = shipCtx + bookCtx;
 
         const contextLines: string[] = [];
@@ -427,7 +460,7 @@ Deno.serve(async (req: Request) => {
           contextLines.push(formatShipmentContext(mockShipResults).replace('[LIVE SHIPMENT DATA FROM LOGITRACK DATABASE]\n', ''));
         }
         if (mockBookResults.length > 0) {
-          contextLines.push(formatBookingContext(mockBookResults, userText).replace('[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n', ''));
+          contextLines.push(formatBookingContext(mockBookResults, userText, fullConversationText).replace('[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n', ''));
         }
 
         injectedAssistantMsg = {
