@@ -470,45 +470,70 @@ Deno.serve(async (req: Request) => {
         const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
         if (supabaseUrl && supabaseKey) {
           const supabase = createClient(supabaseUrl, supabaseKey);
-
-          const { data: shipmentStats } = await supabase
-            .from('shipments')
-            .select('shipment_status, "Transport Mode", "Shipment Type"');
-
-          const { data: bookingStats } = await supabase
-            .from('bookings_from_quotes')
-            .select('status');
-
           const statsLines: string[] = [];
 
-          if (shipmentStats && shipmentStats.length > 0) {
-            const totalShipments = shipmentStats.length;
-            const byStatus: Record<string, number> = {};
-            const byMode: Record<string, number> = {};
-            const byType: Record<string, number> = {};
-            for (const s of shipmentStats) {
-              const st = s['shipment_status'] || 'Unknown';
-              byStatus[st] = (byStatus[st] || 0) + 1;
-              const m = s['Transport Mode'] || 'Unknown';
-              byMode[m] = (byMode[m] || 0) + 1;
-              const t = s['Shipment Type'] || 'Unknown';
-              byType[t] = (byType[t] || 0) + 1;
-            }
-            statsLines.push(`LIVE SHIPMENT STATS (total: ${totalShipments}):`);
-            statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
-            statsLines.push(`By Transport Mode: ${Object.entries(byMode).map(([k, v]) => `${k}=${v}`).join(', ')}`);
-            statsLines.push(`By Type: ${Object.entries(byType).map(([k, v]) => `${k}=${v}`).join(', ')}`);
-          }
+          const entityMatch = userText.match(/for\s+([A-Z][a-zA-Z0-9\s&'\.,-]{2,40}?)(?:\s*\?|$)/i)
+            || userText.match(/(?:of|by|from|to)\s+([A-Z][a-zA-Z0-9\s&'\.,-]{2,40}?)(?:\s*\?|$)/i);
+          const entityName = entityMatch ? entityMatch[1].trim() : null;
 
-          if (bookingStats && bookingStats.length > 0) {
-            const totalBookings = bookingStats.length;
-            const byStatus: Record<string, number> = {};
-            for (const b of bookingStats) {
-              const st = b['status'] || 'Unknown';
-              byStatus[st] = (byStatus[st] || 0) + 1;
+          if (entityName) {
+            const { data: entityShipments } = await supabase
+              .from('shipments')
+              .select('"Shipment Number", "Shipper", "Consignee", "Origin", "Destination", "Transport Mode", shipment_status, "ETA"')
+              .or(`"Shipper".ilike.%${entityName}%,"Consignee".ilike.%${entityName}%`)
+              .limit(200);
+
+            if (entityShipments && entityShipments.length > 0) {
+              const byStatus: Record<string, number> = {};
+              for (const s of entityShipments) {
+                const st = s['shipment_status'] || 'Unknown';
+                byStatus[st] = (byStatus[st] || 0) + 1;
+              }
+              statsLines.push(`LIVE SHIPMENT STATS FOR "${entityName}" (total: ${entityShipments.length}):`);
+              statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+              const sample = entityShipments.slice(0, 5);
+              statsLines.push(`Sample shipments: ${sample.map(s => `${s['Shipment Number']} (${s['shipment_status'] || 'Unknown'}) ${s['Origin']}→${s['Destination']}`).join('; ')}`);
+            } else {
+              statsLines.push(`No shipments found for "${entityName}" in LogiTRACK.`);
             }
-            statsLines.push(`LIVE BOOKING STATS (total: ${totalBookings}):`);
-            statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+          } else {
+            const { data: shipmentStats } = await supabase
+              .from('shipments')
+              .select('shipment_status, "Transport Mode", "Shipment Type"');
+
+            const { data: bookingStats } = await supabase
+              .from('bookings_from_quotes')
+              .select('status');
+
+            if (shipmentStats && shipmentStats.length > 0) {
+              const totalShipments = shipmentStats.length;
+              const byStatus: Record<string, number> = {};
+              const byMode: Record<string, number> = {};
+              const byType: Record<string, number> = {};
+              for (const s of shipmentStats) {
+                const st = s['shipment_status'] || 'Unknown';
+                byStatus[st] = (byStatus[st] || 0) + 1;
+                const m = s['Transport Mode'] || 'Unknown';
+                byMode[m] = (byMode[m] || 0) + 1;
+                const t = s['Shipment Type'] || 'Unknown';
+                byType[t] = (byType[t] || 0) + 1;
+              }
+              statsLines.push(`LIVE SHIPMENT STATS (total: ${totalShipments}):`);
+              statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+              statsLines.push(`By Transport Mode: ${Object.entries(byMode).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+              statsLines.push(`By Type: ${Object.entries(byType).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+            }
+
+            if (bookingStats && bookingStats.length > 0) {
+              const totalBookings = bookingStats.length;
+              const byStatus: Record<string, number> = {};
+              for (const b of bookingStats) {
+                const st = b['status'] || 'Unknown';
+                byStatus[st] = (byStatus[st] || 0) + 1;
+              }
+              statsLines.push(`LIVE BOOKING STATS (total: ${totalBookings}):`);
+              statsLines.push(`By Status: ${Object.entries(byStatus).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+            }
           }
 
           if (statsLines.length > 0) {
