@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Send, Minimize2, Maximize2, RotateCcw, User, Sparkles, Mic, MicOff, Loader2 } from 'lucide-react';
+import { X, Send, Minimize2, Maximize2, RotateCcw, User, Sparkles, Mic, MicOff, Loader2, Volume2, VolumeX } from 'lucide-react';
 import * as SpeechSDK from 'microsoft-cognitiveservices-speech-sdk';
 import type { DashboardStats } from '../App';
 
@@ -16,6 +16,7 @@ interface BoxyAIProps {
 }
 
 type RecordingState = 'idle' | 'recording' | 'transcribing';
+type SpeakingState = 'idle' | 'speaking';
 
 let cachedSpeechToken: { token: string; region: string; expiresAt: number } | null = null;
 
@@ -44,11 +45,14 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasNewMessage, setHasNewMessage] = useState(false);
   const [recordingState, setRecordingState] = useState<RecordingState>('idle');
+  const [speakingState, setSpeakingState] = useState<SpeakingState>('idle');
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [micError, setMicError] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognizerRef = useRef<SpeechSDK.SpeechRecognizer | null>(null);
+  const synthesizerRef = useRef<SpeechSDK.SpeechSynthesizer | null>(null);
 
   useEffect(() => {
     if (isOpen && messagesEndRef.current) {
@@ -69,6 +73,10 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
         recognizerRef.current.stopContinuousRecognitionAsync();
         recognizerRef.current.close();
         recognizerRef.current = null;
+      }
+      if (synthesizerRef.current) {
+        synthesizerRef.current.close();
+        synthesizerRef.current = null;
       }
     };
   }, []);
@@ -128,6 +136,10 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
       }]);
 
       if (!isOpen) setHasNewMessage(true);
+
+      if (voiceEnabled) {
+        speakText(reply);
+      }
     } catch {
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
@@ -153,6 +165,57 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
     if (data.error) throw new Error(data.error);
     cachedSpeechToken = { token: data.token, region: data.region, expiresAt: now + 8 * 60 * 1000 };
     return { token: data.token, region: data.region };
+  }, []);
+
+  const stripMarkdown = (text: string): string => {
+    return text
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/━+/g, '')
+      .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
+      .replace(/\[([^\]]+)\]/g, '$1')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  };
+
+  const speakText = useCallback(async (text: string) => {
+    if (synthesizerRef.current) {
+      synthesizerRef.current.close();
+      synthesizerRef.current = null;
+    }
+    setSpeakingState('speaking');
+    try {
+      const { token, region } = await getSpeechToken();
+      const speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(token, region);
+      speechConfig.speechSynthesisVoiceName = 'en-US-AriaNeural';
+      const synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
+      synthesizerRef.current = synthesizer;
+      const cleanText = stripMarkdown(text);
+      synthesizer.speakTextAsync(
+        cleanText,
+        () => {
+          setSpeakingState('idle');
+          synthesizer.close();
+          synthesizerRef.current = null;
+        },
+        (err) => {
+          console.warn('TTS error:', err);
+          setSpeakingState('idle');
+          synthesizer.close();
+          synthesizerRef.current = null;
+        }
+      );
+    } catch {
+      setSpeakingState('idle');
+    }
+  }, [getSpeechToken]);
+
+  const stopSpeaking = useCallback(() => {
+    if (synthesizerRef.current) {
+      synthesizerRef.current.close();
+      synthesizerRef.current = null;
+    }
+    setSpeakingState('idle');
   }, []);
 
   const startRecording = useCallback(async () => {
@@ -235,12 +298,20 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
   };
 
   const resetChat = () => {
+    stopSpeaking();
     setMessages([{
       id: '0',
       role: 'assistant',
       content: "Hi! I'm **Boxy**, your LogiTRACK AI assistant. I can help you navigate the platform, answer logistics questions, and **track shipments by container number or shipment reference**. You can also use the **microphone** to speak your question. What can I help you with?",
       timestamp: new Date(),
     }]);
+  };
+
+  const toggleVoice = () => {
+    if (voiceEnabled) {
+      stopSpeaking();
+    }
+    setVoiceEnabled(prev => !prev);
   };
 
   const renderContent = (text: string) => {
@@ -316,9 +387,18 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
             </div>
             <div className="flex items-center space-x-1">
               {!isMinimized && (
-                <button onClick={resetChat} className="p-1.5 hover:bg-white/20 rounded-lg transition-colors" title="Reset conversation">
-                  <RotateCcw className="w-3.5 h-3.5 text-white" />
-                </button>
+                <>
+                  <button
+                    onClick={toggleVoice}
+                    className={`p-1.5 rounded-lg transition-colors ${voiceEnabled ? 'hover:bg-white/20' : 'hover:bg-white/20 opacity-50'}`}
+                    title={voiceEnabled ? 'Mute voice output' : 'Enable voice output'}
+                  >
+                    {voiceEnabled ? <Volume2 className="w-3.5 h-3.5 text-white" /> : <VolumeX className="w-3.5 h-3.5 text-white" />}
+                  </button>
+                  <button onClick={resetChat} className="p-1.5 hover:bg-white/20 rounded-lg transition-colors" title="Reset conversation">
+                    <RotateCcw className="w-3.5 h-3.5 text-white" />
+                  </button>
+                </>
               )}
               <button onClick={() => setIsMinimized(!isMinimized)} className="p-1.5 hover:bg-white/20 rounded-lg transition-colors">
                 {isMinimized ? <Maximize2 className="w-3.5 h-3.5 text-white" /> : <Minimize2 className="w-3.5 h-3.5 text-white" />}
@@ -402,6 +482,27 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
                 <div className="flex-shrink-0 mx-3 mb-1 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl flex items-center space-x-2">
                   <Loader2 className="w-3.5 h-3.5 text-amber-600 animate-spin flex-shrink-0" />
                   <span className="text-xs text-amber-700 font-medium">Connecting to speech service...</span>
+                </div>
+              )}
+
+              {speakingState === 'speaking' && voiceEnabled && (
+                <div className="flex-shrink-0 mx-3 mb-1 px-3 py-2 bg-sky-50 border border-sky-200 rounded-xl flex items-center justify-between space-x-2">
+                  <div className="flex items-center space-x-2">
+                    <Volume2 className="w-3.5 h-3.5 text-sky-600 flex-shrink-0" />
+                    <div className="flex items-end space-x-0.5 h-3">
+                      {[...Array(4)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="w-0.5 bg-sky-400 rounded-full animate-bounce"
+                          style={{ height: `${4 + (i % 3) * 3}px`, animationDelay: `${i * 100}ms` }}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs text-sky-700 font-medium">Speaking...</span>
+                  </div>
+                  <button onClick={stopSpeaking} className="text-sky-400 hover:text-sky-600 transition-colors" title="Stop speaking">
+                    <X className="w-3 h-3" />
+                  </button>
                 </div>
               )}
 
