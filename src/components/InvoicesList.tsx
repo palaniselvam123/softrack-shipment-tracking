@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Receipt, Download, Eye, Calendar, DollarSign, AlertCircle } from 'lucide-react';
+import { Receipt, Download, Eye, Calendar, DollarSign, AlertCircle, ChevronUp, ChevronDown } from 'lucide-react';
 import InvoiceDetailModal from './InvoiceDetailModal';
 
 interface Invoice {
@@ -30,9 +30,14 @@ interface InvoicesListProps {
   shipmentNo: string;
 }
 
+type SortField = 'invoiceRef' | 'invoiceStatus' | 'invoiceDate' | 'amount' | 'dueDate' | 'vendor';
+type SortDirection = 'asc' | 'desc';
+
 const InvoicesList: React.FC<InvoicesListProps> = ({ shipmentNo }) => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [sortKey, setSortKey] = useState<SortField>('invoiceDate');
+  const [sortDir, setSortDir] = useState<SortDirection>('desc');
 
   const invoices: Invoice[] = [
     {
@@ -82,6 +87,43 @@ const InvoicesList: React.FC<InvoicesListProps> = ({ shipmentNo }) => {
       voyage: 'MA234E'
     }
   ];
+
+  const handleSort = (key: SortField) => {
+    if (sortKey === key) {
+      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  };
+
+  const SortBtn = ({ field, label }: { field: SortField; label: string }) => (
+    <button
+      onClick={() => handleSort(field)}
+      className={`flex items-center space-x-1 px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
+        sortKey === field
+          ? 'bg-blue-50 border-blue-300 text-blue-700'
+          : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+      }`}
+    >
+      <span>{label}</span>
+      {sortKey === field
+        ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)
+        : <ChevronUp className="w-3 h-3 text-gray-300" />}
+    </button>
+  );
+
+  const sortedInvoices = [...invoices].sort((a, b) => {
+    let aVal: string | number = a[sortKey] ?? '';
+    let bVal: string | number = b[sortKey] ?? '';
+    if (sortKey === 'amount') {
+      aVal = Number(aVal);
+      bVal = Number(bVal);
+      return sortDir === 'asc' ? (aVal as number) - (bVal as number) : (bVal as number) - (aVal as number);
+    }
+    const cmp = aVal.toString().localeCompare(bVal.toString());
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
 
   const handleInvoiceClick = (invoice: Invoice) => {
     setSelectedInvoice(invoice);
@@ -137,6 +179,15 @@ const InvoicesList: React.FC<InvoicesListProps> = ({ shipmentNo }) => {
               Generate Invoice
             </button>
           </div>
+          <div className="flex items-center space-x-2 mt-3 flex-wrap gap-y-2">
+            <span className="text-xs text-gray-500 mr-1">Sort by:</span>
+            <SortBtn field="invoiceDate" label="Date" />
+            <SortBtn field="amount" label="Amount" />
+            <SortBtn field="invoiceStatus" label="Status" />
+            <SortBtn field="dueDate" label="Due Date" />
+            <SortBtn field="vendor" label="Vendor" />
+            <SortBtn field="invoiceRef" label="Ref" />
+          </div>
         </div>
 
         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
@@ -178,7 +229,7 @@ const InvoicesList: React.FC<InvoicesListProps> = ({ shipmentNo }) => {
         </div>
 
         <div className="divide-y divide-gray-200">
-          {invoices.map((invoice) => (
+          {sortedInvoices.map((invoice) => (
             <div
               key={invoice.id}
               className="p-6 hover:bg-gray-50 transition-colors cursor-pointer"

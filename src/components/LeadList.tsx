@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter, Eye, User, Building, Calendar, Package, DollarSign, Star, Settings, ArrowLeft } from 'lucide-react';
+import { Search, Filter, Eye, User, Building, Calendar, Package, DollarSign, Star, Settings, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
 import ColumnCustomizer from './ColumnCustomizer';
 import LeadDetailModal from './LeadDetailModal';
 
@@ -34,6 +34,8 @@ interface LeadListProps {
   onBack: () => void;
 }
 
+type SortDirection = 'asc' | 'desc';
+
 const LeadList: React.FC<LeadListProps> = ({ onBack }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -42,6 +44,8 @@ const LeadList: React.FC<LeadListProps> = ({ onBack }) => {
   const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<SortDirection>('asc');
 
   const [columns, setColumns] = useState<Column[]>([
     { key: 'lead_id', label: 'Lead ID', visible: true },
@@ -210,6 +214,32 @@ const LeadList: React.FC<LeadListProps> = ({ onBack }) => {
     }).format(amount);
   };
 
+  const handleSort = (key: string) => {
+    if (sortKey === key) {
+      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  };
+
+  const SortIcon = ({ colKey }: { colKey: string }) => {
+    if (sortKey !== colKey) return <ChevronUp className="w-3 h-3 text-gray-300 ml-1" />;
+    return sortDir === 'asc'
+      ? <ChevronUp className="w-3 h-3 text-blue-600 ml-1" />
+      : <ChevronDown className="w-3 h-3 text-blue-600 ml-1" />;
+  };
+
+  const getSortValue = (lead: Lead, key: string): string => {
+    switch (key) {
+      case 'customer': return lead.customer_name;
+      case 'route': return `${lead.origin} ${lead.destination}`;
+      case 'lob': return lead.lob.join(',');
+      case 'estimated_value': return String(lead.estimated_value ?? 0);
+      default: return String((lead as Record<string, unknown>)[key] ?? '');
+    }
+  };
+
   const filteredLeads = leads.filter(lead => {
     const matchesSearch = Object.values(lead).some(value =>
       value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -219,6 +249,19 @@ const LeadList: React.FC<LeadListProps> = ({ onBack }) => {
 
     return matchesSearch && matchesStatus && matchesPriority;
   });
+
+  const sortedLeads = sortKey
+    ? [...filteredLeads].sort((a, b) => {
+        const aVal = getSortValue(a, sortKey);
+        const bVal = getSortValue(b, sortKey);
+        const numA = parseFloat(aVal);
+        const numB = parseFloat(bVal);
+        const cmp = !isNaN(numA) && !isNaN(numB)
+          ? numA - numB
+          : aVal.localeCompare(bVal);
+        return sortDir === 'asc' ? cmp : -cmp;
+      })
+    : filteredLeads;
 
   const statusCounts = {
     total: leads.length,
@@ -400,8 +443,15 @@ const LeadList: React.FC<LeadListProps> = ({ onBack }) => {
             <thead className="bg-gray-50">
               <tr>
                 {columns.filter(col => col.visible).map((column) => (
-                  <th key={column.key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {column.label}
+                  <th
+                    key={column.key}
+                    onClick={() => handleSort(column.key)}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                  >
+                    <div className="flex items-center">
+                      {column.label}
+                      <SortIcon colKey={column.key} />
+                    </div>
                   </th>
                 ))}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -410,7 +460,7 @@ const LeadList: React.FC<LeadListProps> = ({ onBack }) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredLeads.map((lead) => (
+              {sortedLeads.map((lead) => (
                 <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
                   {columns.filter(col => col.visible).map((column) => {
                     switch (column.key) {

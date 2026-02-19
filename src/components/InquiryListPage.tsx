@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Download, Filter, Settings, Plus, Eye, Edit, Calendar, User, Package, MapPin } from 'lucide-react';
+import { Search, Download, Filter, Settings, Plus, Eye, Edit, Calendar, User, Package, MapPin, ChevronUp, ChevronDown } from 'lucide-react';
 import ColumnCustomizer from './ColumnCustomizer';
 import InquiryForm from './InquiryForm';
 
@@ -27,6 +27,8 @@ interface Column {
   width?: string;
 }
 
+type SortDirection = 'asc' | 'desc';
+
 const InquiryListPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -34,6 +36,8 @@ const InquiryListPage: React.FC = () => {
   const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
   const [showInquiryForm, setShowInquiryForm] = useState(false);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<SortDirection>('asc');
 
   const [columns, setColumns] = useState<Column[]>([
     { key: 'inquiry_id', label: 'Inquiry ID', visible: true },
@@ -184,6 +188,32 @@ const InquiryListPage: React.FC = () => {
     }
   };
 
+  const handleSort = (key: string) => {
+    if (sortKey === key) {
+      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  };
+
+  const SortIcon = ({ colKey }: { colKey: string }) => {
+    if (sortKey !== colKey) return <ChevronUp className="w-3 h-3 text-gray-300 ml-1" />;
+    return sortDir === 'asc'
+      ? <ChevronUp className="w-3 h-3 text-blue-600 ml-1" />
+      : <ChevronDown className="w-3 h-3 text-blue-600 ml-1" />;
+  };
+
+  const getSortValue = (inquiry: Inquiry, key: string): string => {
+    switch (key) {
+      case 'customer': return inquiry.customer_name;
+      case 'route': return `${inquiry.origin} ${inquiry.destination}`;
+      case 'lob': return inquiry.lob.join(',');
+      case 'contact': return inquiry.contact_email;
+      default: return String((inquiry as Record<string, unknown>)[key] ?? '');
+    }
+  };
+
   const filteredInquiries = mockInquiries.filter(inquiry => {
     const matchesSearch = Object.values(inquiry).some(value =>
       value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -192,6 +222,15 @@ const InquiryListPage: React.FC = () => {
 
     return matchesSearch && matchesStatus;
   });
+
+  const sortedInquiries = sortKey
+    ? [...filteredInquiries].sort((a, b) => {
+        const aVal = getSortValue(a, sortKey);
+        const bVal = getSortValue(b, sortKey);
+        const cmp = aVal.localeCompare(bVal);
+        return sortDir === 'asc' ? cmp : -cmp;
+      })
+    : filteredInquiries;
 
   const downloadExcel = () => {
     const headers = [
@@ -407,8 +446,15 @@ const InquiryListPage: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 {columns.filter(col => col.visible).map((column) => (
-                  <th key={column.key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {column.label}
+                  <th
+                    key={column.key}
+                    onClick={() => handleSort(column.key)}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                  >
+                    <div className="flex items-center">
+                      {column.label}
+                      <SortIcon colKey={column.key} />
+                    </div>
                   </th>
                 ))}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -417,7 +463,7 @@ const InquiryListPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredInquiries.map((inquiry) => (
+              {sortedInquiries.map((inquiry) => (
                 <tr key={inquiry.id} className="hover:bg-gray-50 transition-colors">
                   {columns.filter(col => col.visible).map((column) => {
                     switch (column.key) {

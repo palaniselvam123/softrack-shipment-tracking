@@ -1,11 +1,17 @@
-import React from 'react';
-import { FileText, Download, Eye, Calendar, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { FileText, Download, Eye, Calendar, User, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface DocumentsListProps {
   shipmentNo: string;
 }
 
+type SortField = 'name' | 'type' | 'uploadedDate' | 'status' | 'uploadedBy';
+type SortDirection = 'asc' | 'desc';
+
 const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
+  const [sortKey, setSortKey] = useState<SortField>('uploadedDate');
+  const [sortDir, setSortDir] = useState<SortDirection>('desc');
+
   const documents = [
     {
       id: 1,
@@ -129,6 +135,38 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
     }
   ];
 
+  const handleSort = (key: SortField) => {
+    if (sortKey === key) {
+      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  };
+
+  const SortBtn = ({ field, label }: { field: SortField; label: string }) => (
+    <button
+      onClick={() => handleSort(field)}
+      className={`flex items-center space-x-1 px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
+        sortKey === field
+          ? 'bg-blue-50 border-blue-300 text-blue-700'
+          : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+      }`}
+    >
+      <span>{label}</span>
+      {sortKey === field
+        ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)
+        : <ChevronUp className="w-3 h-3 text-gray-300" />}
+    </button>
+  );
+
+  const sortedDocuments = [...documents].sort((a, b) => {
+    const aVal = a[sortKey] ?? '';
+    const bVal = b[sortKey] ?? '';
+    const cmp = aVal.toString().localeCompare(bVal.toString());
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'approved':
@@ -172,10 +210,18 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
             Upload Document
           </button>
         </div>
+        <div className="flex items-center space-x-2 mt-3 flex-wrap gap-y-2">
+          <span className="text-xs text-gray-500 mr-1">Sort by:</span>
+          <SortBtn field="uploadedDate" label="Date" />
+          <SortBtn field="name" label="Name" />
+          <SortBtn field="type" label="Type" />
+          <SortBtn field="status" label="Status" />
+          <SortBtn field="uploadedBy" label="Uploaded By" />
+        </div>
       </div>
 
       <div className="divide-y divide-gray-200">
-        {documents.map((doc) => (
+        {sortedDocuments.map((doc) => (
           <div key={doc.id} className="p-6 hover:bg-gray-50 transition-colors">
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-4">
