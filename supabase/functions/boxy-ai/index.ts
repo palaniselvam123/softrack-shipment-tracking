@@ -348,12 +348,31 @@ function formatShipmentContext(shipments: typeof MOCK_SHIPMENTS): string {
   return `\n\n[LIVE SHIPMENT DATA FROM LOGITRACK DATABASE]\n${lines.join('\n')}`;
 }
 
-function formatBookingContext(bookings: typeof MOCK_BOOKINGS): string {
+function isCountQuery(text: string): boolean {
+  const lower = text.toLowerCase();
+  return /how many|count|total|number of|how much/.test(lower);
+}
+
+function formatBookingContext(bookings: typeof MOCK_BOOKINGS, userQuery: string): string {
   if (bookings.length === 0) return '';
-  const lines = bookings.map(b => {
-    return `Booking: ${b.bookingNo} | Job Order: ${b.jobOrderNo} | Mode: ${b.transportMode} | Status: ${b.status} | Service Provider: ${b.serviceProvider} | Shipper: ${b.shipper} | Consignee: ${b.consignee} | Date: ${b.date} | Documents Attached: ${b.documentCount} (${b.documents.join(', ')})`;
+
+  if (isCountQuery(userQuery) && bookings.length > 5) {
+    const pending = bookings.filter(b => b.status === 'Pending').length;
+    const approved = bookings.filter(b => b.status === 'Approved').length;
+    const rejected = bookings.filter(b => b.status === 'Rejected').length;
+    const byMode: Record<string, number> = {};
+    for (const b of bookings) byMode[b.transportMode] = (byMode[b.transportMode] || 0) + 1;
+    const modeBreakdown = Object.entries(byMode).map(([m, c]) => `${m}: ${c}`).join(', ');
+    const provider = bookings[0].serviceProvider;
+    const summary = `AGGREGATE SUMMARY for "${provider}": Total bookings = ${bookings.length} | Pending = ${pending} | Approved = ${approved} | Rejected = ${rejected} | By Mode: ${modeBreakdown}`;
+    return `\n\n[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n${summary}`;
+  }
+
+  const lines = bookings.slice(0, 20).map(b => {
+    return `Booking: ${b.bookingNo} | Job Order: ${b.jobOrderNo} | Mode: ${b.transportMode} | Status: ${b.status} | Service Provider: ${b.serviceProvider} | Shipper: ${b.shipper} | Consignee: ${b.consignee} | Date: ${b.date}`;
   });
-  return `\n\n[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n${lines.join('\n')}`;
+  const suffix = bookings.length > 20 ? `\n... and ${bookings.length - 20} more bookings (total: ${bookings.length})` : '';
+  return `\n\n[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n${lines.join('\n')}${suffix}`;
 }
 
 Deno.serve(async (req: Request) => {
@@ -396,7 +415,7 @@ Deno.serve(async (req: Request) => {
 
       if (mockShipResults.length > 0 || mockBookResults.length > 0) {
         const shipCtx = formatShipmentContext(mockShipResults);
-        const bookCtx = formatBookingContext(mockBookResults);
+        const bookCtx = formatBookingContext(mockBookResults, userText);
         shipmentContext = shipCtx + bookCtx;
 
         const contextLines: string[] = [];
@@ -404,7 +423,7 @@ Deno.serve(async (req: Request) => {
           contextLines.push(formatShipmentContext(mockShipResults).replace('[LIVE SHIPMENT DATA FROM LOGITRACK DATABASE]\n', ''));
         }
         if (mockBookResults.length > 0) {
-          contextLines.push(formatBookingContext(mockBookResults).replace('[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n', ''));
+          contextLines.push(formatBookingContext(mockBookResults, userText).replace('[LIVE BOOKING DATA FROM LOGITRACK DATABASE]\n', ''));
         }
 
         injectedAssistantMsg = {
