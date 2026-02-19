@@ -110,35 +110,36 @@ export default function UserManagement() {
     setError(null);
 
     if (!editingUser) {
-      const { data: authData, error: authError } = await supabase.auth.admin
-        ? { data: null, error: new Error('Use service role for user creation') }
-        : { data: null, error: new Error('Admin user creation requires service role key') };
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
 
-      if (authError) {
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email: form.email,
-          password: form.password,
-        });
-
-        if (signUpError) {
-          setError(signUpError.message);
-          setSaving(false);
-          return;
-        }
-
-        if (signUpData.user) {
-          await supabase.from('profiles').upsert({
-            id: signUpData.user.id,
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-user`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'Apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({
             email: form.email,
+            password: form.password,
             full_name: form.full_name,
             company: form.company,
             phone: form.phone,
             role: form.role,
             user_type: form.user_type,
             status: form.status,
-            updated_at: new Date().toISOString(),
-          });
+          }),
         }
+      );
+
+      const result = await res.json();
+      if (!res.ok || result.error) {
+        setError(result.error || 'Failed to create user');
+        setSaving(false);
+        return;
       }
     } else {
       const { error: updateError } = await supabase.from('profiles').update({
