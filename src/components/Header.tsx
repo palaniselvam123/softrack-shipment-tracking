@@ -31,11 +31,12 @@ interface HeaderProps {
 interface NavItem {
   id: string;
   label: string;
+  shortLabel: string;
   icon: React.ElementType;
   onClick?: () => void;
-  highlight?: boolean;
   iconColor: string;
   bgColor: string;
+  activeBgColor: string;
 }
 
 const NavButton: React.FC<{
@@ -43,44 +44,25 @@ const NavButton: React.FC<{
   isActive: boolean;
 }> = ({ item, isActive }) => {
   const Icon = item.icon;
-  const [hovered, setHovered] = React.useState(false);
-  const expanded = isActive || hovered;
 
   return (
     <button
       onClick={item.onClick}
-      title={item.label}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
-        maxWidth: expanded ? '190px' : '48px',
-        outlineColor: isActive ? item.iconColor : 'transparent',
-        outlineWidth: isActive ? '2px' : '0px',
-        outlineStyle: 'solid',
-        outlineOffset: '1px',
+        backgroundColor: isActive ? item.activeBgColor : item.bgColor,
+        boxShadow: isActive ? `0 2px 0 0 ${item.iconColor}` : 'none',
       }}
-      className="relative flex items-center overflow-hidden transition-all duration-300 ease-in-out rounded-xl px-1 py-1 flex-shrink-0"
+      className="relative flex flex-col items-center justify-center gap-0.5 px-2.5 py-1.5 rounded-xl flex-shrink-0 transition-all duration-200 hover:scale-105 hover:brightness-95 min-w-[48px]"
     >
-      <div
-        style={{
-          backgroundColor: item.bgColor,
-          color: item.iconColor,
-        }}
-        className="flex-shrink-0 rounded-lg p-2 transition-all duration-200"
-      >
-        <Icon className="w-5 h-5" />
-      </div>
+      <Icon
+        style={{ color: item.iconColor }}
+        className="w-5 h-5 flex-shrink-0"
+      />
       <span
-        style={{
-          color: item.iconColor,
-          maxWidth: expanded ? '140px' : '0px',
-          marginLeft: expanded ? '6px' : '0px',
-          opacity: expanded ? 1 : 0,
-          marginRight: expanded ? '4px' : '0px',
-        }}
-        className="text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out"
+        style={{ color: item.iconColor }}
+        className="text-[10px] font-bold whitespace-nowrap leading-none"
       >
-        {item.label}
+        {item.shortLabel}
       </span>
     </button>
   );
@@ -109,21 +91,21 @@ const Header: React.FC<HeaderProps> = ({
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const navItems: NavItem[] = [
-    { id: 'dashboard',    label: 'Dashboard',   icon: LayoutDashboard, onClick: onDashboardClick,     iconColor: '#0284c7', bgColor: '#e0f2fe' },
-    { id: 'shipments',    label: 'Shipments',   icon: Ship,            onClick: onShipmentsClick,     iconColor: '#2563eb', bgColor: '#dbeafe' },
-    { id: 'map',          label: 'Map View',    icon: Map,             onClick: onMapViewClick,       iconColor: '#0d9488', bgColor: '#ccfbf1' },
-    { id: 'bookings',     label: 'Bookings',    icon: BookOpen,        onClick: onBookingsClick,      iconColor: '#059669', bgColor: '#d1fae5' },
-    { id: 'quotation',    label: 'Quote & Book',icon: FileSearch,      onClick: onQuotationClick,     iconColor: '#0891b2', bgColor: '#cffafe', highlight: true },
-    { id: 'customs',      label: 'Customs',     icon: ScrollText,      onClick: onCustomsClick,       iconColor: '#ea580c', bgColor: '#ffedd5' },
-    { id: 'booking',      label: 'Book',        icon: Briefcase,       onClick: onBookingClick,       iconColor: '#16a34a', bgColor: '#dcfce7' },
-    { id: 'warehouse',    label: 'Warehouse',   icon: Building2,       onClick: onWarehouseClick,     iconColor: '#d97706', bgColor: '#fef3c7' },
-    { id: 'inquiry',      label: 'Inquiry',     icon: PackageSearch,   onClick: onInquiryClick,       iconColor: '#65a30d', bgColor: '#ecfccb' },
-    { id: 'leads',        label: 'Leads',       icon: User,            onClick: onLeadsClick,         iconColor: '#e11d48', bgColor: '#ffe4e6' },
-    { id: 'communication',label: 'Messages',    icon: MessageSquare,   onClick: onCommunicationClick, iconColor: '#7c3aed', bgColor: '#ede9fe' },
-    { id: 'invoices',     label: 'Invoice',     icon: FileText,        onClick: onInvoicesClick,      iconColor: '#ca8a04', bgColor: '#fef9c3' },
-    { id: 'tickets',      label: 'Tickets',     icon: TicketCheck,     onClick: onTicketsClick,       iconColor: '#dc2626', bgColor: '#fee2e2' },
-    { id: 'webhooks',     label: 'Webhooks',    icon: Webhook,         onClick: onWebhooksClick,      iconColor: '#c026d3', bgColor: '#fae8ff' },
-    { id: 'webhook-docs', label: 'API Docs',    icon: Code2,           onClick: onWebhookDocsClick,   iconColor: '#475569', bgColor: '#f1f5f9' },
+    { id: 'dashboard',     label: 'Dashboard',    shortLabel: 'Home',      icon: LayoutDashboard, onClick: onDashboardClick,     iconColor: '#0369a1', bgColor: '#e0f2fe', activeBgColor: '#bae6fd' },
+    { id: 'shipments',     label: 'Shipments',    shortLabel: 'Ships',     icon: Ship,            onClick: onShipmentsClick,     iconColor: '#1d4ed8', bgColor: '#dbeafe', activeBgColor: '#bfdbfe' },
+    { id: 'map',           label: 'Map View',     shortLabel: 'Map',       icon: Map,             onClick: onMapViewClick,       iconColor: '#0f766e', bgColor: '#ccfbf1', activeBgColor: '#99f6e4' },
+    { id: 'bookings',      label: 'Bookings',     shortLabel: 'Books',     icon: BookOpen,        onClick: onBookingsClick,      iconColor: '#047857', bgColor: '#d1fae5', activeBgColor: '#a7f3d0' },
+    { id: 'quotation',     label: 'Quote & Book', shortLabel: 'Quote',     icon: FileSearch,      onClick: onQuotationClick,     iconColor: '#0e7490', bgColor: '#cffafe', activeBgColor: '#a5f3fc' },
+    { id: 'customs',       label: 'Customs',      shortLabel: 'Customs',   icon: ScrollText,      onClick: onCustomsClick,       iconColor: '#c2410c', bgColor: '#ffedd5', activeBgColor: '#fed7aa' },
+    { id: 'booking',       label: 'Book',         shortLabel: 'Book',      icon: Briefcase,       onClick: onBookingClick,       iconColor: '#15803d', bgColor: '#dcfce7', activeBgColor: '#bbf7d0' },
+    { id: 'warehouse',     label: 'Warehouse',    shortLabel: 'Store',     icon: Building2,       onClick: onWarehouseClick,     iconColor: '#b45309', bgColor: '#fef3c7', activeBgColor: '#fde68a' },
+    { id: 'inquiry',       label: 'Inquiry',      shortLabel: 'Inquiry',   icon: PackageSearch,   onClick: onInquiryClick,       iconColor: '#4d7c0f', bgColor: '#ecfccb', activeBgColor: '#d9f99d' },
+    { id: 'leads',         label: 'Leads',        shortLabel: 'Leads',     icon: User,            onClick: onLeadsClick,         iconColor: '#be123c', bgColor: '#ffe4e6', activeBgColor: '#fecdd3' },
+    { id: 'communication', label: 'Messages',     shortLabel: 'Msgs',      icon: MessageSquare,   onClick: onCommunicationClick, iconColor: '#6d28d9', bgColor: '#ede9fe', activeBgColor: '#ddd6fe' },
+    { id: 'invoices',      label: 'Invoice',      shortLabel: 'Invoice',   icon: FileText,        onClick: onInvoicesClick,      iconColor: '#a16207', bgColor: '#fef9c3', activeBgColor: '#fef08a' },
+    { id: 'tickets',       label: 'Tickets',      shortLabel: 'Tickets',   icon: TicketCheck,     onClick: onTicketsClick,       iconColor: '#b91c1c', bgColor: '#fee2e2', activeBgColor: '#fecaca' },
+    { id: 'webhooks',      label: 'Webhooks',     shortLabel: 'Hooks',     icon: Webhook,         onClick: onWebhooksClick,      iconColor: '#a21caf', bgColor: '#fae8ff', activeBgColor: '#f5d0fe' },
+    { id: 'webhook-docs',  label: 'API Docs',     shortLabel: 'API',       icon: Code2,           onClick: onWebhookDocsClick,   iconColor: '#334155', bgColor: '#f1f5f9', activeBgColor: '#e2e8f0' },
   ];
 
   const isActive = (id: string) => {
