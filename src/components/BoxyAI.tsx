@@ -89,7 +89,7 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
       });
 
       const data = await res.json();
-      const reply = data.reply || "I'm having trouble responding right now. Please try again.";
+      const reply = data.reply || data.error || "I'm having trouble responding right now. Please try again.";
 
       const assistantMsg: Message = {
         id: (Date.now() + 1).toString(),
