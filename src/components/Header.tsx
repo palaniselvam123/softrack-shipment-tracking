@@ -35,8 +35,9 @@ interface NavItem {
   icon: React.ElementType;
   onClick?: () => void;
   iconColor: string;
-  bgColor: string;
-  activeBgColor: string;
+  gradient: string;
+  activeGradient: string;
+  labelColor: string;
 }
 
 const NavButton: React.FC<{
@@ -48,18 +49,23 @@ const NavButton: React.FC<{
   return (
     <button
       onClick={item.onClick}
+      title={item.label}
+      className="relative flex flex-col items-center justify-center gap-1 px-2 py-1.5 rounded-xl flex-shrink-0 transition-all duration-200 hover:scale-105 hover:brightness-110 min-w-[52px]"
       style={{
-        backgroundColor: isActive ? item.activeBgColor : item.bgColor,
-        boxShadow: isActive ? `0 2px 0 0 ${item.iconColor}` : 'none',
+        background: 'transparent',
+        boxShadow: isActive ? `0 -2px 0 0 ${item.iconColor} inset` : 'none',
       }}
-      className="relative flex flex-col items-center justify-center gap-0.5 px-2.5 py-1.5 rounded-xl flex-shrink-0 transition-all duration-200 hover:scale-105 hover:brightness-95 min-w-[48px]"
     >
-      <Icon
-        style={{ color: item.iconColor }}
-        className="w-5 h-5 flex-shrink-0"
-      />
+      <div
+        className="flex items-center justify-center rounded-xl w-10 h-10 shadow-sm"
+        style={{
+          background: isActive ? item.activeGradient : item.gradient,
+        }}
+      >
+        <Icon className="w-6 h-6" style={{ color: '#ffffff' }} />
+      </div>
       <span
-        style={{ color: item.iconColor }}
+        style={{ color: item.labelColor }}
         className="text-[10px] font-bold whitespace-nowrap leading-none"
       >
         {item.shortLabel}
@@ -91,21 +97,21 @@ const Header: React.FC<HeaderProps> = ({
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const navItems: NavItem[] = [
-    { id: 'dashboard',     label: 'Dashboard',    shortLabel: 'Home',      icon: LayoutDashboard, onClick: onDashboardClick,     iconColor: '#0369a1', bgColor: '#e0f2fe', activeBgColor: '#bae6fd' },
-    { id: 'shipments',     label: 'Shipments',    shortLabel: 'Ships',     icon: Ship,            onClick: onShipmentsClick,     iconColor: '#1d4ed8', bgColor: '#dbeafe', activeBgColor: '#bfdbfe' },
-    { id: 'map',           label: 'Map View',     shortLabel: 'Map',       icon: Map,             onClick: onMapViewClick,       iconColor: '#0f766e', bgColor: '#ccfbf1', activeBgColor: '#99f6e4' },
-    { id: 'bookings',      label: 'Bookings',     shortLabel: 'Books',     icon: BookOpen,        onClick: onBookingsClick,      iconColor: '#047857', bgColor: '#d1fae5', activeBgColor: '#a7f3d0' },
-    { id: 'quotation',     label: 'Quote & Book', shortLabel: 'Quote',     icon: FileSearch,      onClick: onQuotationClick,     iconColor: '#0e7490', bgColor: '#cffafe', activeBgColor: '#a5f3fc' },
-    { id: 'customs',       label: 'Customs',      shortLabel: 'Customs',   icon: ScrollText,      onClick: onCustomsClick,       iconColor: '#c2410c', bgColor: '#ffedd5', activeBgColor: '#fed7aa' },
-    { id: 'booking',       label: 'Book',         shortLabel: 'Book',      icon: Briefcase,       onClick: onBookingClick,       iconColor: '#15803d', bgColor: '#dcfce7', activeBgColor: '#bbf7d0' },
-    { id: 'warehouse',     label: 'Warehouse',    shortLabel: 'Store',     icon: Building2,       onClick: onWarehouseClick,     iconColor: '#b45309', bgColor: '#fef3c7', activeBgColor: '#fde68a' },
-    { id: 'inquiry',       label: 'Inquiry',      shortLabel: 'Inquiry',   icon: PackageSearch,   onClick: onInquiryClick,       iconColor: '#4d7c0f', bgColor: '#ecfccb', activeBgColor: '#d9f99d' },
-    { id: 'leads',         label: 'Leads',        shortLabel: 'Leads',     icon: User,            onClick: onLeadsClick,         iconColor: '#be123c', bgColor: '#ffe4e6', activeBgColor: '#fecdd3' },
-    { id: 'communication', label: 'Messages',     shortLabel: 'Msgs',      icon: MessageSquare,   onClick: onCommunicationClick, iconColor: '#6d28d9', bgColor: '#ede9fe', activeBgColor: '#ddd6fe' },
-    { id: 'invoices',      label: 'Invoice',      shortLabel: 'Invoice',   icon: FileText,        onClick: onInvoicesClick,      iconColor: '#a16207', bgColor: '#fef9c3', activeBgColor: '#fef08a' },
-    { id: 'tickets',       label: 'Tickets',      shortLabel: 'Tickets',   icon: TicketCheck,     onClick: onTicketsClick,       iconColor: '#b91c1c', bgColor: '#fee2e2', activeBgColor: '#fecaca' },
-    { id: 'webhooks',      label: 'Webhooks',     shortLabel: 'Hooks',     icon: Webhook,         onClick: onWebhooksClick,      iconColor: '#a21caf', bgColor: '#fae8ff', activeBgColor: '#f5d0fe' },
-    { id: 'webhook-docs',  label: 'API Docs',     shortLabel: 'API',       icon: Code2,           onClick: onWebhookDocsClick,   iconColor: '#334155', bgColor: '#f1f5f9', activeBgColor: '#e2e8f0' },
+    { id: 'dashboard',     label: 'Dashboard',    shortLabel: 'Home',    icon: LayoutDashboard, onClick: onDashboardClick,     iconColor: '#0369a1', gradient: 'linear-gradient(135deg, #38bdf8, #0284c7)',   activeGradient: 'linear-gradient(135deg, #0ea5e9, #0369a1)',   labelColor: '#0369a1' },
+    { id: 'shipments',     label: 'Shipments',    shortLabel: 'Ships',   icon: Ship,            onClick: onShipmentsClick,     iconColor: '#1d4ed8', gradient: 'linear-gradient(135deg, #60a5fa, #2563eb)',   activeGradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',   labelColor: '#1d4ed8' },
+    { id: 'map',           label: 'Map View',     shortLabel: 'Map',     icon: Map,             onClick: onMapViewClick,       iconColor: '#0f766e', gradient: 'linear-gradient(135deg, #2dd4bf, #0d9488)',   activeGradient: 'linear-gradient(135deg, #14b8a6, #0f766e)',   labelColor: '#0f766e' },
+    { id: 'bookings',      label: 'Bookings',     shortLabel: 'Books',   icon: BookOpen,        onClick: onBookingsClick,      iconColor: '#047857', gradient: 'linear-gradient(135deg, #34d399, #059669)',   activeGradient: 'linear-gradient(135deg, #10b981, #047857)',   labelColor: '#047857' },
+    { id: 'quotation',     label: 'Quote & Book', shortLabel: 'Quote',   icon: FileSearch,      onClick: onQuotationClick,     iconColor: '#0e7490', gradient: 'linear-gradient(135deg, #22d3ee, #0891b2)',   activeGradient: 'linear-gradient(135deg, #06b6d4, #0e7490)',   labelColor: '#0e7490' },
+    { id: 'customs',       label: 'Customs',      shortLabel: 'Customs', icon: ScrollText,      onClick: onCustomsClick,       iconColor: '#c2410c', gradient: 'linear-gradient(135deg, #fb923c, #ea580c)',   activeGradient: 'linear-gradient(135deg, #f97316, #c2410c)',   labelColor: '#c2410c' },
+    { id: 'booking',       label: 'Book',         shortLabel: 'Book',    icon: Briefcase,       onClick: onBookingClick,       iconColor: '#15803d', gradient: 'linear-gradient(135deg, #4ade80, #16a34a)',   activeGradient: 'linear-gradient(135deg, #22c55e, #15803d)',   labelColor: '#15803d' },
+    { id: 'warehouse',     label: 'Warehouse',    shortLabel: 'Store',   icon: Building2,       onClick: onWarehouseClick,     iconColor: '#b45309', gradient: 'linear-gradient(135deg, #fbbf24, #d97706)',   activeGradient: 'linear-gradient(135deg, #f59e0b, #b45309)',   labelColor: '#b45309' },
+    { id: 'inquiry',       label: 'Inquiry',      shortLabel: 'Inquiry', icon: PackageSearch,   onClick: onInquiryClick,       iconColor: '#4d7c0f', gradient: 'linear-gradient(135deg, #a3e635, #65a30d)',   activeGradient: 'linear-gradient(135deg, #84cc16, #4d7c0f)',   labelColor: '#4d7c0f' },
+    { id: 'leads',         label: 'Leads',        shortLabel: 'Leads',   icon: User,            onClick: onLeadsClick,         iconColor: '#be123c', gradient: 'linear-gradient(135deg, #fb7185, #e11d48)',   activeGradient: 'linear-gradient(135deg, #f43f5e, #be123c)',   labelColor: '#be123c' },
+    { id: 'communication', label: 'Messages',     shortLabel: 'Msgs',    icon: MessageSquare,   onClick: onCommunicationClick, iconColor: '#6d28d9', gradient: 'linear-gradient(135deg, #a78bfa, #7c3aed)',   activeGradient: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',   labelColor: '#6d28d9' },
+    { id: 'invoices',      label: 'Invoice',      shortLabel: 'Invoice', icon: FileText,        onClick: onInvoicesClick,      iconColor: '#a16207', gradient: 'linear-gradient(135deg, #fcd34d, #ca8a04)',   activeGradient: 'linear-gradient(135deg, #eab308, #a16207)',   labelColor: '#a16207' },
+    { id: 'tickets',       label: 'Tickets',      shortLabel: 'Tickets', icon: TicketCheck,     onClick: onTicketsClick,       iconColor: '#b91c1c', gradient: 'linear-gradient(135deg, #f87171, #dc2626)',   activeGradient: 'linear-gradient(135deg, #ef4444, #b91c1c)',   labelColor: '#b91c1c' },
+    { id: 'webhooks',      label: 'Webhooks',     shortLabel: 'Hooks',   icon: Webhook,         onClick: onWebhooksClick,      iconColor: '#a21caf', gradient: 'linear-gradient(135deg, #e879f9, #c026d3)',   activeGradient: 'linear-gradient(135deg, #d946ef, #a21caf)',   labelColor: '#a21caf' },
+    { id: 'webhook-docs',  label: 'API Docs',     shortLabel: 'API',     icon: Code2,           onClick: onWebhookDocsClick,   iconColor: '#334155', gradient: 'linear-gradient(135deg, #94a3b8, #475569)',   activeGradient: 'linear-gradient(135deg, #64748b, #334155)',   labelColor: '#334155' },
   ];
 
   const isActive = (id: string) => {
