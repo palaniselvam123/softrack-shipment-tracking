@@ -70,12 +70,13 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
       ? `[User is currently on the "${currentView}" page] `
       : '';
 
-    const historyForAPI = messages
-      .filter(m => m.id !== '0')
-      .slice(-10)
-      .map(m => ({ role: m.role, content: m.content }));
-
-    historyForAPI.push({ role: 'user', content: contextNote + content.trim() });
+    const historyForAPI = [
+      ...messages
+        .filter(m => m.id !== '0')
+        .slice(-20)
+        .map(m => ({ role: m.role, content: m.content })),
+      { role: 'user', content: contextNote + content.trim() },
+    ];
 
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/boxy-ai`, {
