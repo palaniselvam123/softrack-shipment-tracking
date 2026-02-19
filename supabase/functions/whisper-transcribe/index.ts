@@ -2,7 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
@@ -12,54 +12,38 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const azureEndpoint = Deno.env.get("AZURE_WHISPER_ENDPOINT");
-    const azureApiKey = Deno.env.get("AZURE_WHISPER_API_KEY");
-    const azureDeployment = Deno.env.get("AZURE_WHISPER_DEPLOYMENT") || "whisper";
-    const azureApiVersion = Deno.env.get("AZURE_WHISPER_API_VERSION") || "2024-06-01";
+    const speechKey = Deno.env.get("AZURE_SPEECH_KEY");
+    const speechRegion = Deno.env.get("AZURE_SPEECH_REGION");
 
-    if (!azureEndpoint || !azureApiKey) {
+    if (!speechKey || !speechRegion) {
       return new Response(
-        JSON.stringify({ error: "Azure Whisper not configured. Please set AZURE_WHISPER_ENDPOINT and AZURE_WHISPER_API_KEY." }),
+        JSON.stringify({ error: "Azure Speech not configured. Please set AZURE_SPEECH_KEY and AZURE_SPEECH_REGION." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const formData = await req.formData();
-    const audioFile = formData.get("audio") as File;
-
-    if (!audioFile) {
-      return new Response(
-        JSON.stringify({ error: "No audio file provided" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const azureFormData = new FormData();
-    azureFormData.append("file", audioFile, audioFile.name || "audio.webm");
-    azureFormData.append("response_format", "json");
-
-    const url = `${azureEndpoint}/openai/deployments/${azureDeployment}/audio/transcriptions?api-version=${azureApiVersion}`;
-
-    const response = await fetch(url, {
+    const tokenUrl = `https://${speechRegion}.api.cognitive.microsoft.com/sts/v1.0/issueToken`;
+    const tokenResponse = await fetch(tokenUrl, {
       method: "POST",
       headers: {
-        "api-key": azureApiKey,
+        "Ocp-Apim-Subscription-Key": speechKey,
+        "Content-Length": "0",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: azureFormData,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
+    if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text();
       return new Response(
-        JSON.stringify({ error: `Azure Whisper error: ${response.status} - ${errorText}` }),
-        { status: response.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: `Azure Speech token error: ${tokenResponse.status} - ${errorText}` }),
+        { status: tokenResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const result = await response.json();
+    const token = await tokenResponse.text();
 
     return new Response(
-      JSON.stringify({ text: result.text || "" }),
+      JSON.stringify({ token, region: speechRegion }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {

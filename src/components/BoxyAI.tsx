@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { MessageSquare, X, Send, Minimize2, Maximize2, RotateCcw, User, Sparkles, Mic, MicOff, Loader2 } from 'lucide-react';
+import { X, Send, Minimize2, Maximize2, RotateCcw, User, Sparkles, Mic, MicOff, Loader2 } from 'lucide-react';
+import * as SpeechSDK from 'microsoft-cognitiveservices-speech-sdk';
 import type { DashboardStats } from '../App';
 
 interface Message {
@@ -15,6 +16,8 @@ interface BoxyAIProps {
 }
 
 type RecordingState = 'idle' | 'recording' | 'transcribing';
+
+let cachedSpeechToken: { token: string; region: string; expiresAt: number } | null = null;
 
 const SUGGESTED_PROMPTS = [
   'How many shipments for Tata Motors Ltd?',
@@ -42,14 +45,10 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
   const [hasNewMessage, setHasNewMessage] = useState(false);
   const [recordingState, setRecordingState] = useState<RecordingState>('idle');
   const [micError, setMicError] = useState<string | null>(null);
-  const [audioLevel, setAudioLevel] = useState(0);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const animFrameRef = useRef<number | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
+  const recognizerRef = useRef<SpeechSDK.SpeechRecognizer | null>(null);
 
   useEffect(() => {
     if (isOpen && messagesEndRef.current) {
@@ -66,7 +65,11 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
 
   useEffect(() => {
     return () => {
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      if (recognizerRef.current) {
+        recognizerRef.current.stopContinuousRecognitionAsync();
+        recognizerRef.current.close();
+        recognizerRef.current = null;
+      }
     };
   }, []);
 
@@ -130,100 +133,85 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
     }
   };
 
-  const startAudioLevelMonitor = useCallback((stream: MediaStream) => {
-    const ctx = new AudioContext();
-    const source = ctx.createMediaStreamSource(stream);
-    const analyser = ctx.createAnalyser();
-    analyser.fftSize = 256;
-    source.connect(analyser);
-    analyserRef.current = analyser;
-
-    const data = new Uint8Array(analyser.frequencyBinCount);
-    const tick = () => {
-      analyser.getByteFrequencyData(data);
-      const avg = data.reduce((a, b) => a + b, 0) / data.length;
-      setAudioLevel(Math.min(100, avg * 2));
-      animFrameRef.current = requestAnimationFrame(tick);
-    };
-    animFrameRef.current = requestAnimationFrame(tick);
-  }, []);
-
-  const stopAudioLevelMonitor = useCallback(() => {
-    if (animFrameRef.current) {
-      cancelAnimationFrame(animFrameRef.current);
-      animFrameRef.current = null;
+  const getSpeechToken = useCallback(async (): Promise<{ token: string; region: string }> => {
+    const now = Date.now();
+    if (cachedSpeechToken && cachedSpeechToken.expiresAt > now) {
+      return { token: cachedSpeechToken.token, region: cachedSpeechToken.region };
     }
-    setAudioLevel(0);
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/whisper-transcribe`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    cachedSpeechToken = { token: data.token, region: data.region, expiresAt: now + 8 * 60 * 1000 };
+    return { token: data.token, region: data.region };
   }, []);
 
   const startRecording = useCallback(async () => {
     setMicError(null);
+    setRecordingState('transcribing');
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioChunksRef.current = [];
+      const { token, region } = await getSpeechToken();
+      const speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(token, region);
+      speechConfig.speechRecognitionLanguage = 'en-US';
+      const audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
+      const recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+      recognizerRef.current = recognizer;
 
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-        ? 'audio/webm;codecs=opus'
-        : MediaRecorder.isTypeSupported('audio/webm')
-        ? 'audio/webm'
-        : 'audio/mp4';
+      let interimText = '';
 
-      const recorder = new MediaRecorder(stream, { mimeType });
-      mediaRecorderRef.current = recorder;
-
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      recognizer.recognizing = (_s, e) => {
+        if (e.result.reason === SpeechSDK.ResultReason.RecognizingSpeech) {
+          interimText = e.result.text;
+          setInput(interimText);
+        }
       };
 
-      recorder.onstop = async () => {
-        stopAudioLevelMonitor();
-        stream.getTracks().forEach(t => t.stop());
-
-        const blob = new Blob(audioChunksRef.current, { type: mimeType });
-        if (blob.size < 1000) {
-          setRecordingState('idle');
-          return;
-        }
-
-        setRecordingState('transcribing');
-        try {
-          const form = new FormData();
-          const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
-          form.append('audio', blob, `recording.${ext}`);
-
-          const res = await fetch(`${SUPABASE_URL}/functions/v1/whisper-transcribe`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
-            body: form,
+      recognizer.recognized = (_s, e) => {
+        if (e.result.reason === SpeechSDK.ResultReason.RecognizedSpeech && e.result.text) {
+          setInput(prev => {
+            const base = prev.replace(interimText, '').trim();
+            return base ? `${base} ${e.result.text}` : e.result.text;
           });
-
-          const data = await res.json();
-          if (data.text && data.text.trim()) {
-            setInput(data.text.trim());
-            setTimeout(() => inputRef.current?.focus(), 50);
-          } else if (data.error) {
-            setMicError(data.error.includes('not configured') ? 'Voice not configured' : 'Could not transcribe audio');
-          }
-        } catch {
-          setMicError('Transcription failed. Please type instead.');
-        } finally {
-          setRecordingState('idle');
+          interimText = e.result.text;
         }
       };
 
-      startAudioLevelMonitor(stream);
-      recorder.start(100);
-      setRecordingState('recording');
+      recognizer.canceled = (_s, e) => {
+        if (e.reason === SpeechSDK.CancellationReason.Error) {
+          const msg = e.errorDetails || 'Speech recognition error';
+          setMicError(msg.includes('key') || msg.includes('auth') ? 'Voice not configured' : 'Speech recognition failed');
+        }
+        setRecordingState('idle');
+        recognizer.close();
+        recognizerRef.current = null;
+      };
+
+      recognizer.sessionStopped = () => {
+        setRecordingState('idle');
+        recognizer.close();
+        recognizerRef.current = null;
+        setTimeout(() => inputRef.current?.focus(), 50);
+      };
+
+      recognizer.startContinuousRecognitionAsync(
+        () => setRecordingState('recording'),
+        (err) => {
+          setMicError(String(err).includes('denied') ? 'Microphone access denied' : 'Could not start microphone');
+          setRecordingState('idle');
+        }
+      );
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Microphone error';
-      setMicError(msg.includes('denied') ? 'Microphone access denied' : 'Could not access microphone');
+      setMicError(msg.includes('not configured') ? 'Voice not configured — set AZURE_SPEECH_KEY & REGION' : msg);
       setRecordingState('idle');
     }
-  }, [startAudioLevelMonitor, stopAudioLevelMonitor]);
+  }, [getSpeechToken]);
 
   const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();
+    if (recognizerRef.current) {
+      recognizerRef.current.stopContinuousRecognitionAsync();
     }
   }, []);
 
@@ -390,13 +378,13 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
               {recordingState === 'recording' && (
                 <div className="flex-shrink-0 mx-3 mb-1 px-3 py-2 bg-red-50 border border-red-200 rounded-xl flex items-center space-x-2">
                   <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse flex-shrink-0" />
-                  <span className="text-xs text-red-700 font-medium flex-1">Recording... tap mic to stop</span>
+                  <span className="text-xs text-red-700 font-medium flex-1">Listening... tap mic to stop</span>
                   <div className="flex items-end space-x-0.5 h-4">
                     {[...Array(5)].map((_, i) => (
                       <div
                         key={i}
-                        className="w-1 bg-red-400 rounded-full transition-all duration-100"
-                        style={{ height: `${Math.max(3, (audioLevel / 100) * 16 * (0.5 + Math.random() * 0.5))}px` }}
+                        className="w-1 bg-red-400 rounded-full animate-bounce"
+                        style={{ height: `${6 + (i % 3) * 4}px`, animationDelay: `${i * 80}ms` }}
                       />
                     ))}
                   </div>
@@ -406,7 +394,7 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
               {recordingState === 'transcribing' && (
                 <div className="flex-shrink-0 mx-3 mb-1 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl flex items-center space-x-2">
                   <Loader2 className="w-3.5 h-3.5 text-amber-600 animate-spin flex-shrink-0" />
-                  <span className="text-xs text-amber-700 font-medium">Transcribing audio...</span>
+                  <span className="text-xs text-amber-700 font-medium">Connecting to speech service...</span>
                 </div>
               )}
 
