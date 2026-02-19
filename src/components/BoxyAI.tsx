@@ -167,15 +167,42 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
     return { token: data.token, region: data.region };
   }, []);
 
-  const stripMarkdown = (text: string): string => {
+  const prepareForSpeech = (text: string): string => {
     return text
+      .replace(/#{1,6}\s*/g, '')
       .replace(/\*\*([^*]+)\*\*/g, '$1')
       .replace(/\*([^*]+)\*/g, '$1')
       .replace(/━+/g, '')
-      .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
+      .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')
+      .replace(/[\u2600-\u26FF]/gu, '')
+      .replace(/[\u2700-\u27BF]/gu, '')
+      .replace(/\|/g, ',')
+      .replace(/^\s*[-•*]\s+/gm, '')
+      .replace(/^\s*\d+\.\s+/gm, '')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
       .replace(/\[([^\]]+)\]/g, '$1')
-      .replace(/\n{3,}/g, '\n\n')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/_{2,}/g, '')
+      .replace(/→/g, 'to')
+      .replace(/←/g, 'from')
+      .replace(/[<>]/g, '')
+      .replace(/\n{2,}/g, '. ')
+      .replace(/\n/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .replace(/\.\s*\.\s*\.*/g, '.')
+      .replace(/,\s*,/g, ',')
       .trim();
+  };
+
+  const buildSsml = (text: string): string => {
+    const clean = prepareForSpeech(text);
+    const escaped = clean
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+    return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="en-US-AriaNeural"><prosody rate="0%" pitch="0%">${escaped}</prosody></voice></speak>`;
   };
 
   const speakText = useCallback(async (text: string) => {
@@ -190,9 +217,9 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
       speechConfig.speechSynthesisVoiceName = 'en-US-AriaNeural';
       const synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
       synthesizerRef.current = synthesizer;
-      const cleanText = stripMarkdown(text);
-      synthesizer.speakTextAsync(
-        cleanText,
+      const ssml = buildSsml(text);
+      synthesizer.speakSsmlAsync(
+        ssml,
         () => {
           setSpeakingState('idle');
           synthesizer.close();
@@ -485,27 +512,6 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
                 </div>
               )}
 
-              {speakingState === 'speaking' && voiceEnabled && (
-                <div className="flex-shrink-0 mx-3 mb-1 px-3 py-2 bg-sky-50 border border-sky-200 rounded-xl flex items-center justify-between space-x-2">
-                  <div className="flex items-center space-x-2">
-                    <Volume2 className="w-3.5 h-3.5 text-sky-600 flex-shrink-0" />
-                    <div className="flex items-end space-x-0.5 h-3">
-                      {[...Array(4)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="w-0.5 bg-sky-400 rounded-full animate-bounce"
-                          style={{ height: `${4 + (i % 3) * 3}px`, animationDelay: `${i * 100}ms` }}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-xs text-sky-700 font-medium">Speaking...</span>
-                  </div>
-                  <button onClick={stopSpeaking} className="text-sky-400 hover:text-sky-600 transition-colors" title="Stop speaking">
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              )}
-
               {micError && (
                 <div className="flex-shrink-0 mx-3 mb-1 px-3 py-1.5 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between">
                   <span className="text-xs text-red-600">{micError}</span>
@@ -517,6 +523,29 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
 
               {/* Input area */}
               <div className="flex-shrink-0 border-t border-gray-100 px-3 py-3 bg-white">
+                {speakingState === 'speaking' && voiceEnabled && (
+                  <div className="flex items-center justify-between mb-2 px-1">
+                    <div className="flex items-center space-x-1.5">
+                      <div className="flex items-end space-x-0.5 h-3">
+                        {[...Array(4)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="w-0.5 bg-sky-500 rounded-full animate-bounce"
+                            style={{ height: `${4 + (i % 3) * 3}px`, animationDelay: `${i * 100}ms` }}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs text-sky-600 font-medium">Boxy is speaking...</span>
+                    </div>
+                    <button
+                      onClick={stopSpeaking}
+                      className="text-xs text-red-500 hover:text-red-700 font-medium flex items-center space-x-1 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                      <span>Stop</span>
+                    </button>
+                  </div>
+                )}
                 <div className="flex items-end space-x-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 focus-within:border-sky-400 focus-within:ring-2 focus-within:ring-sky-100 transition-all duration-150">
                   <textarea
                     ref={inputRef}
@@ -529,6 +558,15 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView, dashboardStats }) => {
                     style={{ minHeight: '20px' }}
                     disabled={isLoading || recordingState !== 'idle'}
                   />
+                  {input.trim() && recordingState === 'idle' && !isLoading && (
+                    <button
+                      onClick={() => setInput('')}
+                      title="Clear input"
+                      className="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-all duration-150"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                   <button
                     onClick={toggleRecording}
                     disabled={isLoading || recordingState === 'transcribing'}
