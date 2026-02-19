@@ -34,6 +34,8 @@ interface NavItem {
   icon: React.ElementType;
   onClick?: () => void;
   highlight?: boolean;
+  iconColor: string;
+  bgColor: string;
 }
 
 const NavButton: React.FC<{
@@ -41,31 +43,36 @@ const NavButton: React.FC<{
   isActive: boolean;
 }> = ({ item, isActive }) => {
   const Icon = item.icon;
+  const [hovered, setHovered] = React.useState(false);
+  const active = isActive || hovered;
 
   return (
     <button
       onClick={item.onClick}
       title={item.label}
-      className={`relative flex items-center gap-0 overflow-hidden transition-all duration-300 ease-in-out rounded-lg
-        px-2.5 py-2
-        max-w-[38px] hover:max-w-[160px]
-        group
-        ${isActive
-          ? 'text-sky-700 bg-sky-50 shadow-sm max-w-[160px]'
-          : item.highlight
-          ? 'text-sky-700 bg-sky-50 border border-sky-200 hover:bg-sky-100 font-semibold'
-          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-        }
-      `}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        maxWidth: active ? '180px' : '44px',
+        backgroundColor: active ? item.bgColor : 'transparent',
+      }}
+      className={`relative flex items-center overflow-hidden transition-all duration-300 ease-in-out rounded-xl px-1.5 py-1.5 group ${item.highlight && !isActive ? 'border border-current/20' : ''}`}
     >
-      <Icon className="w-4 h-4 flex-shrink-0" />
-      <span className={`
-        text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out
-        ml-0 group-hover:ml-2
-        max-w-0 group-hover:max-w-[120px]
-        opacity-0 group-hover:opacity-100
-        ${isActive ? 'ml-2 max-w-[120px] opacity-100' : ''}
-      `}>
+      <div
+        style={{ color: active ? item.iconColor : undefined }}
+        className={`flex-shrink-0 rounded-lg p-1.5 transition-colors duration-300 ${active ? '' : 'text-gray-500'}`}
+      >
+        <Icon className="w-5 h-5" />
+      </div>
+      <span
+        style={{
+          color: item.iconColor,
+          maxWidth: active ? '130px' : '0px',
+          marginLeft: active ? '4px' : '0px',
+          opacity: active ? 1 : 0,
+        }}
+        className="text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out"
+      >
         {item.label}
       </span>
     </button>
@@ -95,21 +102,21 @@ const Header: React.FC<HeaderProps> = ({
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const navItems: NavItem[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, onClick: onDashboardClick },
-    { id: 'shipments', label: 'Shipments', icon: Ship, onClick: onShipmentsClick },
-    { id: 'map', label: 'Map View', icon: Map, onClick: onMapViewClick },
-    { id: 'bookings', label: 'Bookings', icon: BookOpen, onClick: onBookingsClick },
-    { id: 'quotation', label: 'Quote & Book', icon: FileSearch, onClick: onQuotationClick, highlight: true },
-    { id: 'customs', label: 'Customs', icon: ScrollText, onClick: onCustomsClick },
-    { id: 'booking', label: 'Book', icon: Briefcase, onClick: onBookingClick },
-    { id: 'warehouse', label: 'Warehouse', icon: Building2, onClick: onWarehouseClick },
-    { id: 'inquiry', label: 'Inquiry', icon: PackageSearch, onClick: onInquiryClick },
-    { id: 'leads', label: 'Leads', icon: User, onClick: onLeadsClick },
-    { id: 'communication', label: 'Messages', icon: MessageSquare, onClick: onCommunicationClick },
-    { id: 'invoices', label: 'Invoice', icon: FileText, onClick: onInvoicesClick },
-    { id: 'tickets', label: 'Tickets', icon: TicketCheck, onClick: onTicketsClick },
-    { id: 'webhooks', label: 'Webhooks', icon: Webhook, onClick: onWebhooksClick },
-    { id: 'webhook-docs', label: 'API Docs', icon: Code2, onClick: onWebhookDocsClick },
+    { id: 'dashboard',    label: 'Dashboard',   icon: LayoutDashboard, onClick: onDashboardClick,     iconColor: '#0284c7', bgColor: '#e0f2fe' },
+    { id: 'shipments',    label: 'Shipments',   icon: Ship,            onClick: onShipmentsClick,     iconColor: '#2563eb', bgColor: '#dbeafe' },
+    { id: 'map',          label: 'Map View',    icon: Map,             onClick: onMapViewClick,       iconColor: '#0d9488', bgColor: '#ccfbf1' },
+    { id: 'bookings',     label: 'Bookings',    icon: BookOpen,        onClick: onBookingsClick,      iconColor: '#059669', bgColor: '#d1fae5' },
+    { id: 'quotation',    label: 'Quote & Book',icon: FileSearch,      onClick: onQuotationClick,     iconColor: '#0891b2', bgColor: '#cffafe', highlight: true },
+    { id: 'customs',      label: 'Customs',     icon: ScrollText,      onClick: onCustomsClick,       iconColor: '#ea580c', bgColor: '#ffedd5' },
+    { id: 'booking',      label: 'Book',        icon: Briefcase,       onClick: onBookingClick,       iconColor: '#16a34a', bgColor: '#dcfce7' },
+    { id: 'warehouse',    label: 'Warehouse',   icon: Building2,       onClick: onWarehouseClick,     iconColor: '#d97706', bgColor: '#fef3c7' },
+    { id: 'inquiry',      label: 'Inquiry',     icon: PackageSearch,   onClick: onInquiryClick,       iconColor: '#65a30d', bgColor: '#ecfccb' },
+    { id: 'leads',        label: 'Leads',       icon: User,            onClick: onLeadsClick,         iconColor: '#e11d48', bgColor: '#ffe4e6' },
+    { id: 'communication',label: 'Messages',    icon: MessageSquare,   onClick: onCommunicationClick, iconColor: '#7c3aed', bgColor: '#ede9fe' },
+    { id: 'invoices',     label: 'Invoice',     icon: FileText,        onClick: onInvoicesClick,      iconColor: '#ca8a04', bgColor: '#fef9c3' },
+    { id: 'tickets',      label: 'Tickets',     icon: TicketCheck,     onClick: onTicketsClick,       iconColor: '#dc2626', bgColor: '#fee2e2' },
+    { id: 'webhooks',     label: 'Webhooks',    icon: Webhook,         onClick: onWebhooksClick,      iconColor: '#c026d3', bgColor: '#fae8ff' },
+    { id: 'webhook-docs', label: 'API Docs',    icon: Code2,           onClick: onWebhookDocsClick,   iconColor: '#475569', bgColor: '#f1f5f9' },
   ];
 
   const isActive = (id: string) => {
