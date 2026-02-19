@@ -37,13 +37,14 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    const callerAppRole = callerUser.app_metadata?.role;
     const { data: callerProfile } = await supabaseAdmin
       .from("profiles")
       .select("role")
       .eq("id", callerUser.id)
       .maybeSingle();
 
-    if (!callerProfile || callerProfile.role !== "admin") {
+    if (callerAppRole !== "admin" && (!callerProfile || callerProfile.role !== "admin")) {
       return new Response(JSON.stringify({ error: "Forbidden: admin only" }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -59,21 +60,48 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    let userId: string;
+
     const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
+      app_metadata: { role: role || "user" },
     });
 
     if (createError) {
-      return new Response(JSON.stringify({ error: createError.message }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      if (createError.message.toLowerCase().includes("already been registered") || createError.message.toLowerCase().includes("already exists")) {
+        const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+        if (listError) {
+          return new Response(JSON.stringify({ error: listError.message }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const existing = users.find((u) => u.email === email);
+        if (!existing) {
+          return new Response(JSON.stringify({ error: createError.message }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        userId = existing.id;
+        await supabaseAdmin.auth.admin.updateUserById(userId, {
+          password,
+          app_metadata: { role: role || "user" },
+        });
+      } else {
+        return new Response(JSON.stringify({ error: createError.message }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    } else {
+      userId = newUser.user.id;
     }
 
     const { error: profileError } = await supabaseAdmin.from("profiles").upsert({
-      id: newUser.user.id,
+      id: userId,
       email,
       full_name: full_name || null,
       company: company || null,
@@ -91,7 +119,7 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    return new Response(JSON.stringify({ success: true, userId: newUser.user.id }), {
+    return new Response(JSON.stringify({ success: true, userId }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
