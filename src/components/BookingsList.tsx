@@ -359,35 +359,52 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
                     onClick={() => onViewBooking(booking.bookingNo)}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-blue-600 font-medium">{booking.bookingNo}</span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900">{booking.date}</span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900">{booking.jobOrderNo}</span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900">{booking.serviceProvider}</span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-2">
-                        {getTransportIcon(booking.transportMode)}
-                        <span className="text-sm text-gray-900">{booking.transportMode}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={getStatusBadgeClass(booking.status)}>
-                        {booking.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-gray-900">{booking.shipper}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-gray-900">{booking.cosignee}</span>
-                    </td>
+                    {visibleColumns.map((column) => {
+                      if (column.key === 'bookingNo') return (
+                        <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm text-blue-600 font-medium">{booking.bookingNo}</span>
+                        </td>
+                      );
+                      if (column.key === 'date') return (
+                        <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm text-gray-900">{booking.date}</span>
+                        </td>
+                      );
+                      if (column.key === 'jobOrderNo') return (
+                        <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm text-gray-900">{booking.jobOrderNo}</span>
+                        </td>
+                      );
+                      if (column.key === 'serviceProvider') return (
+                        <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm text-gray-900">{booking.serviceProvider}</span>
+                        </td>
+                      );
+                      if (column.key === 'transportMode') return (
+                        <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center space-x-2">
+                            {getTransportIcon(booking.transportMode)}
+                            <span className="text-sm text-gray-900">{booking.transportMode}</span>
+                          </div>
+                        </td>
+                      );
+                      if (column.key === 'status') return (
+                        <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <span className={getStatusBadgeClass(booking.status)}>{booking.status}</span>
+                        </td>
+                      );
+                      if (column.key === 'shipper') return (
+                        <td key={column.key} className="px-6 py-4">
+                          <span className="text-sm text-gray-900">{booking.shipper}</span>
+                        </td>
+                      );
+                      if (column.key === 'cosignee') return (
+                        <td key={column.key} className="px-6 py-4">
+                          <span className="text-sm text-gray-900">{booking.cosignee}</span>
+                        </td>
+                      );
+                      return null;
+                    })}
                   </tr>
                 ))}
               </tbody>

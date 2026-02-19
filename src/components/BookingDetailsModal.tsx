@@ -277,6 +277,76 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
       consigneeContact: '+91 44 5678 9012',
       consigneeEmail: 'logistics@chennaimotors.in'
     },
+    'AE//0043//17.2': {
+      bookingNo: 'AE//0043//17.2',
+      status: 'Pending',
+      createdDate: '15th Oct 2025',
+      jobOrderNo: '69595590',
+      serviceProvider: 'Emirates SkyCargo',
+      transportMode: 'Air Export',
+      shipper: 'Pharma Exports India Ltd',
+      consignee: 'Healthcare Dubai LLC',
+      origin: 'Mumbai, IN',
+      destination: 'Dubai, AE',
+      pickupDate: '2025-11-08',
+      deliveryDate: '2025-11-09',
+      eta: '9 Nov 2025',
+      location: 'Dubai Airport, UAE',
+      cargoType: 'Pharmaceuticals',
+      movementType: 'Air Express',
+      totalPackages: 40,
+      totalWeight: '180 kg',
+      totalVolume: '0.6 m³',
+      goods: [
+        { id: 1, description: 'Pharmaceutical Products', packages: 40, weight: 180, volume: 0.6 }
+      ],
+      documents: [],
+      remarks: 'Temperature-controlled pharma export to UAE.',
+      trackingEvents: [
+        { date: '2025-11-08', time: '7:30 AM', event: 'Booking Created', location: 'Mumbai' }
+      ],
+      shipperAddress: '101 Pharma Hub, Mumbai, India',
+      shipperContact: '+91 22 3456 7890',
+      shipperEmail: 'exports@pharmaexp.in',
+      consigneeAddress: 'Healthcare District, Dubai, UAE',
+      consigneeContact: '+971 4 1234 5678',
+      consigneeEmail: 'imports@healthcaredubai.ae'
+    },
+    'AE//0044//18.4': {
+      bookingNo: 'AE//0044//18.4',
+      status: 'Pending',
+      createdDate: '16th Oct 2025',
+      jobOrderNo: '69595591',
+      serviceProvider: 'Qatar Airways Cargo',
+      transportMode: 'Air Export',
+      shipper: 'Fresh Foods Exports',
+      consignee: 'Middle East Grocers',
+      origin: 'Delhi, IN',
+      destination: 'Doha, QA',
+      pickupDate: '2025-11-10',
+      deliveryDate: '2025-11-11',
+      eta: '11 Nov 2025',
+      location: 'Doha Airport, Qatar',
+      cargoType: 'Perishables',
+      movementType: 'Air Express',
+      totalPackages: 30,
+      totalWeight: '120 kg',
+      totalVolume: '0.4 m³',
+      goods: [
+        { id: 1, description: 'Fresh Food Products', packages: 30, weight: 120, volume: 0.4 }
+      ],
+      documents: [],
+      remarks: 'Perishable goods - cold chain required.',
+      trackingEvents: [
+        { date: '2025-11-10', time: '5:00 AM', event: 'Booking Created', location: 'Delhi' }
+      ],
+      shipperAddress: '202 Food Park, Delhi, India',
+      shipperContact: '+91 11 2345 6789',
+      shipperEmail: 'export@freshfoods.in',
+      consigneeAddress: 'Market District, Doha, Qatar',
+      consigneeContact: '+974 4 1234 5678',
+      consigneeEmail: 'imports@megrocers.qa'
+    },
     'LI//0045//19.1': {
       bookingNo: 'LI//0045//19.1',
       status: 'Pending',
