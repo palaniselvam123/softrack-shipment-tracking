@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Upload, Plus, X, Calendar, MapPin } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface BookingData {
   // Service Selection
@@ -813,9 +814,63 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo, onBack }) => {
     }
   };
 
-  const handleSubmit = () => {
-    console.log('Booking submitted:', bookingData);
-    alert('Booking submitted successfully!');
+  const handleSubmit = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert('You must be logged in to submit a booking.');
+      return;
+    }
+
+    const modeMap: Record<string, string> = {
+      sea: bookingData.shipmentType === 'Import' ? 'Sea Import' : 'Sea Export',
+      air: bookingData.shipmentType === 'Import' ? 'Air Import' : 'Air Export',
+      land: bookingData.shipmentType === 'Import' ? 'Land Import' : 'Land Export',
+    };
+    const transportMode = modeMap[bookingData.transportMode] || bookingData.transportMode;
+
+    const prefix: Record<string, string> = {
+      'Sea Import': 'SE-S', 'Sea Export': 'SE-E',
+      'Air Import': 'AI', 'Air Export': 'AE',
+      'Land Import': 'LI', 'Land Export': 'LE',
+    };
+    const pre = prefix[transportMode] || 'BK';
+    const rand = Math.floor(Math.random() * 9000) + 1000;
+    const sub = Math.floor(Math.random() * 20) + 1;
+    const dec = Math.floor(Math.random() * 9) + 1;
+    const bookingNo = `${pre}//${String(rand).padStart(4, '0')}//${sub}.${dec}`;
+    const jobOrderNo = String(Math.floor(Date.now() / 1000));
+
+    const payload = {
+      booking_no: bookingNo,
+      user_id: user.id,
+      service_provider: bookingData.serviceProvider,
+      transport_mode: transportMode,
+      shipment_type: bookingData.shipmentType,
+      movement_type: bookingData.movementType,
+      job_order_no: jobOrderNo,
+      consignee_name: bookingData.consigneeName,
+      consignee_address: bookingData.consigneeAddress,
+      consignee_contact: bookingData.consigneeContact,
+      consignee_email: bookingData.consigneeEmail,
+      origin_location: bookingData.originLocation,
+      destination_location: bookingData.destinationLocation,
+      pickup_date: bookingData.pickupDate || null,
+      delivery_date: bookingData.deliveryDate || null,
+      cargo_description: bookingData.goods.map(g => g.description).join(', '),
+      goods_description: bookingData.goods,
+      services: bookingData.services,
+      remarks: bookingData.remarks,
+      status: 'pending',
+    };
+
+    const { error } = await supabase.from('bookings_from_quotes').insert(payload);
+    if (error) {
+      alert(`Failed to submit booking: ${error.message}`);
+      return;
+    }
+
+    alert(`Booking ${bookingNo} submitted successfully!`);
+    onBack();
   };
 
   const goToStep = (stepNumber: number) => {
