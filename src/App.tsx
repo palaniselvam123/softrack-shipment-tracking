@@ -64,6 +64,7 @@ function App() {
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
 
   useEffect(() => {
+    if (!user) return;
     async function fetchStats() {
       const { data: shipments } = await supabase
         .from('shipments')
@@ -98,7 +99,7 @@ function App() {
       }
     }
     fetchStats();
-  }, []);
+  }, [user]);
 
   React.useEffect(() => {
     const path = window.location.pathname;
