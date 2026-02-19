@@ -175,10 +175,10 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-sky-500 to-cyan-600 rounded-2xl shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200 group"
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-sky-500 to-cyan-600 rounded-2xl shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200 group overflow-hidden"
           aria-label="Open Boxy AI"
         >
-          <Bot className="w-7 h-7 text-white" />
+          <img src="/BoxyAi.png" alt="Boxy AI" className="w-12 h-12 object-contain" />
           {hasNewMessage && (
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full ring-2 ring-white animate-pulse" />
           )}
@@ -199,8 +199,8 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 flex-shrink-0">
             <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
-                <Bot className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center">
+                <img src="/BoxyAi.png" alt="Boxy AI" className="w-8 h-8 object-contain" />
               </div>
               <div>
                 <div className="flex items-center space-x-1.5">
@@ -251,14 +251,14 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
                     className={`flex items-start space-x-2.5 ${msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}
                   >
                     <div
-                      className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                      className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden ${
                         msg.role === 'assistant'
                           ? 'bg-gradient-to-br from-sky-500 to-cyan-600'
                           : 'bg-gray-200'
                       }`}
                     >
                       {msg.role === 'assistant' ? (
-                        <Bot className="w-4 h-4 text-white" />
+                        <img src="/BoxyAi.png" alt="Boxy AI" className="w-7 h-7 object-contain" />
                       ) : (
                         <User className="w-4 h-4 text-gray-600" />
                       )}
@@ -284,8 +284,8 @@ const BoxyAI: React.FC<BoxyAIProps> = ({ currentView }) => {
 
                 {isLoading && (
                   <div className="flex items-start space-x-2.5">
-                    <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-600 flex items-center justify-center flex-shrink-0">
-                      <Bot className="w-4 h-4 text-white" />
+                    <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      <img src="/BoxyAi.png" alt="Boxy AI" className="w-7 h-7 object-contain" />
                     </div>
                     <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
                       <div className="flex space-x-1.5 items-center h-4">
