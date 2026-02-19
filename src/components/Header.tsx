@@ -57,12 +57,12 @@ const NavButton: React.FC<{
       }}
     >
       <div
-        className="flex items-center justify-center rounded-xl w-10 h-10 shadow-sm"
+        className="flex items-center justify-center rounded-xl w-12 h-12 shadow-sm"
         style={{
           background: isActive ? item.activeGradient : item.gradient,
         }}
       >
-        <Icon className="w-6 h-6" style={{ color: '#ffffff' }} />
+        <Icon className="w-7 h-7" style={{ color: '#ffffff' }} />
       </div>
       <span
         style={{ color: item.labelColor }}
