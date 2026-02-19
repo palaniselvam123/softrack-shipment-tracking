@@ -228,16 +228,23 @@ Deno.serve(async (req: Request) => {
     const lastUserMsg = [...messages].reverse().find((m: { role: string }) => m.role === 'user');
     const userText = lastUserMsg ? lastUserMsg.content : '';
 
-    const searchTerms = extractSearchTerms(userText);
-    const couldBeTracking = isTrackingQuery(userText);
+    const fullConversationText = messages
+      .map((m: { role: string; content: string }) => m.content)
+      .join(' ');
+
+    const searchTerms = extractSearchTerms(fullConversationText);
+    const currentTerms = extractSearchTerms(userText);
+    const couldBeTracking = isTrackingQuery(userText) || isTrackingQuery(fullConversationText);
     let shipmentContext = '';
 
     let injectedAssistantMsg: { role: string; content: string } | null = null;
     let notFoundReply: string | null = null;
 
+    const isFollowUp = messages.length > 2 && currentTerms.length === 0 && searchTerms.length > 0;
+
     if (couldBeTracking || searchTerms.length > 0) {
-      const mockShipResults = lookupMockShipments(searchTerms, userText);
-      const mockBookResults = lookupMockBookings(searchTerms, userText);
+      const mockShipResults = lookupMockShipments(searchTerms, fullConversationText);
+      const mockBookResults = lookupMockBookings(searchTerms, fullConversationText);
 
       if (mockShipResults.length > 0 || mockBookResults.length > 0) {
         const shipCtx = formatShipmentContext(mockShipResults);
