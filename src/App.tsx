@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 import BoxyAI from './components/BoxyAI';
 import { supabase } from './lib/supabase';
 import { mockInvoices } from './data/mockData';
@@ -78,6 +79,7 @@ function App() {
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
   const [showBookingDetails, setShowBookingDetails] = useState(false);
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -137,54 +139,28 @@ function App() {
 
   React.useEffect(() => {
     const path = window.location.pathname;
-
-    if (path === '/tracking') {
-      setCurrentView('tracking');
-    } else if (path === '/quotation' || path === '/quote') {
-      setCurrentView('quotation');
-    } else if (path === '/book') {
-      setCurrentView('booking');
-    } else if (path === '/bookings') {
-      setCurrentView('bookings');
-    } else if (path === '/dashboard') {
-      setCurrentView('dashboard');
-    } else if (path === '/shipments') {
-      setCurrentView('table');
-    } else if (path === '/shipments/map') {
-      setCurrentView('map-view');
-    } else if (path === '/invoices') {
-      setCurrentView('invoices');
-    } else if (path === '/communication') {
-      setCurrentView('communication');
-    } else if (path === '/tickets') {
-      setCurrentView('tickets');
-    } else if (path === '/webhooks') {
-      setCurrentView('webhooks');
-    } else if (path === '/webhook-docs') {
-      setCurrentView('webhook-docs');
-    } else if (path === '/customs') {
-      setCurrentView('customs');
-    } else if (path === '/inquiry') {
-      setCurrentView('inquiry');
-    } else if (path === '/leads') {
-      setCurrentView('leads');
-    } else if (path === '/warehouse') {
-      setCurrentView('warehouse');
-    } else {
-      setCurrentView('dashboard');
-    }
+    if (path === '/tracking') setCurrentView('tracking');
+    else if (path === '/quotation' || path === '/quote') setCurrentView('quotation');
+    else if (path === '/book') setCurrentView('booking');
+    else if (path === '/bookings') setCurrentView('bookings');
+    else if (path === '/dashboard') setCurrentView('dashboard');
+    else if (path === '/shipments') setCurrentView('table');
+    else if (path === '/shipments/map') setCurrentView('map-view');
+    else if (path === '/invoices') setCurrentView('invoices');
+    else if (path === '/communication') setCurrentView('communication');
+    else if (path === '/tickets') setCurrentView('tickets');
+    else if (path === '/webhooks') setCurrentView('webhooks');
+    else if (path === '/webhook-docs') setCurrentView('webhook-docs');
+    else if (path === '/customs') setCurrentView('customs');
+    else if (path === '/inquiry') setCurrentView('inquiry');
+    else if (path === '/leads') setCurrentView('leads');
+    else if (path === '/warehouse') setCurrentView('warehouse');
+    else setCurrentView('dashboard');
   }, []);
 
-  /* 🔹 NAVIGATION HANDLERS */
-
-  const handleTrackingNavigation = () => {
-    setCurrentView('tracking');
-    window.history.pushState({}, '', '/tracking');
-  };
-
-  const handleQuotationNavigation = () => {
-    setCurrentView('quotation');
-    window.history.pushState({}, '', '/quotation');
+  const navigate = (view: ViewType, path: string) => {
+    setCurrentView(view);
+    window.history.pushState({}, '', path);
   };
 
   const handleViewShipment = (shipmentNo: string) => {
@@ -199,90 +175,12 @@ function App() {
     window.history.pushState({}, '', '/shipments');
   };
 
-  const handleBookingNavigation = () => {
-    setSelectedBooking(null);
-    setCurrentView('booking');
-    window.history.pushState({}, '', '/book');
-  };
-
-  const handleBookingsNavigation = () => {
-    setCurrentView('bookings');
-    window.history.pushState({}, '', '/bookings');
-  };
-
-  const handleDashboardNavigation = () => {
-    setCurrentView('dashboard');
-    window.history.pushState({}, '', '/dashboard');
-  };
-
-  const handleShipmentsNavigation = () => {
-    setCurrentView('table');
-    window.history.pushState({}, '', '/shipments');
-  };
-
-  const handleMapViewNavigation = () => {
-    setCurrentView('map-view');
-    window.history.pushState({}, '', '/shipments/map');
-  };
-
-  const handleInvoicesNavigation = () => {
-    setCurrentView('invoices');
-    window.history.pushState({}, '', '/invoices');
-  };
-
-  const handleCommunicationNavigation = () => {
-    setCurrentView('communication');
-    window.history.pushState({}, '', '/communication');
-  };
-
-  const handleTicketsNavigation = () => {
-    setCurrentView('tickets');
-    window.history.pushState({}, '', '/tickets');
-  };
-
-  const handleWebhooksNavigation = () => {
-    setCurrentView('webhooks');
-    window.history.pushState({}, '', '/webhooks');
-  };
-
-  const handleWebhookDocsNavigation = () => {
-    setCurrentView('webhook-docs');
-    window.history.pushState({}, '', '/webhook-docs');
-  };
-
-  const handleCustomsNavigation = () => {
-    setCurrentView('customs');
-    window.history.pushState({}, '', '/customs');
-  };
-
-  const handleInquiryNavigation = () => {
-    setCurrentView('inquiry');
-    window.history.pushState({}, '', '/inquiry');
-  };
-
-  const handleLeadsNavigation = () => {
-    setCurrentView('leads');
-    window.history.pushState({}, '', '/leads');
-  };
-
-  const handleAdminNavigation = () => {
-    setCurrentView('admin');
-    window.history.pushState({}, '', '/admin');
-  };
-
-  const handleWarehouseNavigation = () => {
-    setCurrentView('warehouse');
-    window.history.pushState({}, '', '/warehouse');
-  };
-
-  /* 🔹 AUTH STATES */
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mx-auto"></div>
-          <p className="mt-4 text-slate-600">Loading...</p>
+          <div className="w-10 h-10 border-[3px] border-gray-200 border-t-sky-500 rounded-full animate-spin mx-auto" />
+          <p className="mt-4 text-sm text-gray-500 font-medium">Loading...</p>
         </div>
       </div>
     );
@@ -292,89 +190,111 @@ function App() {
     return <LoginPage />;
   }
 
-  /* 🔹 MAIN RENDER */
-
   if (currentView === 'admin') {
-    return <AdminPortal onBack={handleDashboardNavigation} />;
+    return <AdminPortal onBack={() => navigate('dashboard', '/dashboard')} />;
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header
-        onDashboardClick={handleDashboardNavigation}
-        onShipmentsClick={handleShipmentsNavigation}
-        onBookingsClick={handleBookingsNavigation}
-        onBookingClick={handleBookingNavigation}
-        onMapViewClick={handleMapViewNavigation}
-        onInvoicesClick={handleInvoicesNavigation}
-        onCommunicationClick={handleCommunicationNavigation}
-        onTicketsClick={handleTicketsNavigation}
-        onWebhooksClick={handleWebhooksNavigation}
-        onWebhookDocsClick={handleWebhookDocsNavigation}
-        onCustomsClick={handleCustomsNavigation}
-        onInquiryClick={handleInquiryNavigation}
-        onLeadsClick={handleLeadsNavigation}
-        onQuotationClick={handleQuotationNavigation}
-        onAdminClick={handleAdminNavigation}
-        onWarehouseClick={handleWarehouseNavigation}
+        onDashboardClick={() => navigate('dashboard', '/dashboard')}
+        onShipmentsClick={() => navigate('table', '/shipments')}
+        onBookingsClick={() => navigate('bookings', '/bookings')}
+        onBookingClick={() => { setSelectedBooking(null); navigate('booking', '/book'); }}
+        onMapViewClick={() => navigate('map-view', '/shipments/map')}
+        onInvoicesClick={() => navigate('invoices', '/invoices')}
+        onCommunicationClick={() => navigate('communication', '/communication')}
+        onTicketsClick={() => navigate('tickets', '/tickets')}
+        onWebhooksClick={() => navigate('webhooks', '/webhooks')}
+        onWebhookDocsClick={() => navigate('webhook-docs', '/webhook-docs')}
+        onCustomsClick={() => navigate('customs', '/customs')}
+        onInquiryClick={() => navigate('inquiry', '/inquiry')}
+        onLeadsClick={() => navigate('leads', '/leads')}
+        onQuotationClick={() => navigate('quotation', '/quotation')}
+        onAdminClick={() => navigate('admin', '/admin')}
+        onWarehouseClick={() => navigate('warehouse', '/warehouse')}
         currentView={currentView}
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
       />
 
-      {currentView === 'dashboard' ? (
-        <Dashboard
-          onViewShipments={handleShipmentsNavigation}
-          onNewBooking={handleBookingNavigation}
-          onViewBookings={handleBookingsNavigation}
-          onViewCommunication={handleCommunicationNavigation}
-          onViewTickets={handleTicketsNavigation}
-          liveStats={dashboardStats}
-        />
-      ) : currentView === 'booking' ? (
-        <BookingWizard
-          bookingNo={selectedBooking || undefined}
-          onBack={handleDashboardNavigation}
-        />
-      ) : currentView === 'bookings' ? (
-        <BookingsList
-          onViewBooking={(bookingNo) => {
-            setSelectedBooking(bookingNo);
-            setShowBookingDetails(true);
-          }}
-          onNewBooking={handleBookingNavigation}
-          onBack={handleDashboardNavigation}
-        />
-      ) : currentView === 'table' ? (
-        <ShipmentsTable onViewShipment={handleViewShipment} onBack={handleDashboardNavigation} />
-      ) : currentView === 'map-view' ? (
-        <ShipmentsMapView onViewShipment={handleViewShipment} onBack={handleDashboardNavigation} />
-      ) : currentView === 'quotation' ? (
-        <QuotationPage onBack={handleDashboardNavigation} />
-      ) : currentView === 'tracking' ? (
-        <TrackingPage onBack={handleDashboardNavigation} />
-      ) : currentView === 'invoices' ? (
-        <InvoiceListPage onBack={handleDashboardNavigation} />
-      ) : currentView === 'communication' ? (
-        <CommunicationHub onBack={handleDashboardNavigation} />
-      ) : currentView === 'tickets' ? (
-        <TicketingPortal onBack={handleDashboardNavigation} />
-      ) : currentView === 'webhooks' ? (
-        <WebhookManager onBack={handleDashboardNavigation} />
-      ) : currentView === 'webhook-docs' ? (
-        <WebhookDocumentation onBack={handleDashboardNavigation} />
-      ) : currentView === 'customs' ? (
-        <CustomsPage onBack={handleDashboardNavigation} />
-      ) : currentView === 'inquiry' ? (
-        <InquiryForm onBack={handleDashboardNavigation} />
-      ) : currentView === 'leads' ? (
-        <LeadList onBack={handleDashboardNavigation} />
-      ) : currentView === 'warehouse' ? (
-        <WarehousePage onBack={handleDashboardNavigation} />
-      ) : (
-        <ShipmentDetails
-          shipmentNo={selectedShipment!}
-          onBack={handleBackToTable}
-        />
-      )}
+      <Sidebar
+        currentView={currentView}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        onDashboardClick={() => navigate('dashboard', '/dashboard')}
+        onShipmentsClick={() => navigate('table', '/shipments')}
+        onBookingsClick={() => navigate('bookings', '/bookings')}
+        onBookingClick={() => { setSelectedBooking(null); navigate('booking', '/book'); }}
+        onMapViewClick={() => navigate('map-view', '/shipments/map')}
+        onInvoicesClick={() => navigate('invoices', '/invoices')}
+        onCommunicationClick={() => navigate('communication', '/communication')}
+        onTicketsClick={() => navigate('tickets', '/tickets')}
+        onWebhooksClick={() => navigate('webhooks', '/webhooks')}
+        onWebhookDocsClick={() => navigate('webhook-docs', '/webhook-docs')}
+        onCustomsClick={() => navigate('customs', '/customs')}
+        onInquiryClick={() => navigate('inquiry', '/inquiry')}
+        onLeadsClick={() => navigate('leads', '/leads')}
+        onQuotationClick={() => navigate('quotation', '/quotation')}
+        onWarehouseClick={() => navigate('warehouse', '/warehouse')}
+      />
+
+      <main className="lg:ml-60 min-h-[calc(100vh-4rem)]">
+        {currentView === 'dashboard' ? (
+          <Dashboard
+            onViewShipments={() => navigate('table', '/shipments')}
+            onNewBooking={() => { setSelectedBooking(null); navigate('booking', '/book'); }}
+            onViewBookings={() => navigate('bookings', '/bookings')}
+            onViewCommunication={() => navigate('communication', '/communication')}
+            onViewTickets={() => navigate('tickets', '/tickets')}
+            liveStats={dashboardStats}
+          />
+        ) : currentView === 'booking' ? (
+          <BookingWizard
+            bookingNo={selectedBooking || undefined}
+            onBack={() => navigate('dashboard', '/dashboard')}
+          />
+        ) : currentView === 'bookings' ? (
+          <BookingsList
+            onViewBooking={(bookingNo) => {
+              setSelectedBooking(bookingNo);
+              setShowBookingDetails(true);
+            }}
+            onNewBooking={() => { setSelectedBooking(null); navigate('booking', '/book'); }}
+            onBack={() => navigate('dashboard', '/dashboard')}
+          />
+        ) : currentView === 'table' ? (
+          <ShipmentsTable onViewShipment={handleViewShipment} onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : currentView === 'map-view' ? (
+          <ShipmentsMapView onViewShipment={handleViewShipment} onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : currentView === 'quotation' ? (
+          <QuotationPage onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : currentView === 'tracking' ? (
+          <TrackingPage onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : currentView === 'invoices' ? (
+          <InvoiceListPage onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : currentView === 'communication' ? (
+          <CommunicationHub onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : currentView === 'tickets' ? (
+          <TicketingPortal onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : currentView === 'webhooks' ? (
+          <WebhookManager onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : currentView === 'webhook-docs' ? (
+          <WebhookDocumentation onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : currentView === 'customs' ? (
+          <CustomsPage onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : currentView === 'inquiry' ? (
+          <InquiryForm onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : currentView === 'leads' ? (
+          <LeadList onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : currentView === 'warehouse' ? (
+          <WarehousePage onBack={() => navigate('dashboard', '/dashboard')} />
+        ) : (
+          <ShipmentDetails
+            shipmentNo={selectedShipment!}
+            onBack={handleBackToTable}
+          />
+        )}
+      </main>
 
       {showBookingDetails && selectedBooking && (
         <BookingDetailsModal

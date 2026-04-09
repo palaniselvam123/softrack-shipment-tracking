@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Download, Filter, Settings, Star, Truck, Plane, Ship, MessageCircle, Loader2, ArrowLeft, Lock } from 'lucide-react';
+import { Search, Download, Filter, Settings, Star, Truck, Plane, Ship, Loader2, ArrowLeft, Lock, ChevronUp, ChevronDown } from 'lucide-react';
 import { supabase, type SupabaseShipment } from '../lib/supabase';
 import ColumnCustomizer from './ColumnCustomizer';
 import { useAuth } from '../contexts/AuthContext';
@@ -43,7 +43,7 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [columns, setColumns] = useState<Column[]>([
     { key: 'shipmentNo', label: 'Shipment No', visible: true },
     { key: 'containerNo', label: 'Container No', visible: true },
@@ -67,14 +67,11 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
     try {
       setLoading(true);
       setError(null);
-
       const { data, error: fetchError } = await supabase
         .from('shipments')
         .select('*')
         .order('created_at', { ascending: false });
-
       if (fetchError) throw fetchError;
-
       const mappedShipments: Shipment[] = (data as SupabaseShipment[]).map(ship => ({
         shipmentNo: ship['Shipment Number'],
         containerNo: ship.job_ref || undefined,
@@ -90,7 +87,6 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
         etd: ship['ETD'] ? new Date(ship['ETD']).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A',
         eta: ship['ETA'] ? new Date(ship['ETA']).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : undefined
       }));
-
       setShipments(mappedShipments);
     } catch (err) {
       console.error('Error fetching shipments:', err);
@@ -102,58 +98,17 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
 
   const toggleFavorite = (shipmentNo: string) => {
     const newFavorites = new Set(favorites);
-    if (newFavorites.has(shipmentNo)) {
-      newFavorites.delete(shipmentNo);
-    } else {
-      newFavorites.add(shipmentNo);
-    }
+    if (newFavorites.has(shipmentNo)) newFavorites.delete(shipmentNo);
+    else newFavorites.add(shipmentNo);
     setFavorites(newFavorites);
   };
 
   const getTransportIcon = (mode: string) => {
     switch (mode.toLowerCase()) {
-      case 'road':
-        return <Truck className="w-4 h-4 text-gray-600" />;
-      case 'air':
-        return <Plane className="w-4 h-4 text-gray-600" />;
-      case 'sea':
-        return <Ship className="w-4 h-4 text-gray-600" />;
-      default:
-        return <Truck className="w-4 h-4 text-gray-600" />;
-    }
-  };
-
-  const getTransportColor = (mode: string) => {
-    switch (mode.toLowerCase()) {
-      case 'road':
-        return 'bg-green-100 text-green-800';
-      case 'air':
-        return 'bg-pink-100 text-pink-800';
-      case 'sea':
-        return 'bg-indigo-100 text-indigo-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'export':
-        return 'bg-blue-100 text-blue-800';
-      case 's/b filed':
-        return <Plane className="w-4 h-4 text-pink-600" />;
-      case 'billing':
-        return 'bg-amber-100 text-amber-800';
-      case 'can sent':
-        return 'bg-cyan-100 text-cyan-800';
-      case 'goods r...':
-      case 'goods received':
-        return 'bg-green-100 text-green-800';
-      case 'loaded ...':
-      case 'loaded':
-        return 'bg-emerald-100 text-emerald-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+      case 'road': return <Truck className="w-3.5 h-3.5 text-gray-500" />;
+      case 'air': return <Plane className="w-3.5 h-3.5 text-gray-500" />;
+      case 'sea': return <Ship className="w-3.5 h-3.5 text-gray-500" />;
+      default: return <Truck className="w-3.5 h-3.5 text-gray-500" />;
     }
   };
 
@@ -164,35 +119,14 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
   );
 
   const downloadExcel = () => {
-    // Create CSV content
-    const headers = [
-      'Shipment No', 'Container No', 'Shipper', 'Shipper Ref', 'Consignee', 
-      'Customer', 'Transport', 'Departure', 'Arrival Port', 'Type', 'Status', 'ETD'
-    ];
-    
+    const headers = ['Shipment No', 'Container No', 'Shipper', 'Shipper Ref', 'Consignee', 'Customer', 'Transport', 'Departure', 'Arrival Port', 'Type', 'Status', 'ETD'];
     const csvContent = [
       headers.join(','),
-      ...filteredShipments.map(shipment => [
-        shipment.shipmentNo,
-        shipment.containerNo,
-        shipment.shipper,
-        shipment.shipperRef,
-        shipment.consignee,
-        shipment.customer,
-        shipment.transport,
-        shipment.departure,
-        shipment.arrivalPort,
-        shipment.type,
-        shipment.status,
-        shipment.etd
-      ].join(','))
+      ...filteredShipments.map(s => [s.shipmentNo, s.containerNo, s.shipper, s.shipperRef, s.consignee, s.customer, s.transport, s.departure, s.arrivalPort, s.type, s.status, s.etd].join(','))
     ].join('\n');
-
-    // Create and download file
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
+    link.setAttribute('href', URL.createObjectURL(blob));
     link.setAttribute('download', `shipments_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
@@ -201,25 +135,17 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
   };
 
   const handleSort = (field: string) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
+    if (sortField === field) setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    else { setSortField(field); setSortDirection('asc'); }
   };
 
   const sortedShipments = [...filteredShipments].sort((a, b) => {
     if (!sortField) return 0;
-    
     const aValue = a[sortField as keyof typeof a] || '';
     const bValue = b[sortField as keyof typeof b] || '';
-    
-    if (sortDirection === 'asc') {
-      return aValue.toString().localeCompare(bValue.toString());
-    } else {
-      return bValue.toString().localeCompare(aValue.toString());
-    }
+    return sortDirection === 'asc'
+      ? aValue.toString().localeCompare(bValue.toString())
+      : bValue.toString().localeCompare(aValue.toString());
   });
 
   const visibleColumns = columns.filter(col => col.visible);
@@ -228,61 +154,56 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
     switch (columnKey) {
       case 'shipmentNo':
         return (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFavorite(shipment.shipmentNo);
-              }}
-              className="text-gray-300 hover:text-gray-500 transition-colors"
+              onClick={(e) => { e.stopPropagation(); toggleFavorite(shipment.shipmentNo); }}
+              className="text-gray-300 hover:text-amber-400 transition-colors"
             >
-              <Star
-                className={`w-4 h-4 ${
-                  favorites.has(shipment.shipmentNo)
-                    ? 'fill-gray-900 text-gray-900'
-                    : ''
-                }`}
-              />
+              <Star className={`w-3.5 h-3.5 ${favorites.has(shipment.shipmentNo) ? 'fill-amber-400 text-amber-400' : ''}`} />
             </button>
-            <span className="text-sm text-gray-900">{shipment.shipmentNo}</span>
+            <span className="text-sm font-medium text-sky-600">{shipment.shipmentNo}</span>
           </div>
         );
       case 'transport':
         return (
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center gap-1.5">
             {getTransportIcon(shipment.transport)}
             <span className="text-sm text-gray-700">{shipment.transport}</span>
           </div>
         );
       case 'status':
         return (
-          <span className={`text-sm ${shipment.status.toLowerCase() === 'delayed' ? 'text-red-600 font-semibold' : 'text-gray-700'}`}>
+          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-md ${
+            shipment.status.toLowerCase() === 'delayed' ? 'bg-red-50 text-red-700' :
+            shipment.status.toLowerCase().includes('transit') ? 'bg-blue-50 text-blue-700' :
+            shipment.status.toLowerCase() === 'delivered' ? 'bg-emerald-50 text-emerald-700' :
+            'bg-gray-100 text-gray-600'
+          }`}>
             {shipment.status}
           </span>
         );
       case 'shipper':
       case 'consignee':
       case 'customer':
-        return <span className="text-sm text-logitrack-blue-600">{shipment[columnKey] || ''}</span>;
-      default:
         return <span className="text-sm text-gray-700">{shipment[columnKey] || ''}</span>;
+      default:
+        return <span className="text-sm text-gray-600">{shipment[columnKey] || ''}</span>;
     }
   };
+
   if (loading) {
     return (
-      <div className="p-8 bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen">
-        <div className="mb-8">
-          <button onClick={onBack} className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors mb-2">
-            <ArrowLeft className="w-5 h-5" /><span>Back</span>
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-3">
+            <ArrowLeft className="w-4 h-4" /><span>Back</span>
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Shipments</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Shipments</h1>
         </div>
-        <div className="card">
-          <div className="flex items-center justify-center py-32">
-            <div className="text-center">
-              <Loader2 className="w-16 h-16 text-sky-600 animate-spin mx-auto mb-6" />
-              <p className="text-gray-600 font-medium">Loading shipments...</p>
-            </div>
+        <div className="bg-white border border-gray-200 rounded-xl flex items-center justify-center py-24">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 text-sky-500 animate-spin mx-auto mb-3" />
+            <p className="text-sm text-gray-500">Loading shipments...</p>
           </div>
         </div>
       </div>
@@ -291,28 +212,21 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
 
   if (error) {
     return (
-      <div className="p-8 bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen">
-        <div className="mb-8">
-          <button onClick={onBack} className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors mb-2">
-            <ArrowLeft className="w-5 h-5" /><span>Back</span>
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-3">
+            <ArrowLeft className="w-4 h-4" /><span>Back</span>
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Shipments</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Shipments</h1>
         </div>
-        <div className="card">
-          <div className="flex items-center justify-center py-32">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <span className="text-red-600 text-3xl font-bold">!</span>
-              </div>
-              <p className="text-red-600 font-bold mb-2 text-lg">Error loading shipments</p>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">{error}</p>
-              <button
-                onClick={fetchShipments}
-                className="btn-primary"
-              >
-                Retry
-              </button>
+        <div className="bg-white border border-gray-200 rounded-xl flex items-center justify-center py-24">
+          <div className="text-center">
+            <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <span className="text-red-500 text-xl font-bold">!</span>
             </div>
+            <p className="text-sm text-red-600 font-medium mb-1">Error loading shipments</p>
+            <p className="text-xs text-gray-500 mb-4 max-w-sm">{error}</p>
+            <button onClick={fetchShipments} className="btn-primary text-sm">Retry</button>
           </div>
         </div>
       </div>
@@ -321,146 +235,103 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
 
   return (
     <>
-      <div className="p-8 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 min-h-screen">
-        <div className="mb-8">
-          <div className="flex items-center space-x-4 mb-1">
-            <button
-              onClick={onBack}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span>Back</span>
-            </button>
-          </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Shipments</h1>
-          <p className="text-gray-600 mt-2 text-lg">Track and manage all your shipments in one place</p>
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-3">
+            <ArrowLeft className="w-4 h-4" /><span>Back</span>
+          </button>
+          <h1 className="text-2xl font-bold text-gray-900">Shipments</h1>
+          <p className="text-sm text-gray-500 mt-1">Track and manage all your shipments</p>
         </div>
 
-        <div className="card shadow-xl border border-gray-200/50">
-          <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-purple-50/20">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 gap-4">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="text"
                   placeholder="Search shipments..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="input-field pl-12 shadow-sm"
+                  className="input-field pl-9"
                 />
               </div>
-              <div className="flex items-center space-x-3">
-                <button
-                  onClick={downloadExcel}
-                  className="btn-secondary flex items-center space-x-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 shadow-sm hover:shadow-md"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Export</span>
-                </button>
-                <button
-                  onClick={() => setSortField('')}
-                  className="btn-secondary flex items-center space-x-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 shadow-sm hover:shadow-md"
-                >
-                  <span>Sort</span>
+              <div className="flex items-center gap-2">
+                <button onClick={downloadExcel} className="btn-secondary flex items-center gap-1.5 text-sm">
+                  <Download className="w-4 h-4" /><span>Export</span>
                 </button>
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-semibold border-2 transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md ${
-                    showFilters
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 border-blue-600 text-white'
-                      : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50'
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
+                    showFilters ? 'bg-sky-50 border-sky-200 text-sky-700' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                   }`}
                 >
-                  <Filter className="w-4 h-4" />
-                  <span>Filters</span>
+                  <Filter className="w-4 h-4" /><span>Filters</span>
                 </button>
-                <button
-                  onClick={() => setShowColumnCustomizer(true)}
-                  className="btn-secondary flex items-center space-x-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 shadow-sm hover:shadow-md"
-                >
-                  <Settings className="w-4 h-4" />
-                  <span>Columns</span>
+                <button onClick={() => setShowColumnCustomizer(true)} className="btn-secondary flex items-center gap-1.5 text-sm">
+                  <Settings className="w-4 h-4" /><span>Columns</span>
                 </button>
               </div>
             </div>
           </div>
 
           {showFilters && (
-            <div className="px-6 py-5 border-b border-gray-100 bg-sky-50/30 animate-fade-in">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 animate-fade-in">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Transport Mode</label>
-                  <select className="input-field">
-                    <option value="">All Modes</option>
-                    <option value="sea">Sea</option>
-                    <option value="air">Air</option>
-                    <option value="road">Road</option>
-                  </select>
+                  <label className="block text-xs font-medium text-gray-500 mb-1.5">Transport Mode</label>
+                  <select className="input-field text-sm"><option value="">All Modes</option><option value="sea">Sea</option><option value="air">Air</option><option value="road">Road</option></select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Status</label>
-                  <select className="input-field">
-                    <option value="">All Statuses</option>
-                    <option value="export">Export</option>
-                    <option value="billing">Billing</option>
-                    <option value="loaded">Loaded</option>
-                  </select>
+                  <label className="block text-xs font-medium text-gray-500 mb-1.5">Status</label>
+                  <select className="input-field text-sm"><option value="">All Statuses</option><option value="export">Export</option><option value="billing">Billing</option><option value="loaded">Loaded</option></select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Type</label>
-                  <select className="input-field">
-                    <option value="">All Types</option>
-                    <option value="export">Export</option>
-                    <option value="import">Import</option>
-                    <option value="domestic">Domestic</option>
-                  </select>
+                  <label className="block text-xs font-medium text-gray-500 mb-1.5">Type</label>
+                  <select className="input-field text-sm"><option value="">All Types</option><option value="export">Export</option><option value="import">Import</option></select>
                 </div>
                 <div className="flex items-end">
-                  <button className="btn-primary w-full">
-                    Apply Filters
-                  </button>
+                  <button className="btn-primary w-full text-sm">Apply</button>
                 </div>
               </div>
             </div>
           )}
 
-          <div className="overflow-x-auto rounded-b-lg">
+          <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 border-b-2 border-indigo-700">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   {visibleColumns.map((column) => (
                     <th
                       key={column.key}
-                      className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider cursor-pointer hover:bg-indigo-700/50 transition-all duration-200 group"
+                      className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700 transition-colors select-none"
                       onClick={() => handleSort(column.key)}
                     >
-                      <div className="flex items-center space-x-2">
-                        {column.key === 'shipmentNo' && <Star className="w-3.5 h-3.5 text-blue-200 group-hover:text-white" />}
+                      <div className="flex items-center gap-1">
                         <span>{column.label}</span>
                         {sortField === column.key && (
-                          <span className="text-yellow-300 font-bold">
-                            {sortDirection === 'asc' ? '↑' : '↓'}
-                          </span>
+                          sortDirection === 'asc' ? <ChevronUp className="w-3 h-3 text-sky-500" /> : <ChevronDown className="w-3 h-3 text-sky-500" />
                         )}
                       </div>
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100">
                 {sortedShipments.length === 0 && !loading && (
                   <tr>
-                    <td colSpan={visibleColumns.length} className="px-6 py-20 text-center">
+                    <td colSpan={visibleColumns.length} className="px-4 py-16 text-center">
                       {!isAdmin ? (
-                        <div className="flex flex-col items-center space-y-3">
-                          <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center">
-                            <Lock className="w-7 h-7 text-amber-500" />
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center">
+                            <Lock className="w-5 h-5 text-amber-500" />
                           </div>
-                          <p className="text-gray-700 font-semibold">No shipments assigned to your account</p>
-                          <p className="text-sm text-gray-500 max-w-sm">Your administrator needs to map your account to the relevant shippers, consignees, or agents before shipments will appear here.</p>
+                          <p className="text-sm text-gray-700 font-medium">No shipments assigned</p>
+                          <p className="text-xs text-gray-500 max-w-sm">Your administrator needs to map your account to the relevant parties before shipments appear here.</p>
                         </div>
                       ) : (
-                        <p className="text-gray-500 text-sm">No shipments found.</p>
+                        <p className="text-sm text-gray-500">No shipments found.</p>
                       )}
                     </td>
                   </tr>
@@ -468,15 +339,15 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
                 {sortedShipments.map((shipment) => (
                   <tr
                     key={shipment.shipmentNo}
-                    className={`cursor-pointer transition-all duration-200 ${
+                    className={`cursor-pointer transition-colors ${
                       shipment.status.toLowerCase() === 'delayed'
-                        ? 'bg-yellow-50/30 hover:bg-yellow-50 border-l-4 border-yellow-500 hover:shadow-md'
-                        : 'hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-indigo-50/30 hover:shadow-sm'
+                        ? 'bg-amber-50/30 hover:bg-amber-50/60 border-l-2 border-l-amber-400'
+                        : 'hover:bg-gray-50'
                     }`}
                     onClick={() => onViewShipment(shipment.shipmentNo)}
                   >
                     {visibleColumns.map((column) => (
-                      <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                      <td key={column.key} className="px-4 py-3 whitespace-nowrap">
                         {renderCellContent(shipment, column.key)}
                       </td>
                     ))}
@@ -485,9 +356,15 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
               </tbody>
             </table>
           </div>
+
+          <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30">
+            <p className="text-xs text-gray-500">
+              Showing {sortedShipments.length} of {shipments.length} shipments
+            </p>
+          </div>
         </div>
       </div>
-      
+
       <ColumnCustomizer
         isOpen={showColumnCustomizer}
         onClose={() => setShowColumnCustomizer(false)}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, FileSpreadsheet, FileText, Filter, Settings2, Truck, Plane, Ship, ArrowLeft, ChevronUp, ChevronDown, Loader2 } from 'lucide-react';
+import { Search, FileSpreadsheet, FileText, Filter, Settings2, Truck, Plane, Ship, ArrowLeft, ChevronUp, ChevronDown, Loader2, Plus } from 'lucide-react';
 import ColumnCustomizer from './ColumnCustomizer';
 import { supabase } from '../lib/supabase';
 
@@ -83,45 +83,29 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
   };
 
   const handleSort = (key: keyof Booking) => {
-    if (sortKey === key) {
-      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortKey(key);
-      setSortDir('asc');
-    }
-  };
-
-  const SortIcon = ({ colKey }: { colKey: string }) => {
-    if (sortKey !== colKey) return <ChevronUp className="w-3 h-3 text-gray-300 ml-1" />;
-    return sortDir === 'asc'
-      ? <ChevronUp className="w-3 h-3 text-gray-700 ml-1" />
-      : <ChevronDown className="w-3 h-3 text-gray-700 ml-1" />;
+    if (sortKey === key) setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('asc'); }
   };
 
   const getTransportIcon = (mode: string) => {
-    if (mode.toLowerCase().includes('sea')) return <Ship className="w-4 h-4" />;
-    if (mode.toLowerCase().includes('air')) return <Plane className="w-4 h-4" />;
-    if (mode.toLowerCase().includes('land') || mode.toLowerCase().includes('road')) return <Truck className="w-4 h-4" />;
+    if (mode.toLowerCase().includes('sea')) return <Ship className="w-3.5 h-3.5 text-gray-500" />;
+    if (mode.toLowerCase().includes('air')) return <Plane className="w-3.5 h-3.5 text-gray-500" />;
+    if (mode.toLowerCase().includes('land') || mode.toLowerCase().includes('road')) return <Truck className="w-3.5 h-3.5 text-gray-500" />;
     return null;
   };
 
   const normalizeStatus = (status: string): string => {
-    const map: Record<string, string> = {
-      pending: 'Pending',
-      confirmed: 'Approved',
-      cancelled: 'Rejected',
-      completed: 'Approved',
-    };
+    const map: Record<string, string> = { pending: 'Pending', confirmed: 'Approved', cancelled: 'Rejected', completed: 'Approved' };
     return map[status?.toLowerCase()] || status;
   };
 
-  const getStatusBadgeClass = (status: string) => {
+  const getStatusClass = (status: string) => {
     const normalized = normalizeStatus(status);
     switch (normalized) {
-      case 'Pending': return 'bg-yellow-100 text-yellow-800 px-3 py-1 rounded text-sm font-medium';
-      case 'Approved': return 'bg-green-100 text-green-800 px-3 py-1 rounded text-sm font-medium';
-      case 'Rejected': return 'bg-red-100 text-red-800 px-3 py-1 rounded text-sm font-medium';
-      default: return 'bg-gray-100 text-gray-800 px-3 py-1 rounded text-sm font-medium';
+      case 'Pending': return 'bg-amber-50 text-amber-700';
+      case 'Approved': return 'bg-emerald-50 text-emerald-700';
+      case 'Rejected': return 'bg-red-50 text-red-700';
+      default: return 'bg-gray-100 text-gray-600';
     }
   };
 
@@ -144,59 +128,47 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
 
   return (
     <>
-      <div className="flex flex-col p-4 bg-gray-50 min-h-screen">
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="px-6 py-5 border-b border-gray-200">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={onBack}
-                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span>Back</span>
-              </button>
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-3">
+            <ArrowLeft className="w-4 h-4" /><span>Back</span>
+          </button>
+          <div className="flex items-center justify-between">
+            <div>
               <h1 className="text-2xl font-bold text-gray-900">Bookings</h1>
+              <p className="text-sm text-gray-500 mt-1">Manage all your booking records</p>
             </div>
+            <button onClick={onNewBooking} className="btn-primary flex items-center gap-1.5">
+              <Plus className="w-4 h-4" /><span>New Booking</span>
+            </button>
           </div>
+        </div>
 
-          <div className="px-6 py-4 border-b border-gray-200 bg-white">
-            <div className="flex items-center justify-between">
-              <div className="relative w-80">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="text"
-                  placeholder="Search"
+                  placeholder="Search bookings..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300 text-sm"
+                  className="input-field pl-9"
                 />
               </div>
-              <div className="flex items-center space-x-3">
-                <button
-                  onClick={onNewBooking}
-                  className="flex items-center space-x-2 px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800 transition-colors text-sm font-medium"
-                >
-                  <span className="text-lg">+</span>
-                  <span>New Booking</span>
+              <div className="flex items-center gap-2">
+                <button className="btn-secondary flex items-center gap-1.5 text-sm">
+                  <FileSpreadsheet className="w-4 h-4" /><span>Excel</span>
                 </button>
-                <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">
-                  <FileSpreadsheet className="w-4 h-4" />
-                  <span>Excel</span>
+                <button className="btn-secondary flex items-center gap-1.5 text-sm">
+                  <FileText className="w-4 h-4" /><span>PDF</span>
                 </button>
-                <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">
-                  <FileText className="w-4 h-4" />
-                  <span>PDF</span>
+                <button className="btn-secondary flex items-center gap-1.5 text-sm">
+                  <Filter className="w-4 h-4" /><span>Filters</span>
                 </button>
-                <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">
-                  <Filter className="w-4 h-4" />
-                  <span>Filters</span>
-                </button>
-                <button
-                  onClick={() => setShowColumnCustomizer(true)}
-                  className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm"
-                >
-                  <Settings2 className="w-4 h-4" />
-                  <span>Customise Columns</span>
+                <button onClick={() => setShowColumnCustomizer(true)} className="btn-secondary flex items-center gap-1.5 text-sm">
+                  <Settings2 className="w-4 h-4" /><span>Columns</span>
                 </button>
               </div>
             </div>
@@ -205,18 +177,18 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
           <div className="overflow-x-auto">
             {loading ? (
               <div className="flex items-center justify-center py-20">
-                <Loader2 className="w-6 h-6 animate-spin text-gray-400 mr-2" />
-                <span className="text-gray-500 text-sm">Loading bookings...</span>
+                <Loader2 className="w-6 h-6 animate-spin text-sky-500 mr-2" />
+                <span className="text-sm text-gray-500">Loading bookings...</span>
               </div>
             ) : error ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <p className="text-red-500 text-sm mb-3">{error}</p>
-                <button onClick={fetchBookings} className="text-sm text-blue-600 hover:underline">Retry</button>
+              <div className="flex flex-col items-center justify-center py-20">
+                <p className="text-sm text-red-500 mb-2">{error}</p>
+                <button onClick={fetchBookings} className="text-sm text-sky-600 hover:underline">Retry</button>
               </div>
             ) : sortedBookings.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <p className="text-gray-500 text-sm">No bookings found.</p>
-                <button onClick={onNewBooking} className="mt-3 text-sm text-blue-600 hover:underline">Create your first booking</button>
+              <div className="flex flex-col items-center justify-center py-20">
+                <p className="text-sm text-gray-500">No bookings found.</p>
+                <button onClick={onNewBooking} className="mt-2 text-sm text-sky-600 hover:underline">Create your first booking</button>
               </div>
             ) : (
               <table className="w-full">
@@ -226,17 +198,19 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
                       <th
                         key={column.key}
                         onClick={() => handleSort(column.key as keyof Booking)}
-                        className="px-6 py-3 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
+                        className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700 transition-colors select-none"
                       >
-                        <div className="flex items-center">
-                          {column.label}
-                          <SortIcon colKey={column.key} />
+                        <div className="flex items-center gap-1">
+                          <span>{column.label}</span>
+                          {sortKey === column.key && (
+                            sortDir === 'asc' ? <ChevronUp className="w-3 h-3 text-sky-500" /> : <ChevronDown className="w-3 h-3 text-sky-500" />
+                          )}
                         </div>
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-100">
                   {sortedBookings.map((booking, index) => (
                     <tr
                       key={index}
@@ -245,49 +219,30 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
                     >
                       {visibleColumns.map((column) => {
                         if (column.key === 'bookingNo') return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-blue-600 font-medium">{booking.bookingNo}</span>
-                          </td>
-                        );
-                        if (column.key === 'date') return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-900">{booking.date}</span>
-                          </td>
-                        );
-                        if (column.key === 'jobOrderNo') return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-900">{booking.jobOrderNo}</span>
-                          </td>
-                        );
-                        if (column.key === 'serviceProvider') return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-900">{booking.serviceProvider}</span>
+                          <td key={column.key} className="px-4 py-3 whitespace-nowrap">
+                            <span className="text-sm font-medium text-sky-600">{booking.bookingNo}</span>
                           </td>
                         );
                         if (column.key === 'transportMode') return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center space-x-2">
+                          <td key={column.key} className="px-4 py-3 whitespace-nowrap">
+                            <div className="flex items-center gap-1.5">
                               {getTransportIcon(booking.transportMode)}
-                              <span className="text-sm text-gray-900">{booking.transportMode}</span>
+                              <span className="text-sm text-gray-700">{booking.transportMode}</span>
                             </div>
                           </td>
                         );
                         if (column.key === 'status') return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
-                            <span className={getStatusBadgeClass(booking.status)}>{normalizeStatus(booking.status)}</span>
+                          <td key={column.key} className="px-4 py-3 whitespace-nowrap">
+                            <span className={`text-[11px] font-medium px-2 py-0.5 rounded-md ${getStatusClass(booking.status)}`}>
+                              {normalizeStatus(booking.status)}
+                            </span>
                           </td>
                         );
-                        if (column.key === 'shipper') return (
-                          <td key={column.key} className="px-6 py-4">
-                            <span className="text-sm text-gray-900">{booking.shipper}</span>
+                        return (
+                          <td key={column.key} className="px-4 py-3 whitespace-nowrap">
+                            <span className="text-sm text-gray-700">{booking[column.key as keyof Booking] || ''}</span>
                           </td>
                         );
-                        if (column.key === 'cosignee') return (
-                          <td key={column.key} className="px-6 py-4">
-                            <span className="text-sm text-gray-900">{booking.cosignee}</span>
-                          </td>
-                        );
-                        return null;
                       })}
                     </tr>
                   ))}
@@ -295,6 +250,14 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
               </table>
             )}
           </div>
+
+          {!loading && !error && sortedBookings.length > 0 && (
+            <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30">
+              <p className="text-xs text-gray-500">
+                Showing {sortedBookings.length} of {bookings.length} bookings
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

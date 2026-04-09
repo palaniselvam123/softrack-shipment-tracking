@@ -353,7 +353,7 @@ const InvoiceListPage: React.FC<InvoiceListPageProps> = ({ onBack }) => {
       case 'cancelled':
         return 'bg-gray-100 text-gray-800';
       case 'disputed':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-rose-100 text-rose-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -685,131 +685,87 @@ startxref
 
   return (
     <>
-      <div className="p-6">
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={onBack}
-                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span>Back</span>
-              </button>
-              <h1 className="text-2xl font-semibold text-gray-900">Invoices</h1>
-            </div>
-          </div>
-          
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-3">
+            <ArrowLeft className="w-4 h-4" /><span>Back</span>
+          </button>
+          <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
+          <p className="text-sm text-gray-500 mt-1">View and manage all invoice records</p>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="text"
                   placeholder="Search invoices..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="input-field pl-9"
                 />
               </div>
-              <div className="flex items-center space-x-3">
-                <button 
-                  onClick={downloadExcel}
-                  className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Export</span>
+              <div className="flex items-center gap-2">
+                <button onClick={downloadExcel} className="btn-secondary flex items-center gap-1.5 text-sm">
+                  <Download className="w-4 h-4" /><span>Export</span>
                 </button>
-                <button 
-                  onClick={clearAllFilters}
-                  className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                >
+                <button onClick={clearAllFilters} className="btn-secondary text-sm">
                   <span>Clear All</span>
                 </button>
-                <button 
+                <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className={`flex items-center space-x-2 px-4 py-2 border rounded-md transition-colors ${
-                    showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 hover:bg-gray-50'
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
+                    showFilters ? 'bg-sky-50 border-sky-200 text-sky-700' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                   }`}
                 >
-                  <Filter className="w-4 h-4" />
-                  <span>Filters</span>
+                  <Filter className="w-4 h-4" /><span>Filters</span>
                 </button>
-                <button 
-                  onClick={() => setShowColumnCustomizer(true)}
-                  className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                >
-                  <Settings className="w-4 h-4" />
-                  <span className="hidden sm:inline">Columns</span>
+                <button onClick={() => setShowColumnCustomizer(true)} className="btn-secondary flex items-center gap-1.5 text-sm">
+                  <Settings className="w-4 h-4" /><span className="hidden sm:inline">Columns</span>
                 </button>
               </div>
             </div>
 
             {showFilters && (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-3 p-4 bg-gray-50/50 rounded-lg animate-fade-in">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                  <select 
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
+                  <label className="block text-xs font-medium text-gray-500 mb-1.5">Status</label>
+                  <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="input-field text-sm">
                     <option value="">All Status</option>
-                    {uniqueStatuses.map(status => (
-                      <option key={status} value={status}>{status}</option>
-                    ))}
+                    {uniqueStatuses.map(status => (<option key={status} value={status}>{status}</option>))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-                  <select 
-                    value={currencyFilter}
-                    onChange={(e) => setCurrencyFilter(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
+                  <label className="block text-xs font-medium text-gray-500 mb-1.5">Currency</label>
+                  <select value={currencyFilter} onChange={(e) => setCurrencyFilter(e.target.value)} className="input-field text-sm">
                     <option value="">All Currencies</option>
-                    {uniqueCurrencies.map(currency => (
-                      <option key={currency} value={currency}>{currency}</option>
-                    ))}
+                    {uniqueCurrencies.map(currency => (<option key={currency} value={currency}>{currency}</option>))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date From</label>
-                  <input
-                    type="date"
-                    value={dateRangeFilter.from}
-                    onChange={(e) => setDateRangeFilter(prev => ({ ...prev, from: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
+                  <label className="block text-xs font-medium text-gray-500 mb-1.5">Date From</label>
+                  <input type="date" value={dateRangeFilter.from} onChange={(e) => setDateRangeFilter(prev => ({ ...prev, from: e.target.value }))} className="input-field text-sm" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date To</label>
-                  <input
-                    type="date"
-                    value={dateRangeFilter.to}
-                    onChange={(e) => setDateRangeFilter(prev => ({ ...prev, to: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
+                  <label className="block text-xs font-medium text-gray-500 mb-1.5">Date To</label>
+                  <input type="date" value={dateRangeFilter.to} onChange={(e) => setDateRangeFilter(prev => ({ ...prev, to: e.target.value }))} className="input-field text-sm" />
                 </div>
               </div>
             )}
           </div>
 
           {selectedInvoices.size > 0 && (
-            <div className="px-6 py-3 bg-blue-50 border-b border-blue-200">
+            <div className="px-5 py-3 bg-sky-50 border-b border-sky-200">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-blue-800">
+                <span className="text-sm font-medium text-sky-800">
                   {selectedInvoices.size} invoice{selectedInvoices.size !== 1 ? 's' : ''} selected
                 </span>
-                <div className="flex items-center space-x-2">
-                  <button className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">
-                    Bulk Actions
-                  </button>
-                  <button 
-                    onClick={() => setSelectedInvoices(new Set())}
-                    className="px-3 py-1 border border-blue-300 text-blue-700 rounded text-sm hover:bg-blue-100 transition-colors"
-                  >
-                    Clear Selection
+                <div className="flex items-center gap-2">
+                  <button className="btn-primary text-xs px-3 py-1">Bulk Actions</button>
+                  <button onClick={() => setSelectedInvoices(new Set())} className="px-3 py-1 border border-sky-300 text-sky-700 rounded-lg text-xs font-medium hover:bg-sky-100 transition-colors">
+                    Clear
                   </button>
                 </div>
               </div>
@@ -818,99 +774,40 @@ startxref
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-3 text-left">
-                    <input
-                      type="checkbox"
-                      checked={selectedInvoices.size === filteredInvoices.length && filteredInvoices.length > 0}
-                      onChange={toggleSelectAll}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
+                  <th className="px-4 py-3 text-left">
+                    <input type="checkbox" checked={selectedInvoices.size === filteredInvoices.length && filteredInvoices.length > 0} onChange={toggleSelectAll} className="rounded border-gray-300 text-sky-600 focus:ring-sky-500" />
                   </th>
                   {visibleColumns.map((column) => (
-                    <th 
-                      key={column.key}
-                      className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider group ${
-                        column.sortable ? 'cursor-pointer hover:bg-gray-100' : ''
-                      } transition-colors`}
-                      onClick={() => column.sortable && handleSort(column.key)}
-                    >
-                      <div className="flex items-center space-x-2">
-                        {column.key === 'invoiceRef' && <Star className="w-4 h-4" />}
+                    <th key={column.key} className={`px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider ${column.sortable ? 'cursor-pointer hover:text-gray-700' : ''} transition-colors select-none`} onClick={() => column.sortable && handleSort(column.key)}>
+                      <div className="flex items-center gap-1">
+                        {column.key === 'invoiceRef' && <Star className="w-3.5 h-3.5" />}
                         <span>{column.label}</span>
                         {renderSortIcon(column.key)}
                       </div>
                     </th>
                   ))}
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-100">
                 {filteredInvoices.map((invoice) => (
-                  <tr 
-                    key={invoice.id} 
-                    className="hover:bg-gray-50 cursor-pointer transition-colors"
-                    onClick={() => handleInvoiceClick(invoice)}
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <input
-                        type="checkbox"
-                        checked={selectedInvoices.has(invoice.id)}
-                        onChange={() => toggleSelectInvoice(invoice.id)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        onClick={(e) => e.stopPropagation()}
-                      />
+                  <tr key={invoice.id} className="hover:bg-gray-50 cursor-pointer transition-colors" onClick={() => handleInvoiceClick(invoice)}>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <input type="checkbox" checked={selectedInvoices.has(invoice.id)} onChange={() => toggleSelectInvoice(invoice.id)} className="rounded border-gray-300 text-sky-600 focus:ring-sky-500" onClick={(e) => e.stopPropagation()} />
                     </td>
                     {visibleColumns.map((column) => (
-                      <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                      <td key={column.key} className="px-4 py-3 whitespace-nowrap">
                         {renderCellContent(invoice, column.key)}
                       </td>
                     ))}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewInvoice(invoice);
-                          }}
-                          className="text-blue-600 hover:text-blue-800 transition-colors"
-                          title="View Invoice"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDownloadPDF(invoice);
-                          }}
-                          className="text-green-600 hover:text-green-800 transition-colors"
-                          title="Download PDF"
-                        >
-                          <Download className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSendMail(invoice);
-                          }}
-                          className="text-blue-600 hover:text-blue-800 transition-colors"
-                          title="Send Email"
-                        >
-                          <Mail className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRaiseDispute(invoice);
-                          }}
-                          className="text-red-600 hover:text-red-800 transition-colors"
-                          title="Raise Dispute"
-                        >
-                          <AlertTriangle className="w-4 h-4" />
-                        </button>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="flex items-center gap-1.5">
+                        <button onClick={(e) => { e.stopPropagation(); handleViewInvoice(invoice); }} className="p-1.5 rounded-md text-gray-400 hover:text-sky-600 hover:bg-sky-50 transition-all" title="View Invoice"><Eye className="w-4 h-4" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); handleDownloadPDF(invoice); }} className="p-1.5 rounded-md text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all" title="Download PDF"><Download className="w-4 h-4" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); handleSendMail(invoice); }} className="p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="Send Email"><Mail className="w-4 h-4" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); handleRaiseDispute(invoice); }} className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all" title="Raise Dispute"><AlertTriangle className="w-4 h-4" /></button>
                       </div>
                     </td>
                   </tr>
@@ -919,16 +816,16 @@ startxref
             </table>
           </div>
 
-          <div className="px-6 py-4 border-t border-gray-200">
+          <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
+              <p className="text-xs text-gray-500">
                 Showing {filteredInvoices.length} of {mockInvoices.length} invoices
                 {selectedInvoices.size > 0 && ` (${selectedInvoices.size} selected)`}
               </p>
-              <nav className="flex items-center space-x-2">
-                <button className="px-3 py-1 text-sm border rounded hover:bg-gray-50">‹ Previous</button>
-                <span className="px-3 py-1 text-sm">Page 1 of 1</span>
-                <button className="px-3 py-1 text-sm border rounded hover:bg-gray-50">Next ›</button>
+              <nav className="flex items-center gap-2">
+                <button className="px-3 py-1 text-xs border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors">Previous</button>
+                <span className="px-3 py-1 text-xs text-gray-500">Page 1 of 1</span>
+                <button className="px-3 py-1 text-xs border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors">Next</button>
               </nav>
             </div>
           </div>
