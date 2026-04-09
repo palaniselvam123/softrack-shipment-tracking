@@ -120,9 +120,10 @@ function App() {
           invoices: mockInvoices.map(i => ({ ref: i.invoiceRef, status: i.invoiceStatus, amount: i.amount, currency: i.currency, vendor: i.vendor, shipmentRef: i.shipmentRef, dueDate: i.dueDate })),
         };
 
+        const activeInTransit = (byStatus['in transit'] || 0) + (byStatus['departed'] || 0) + (byStatus['loaded'] || 0) + (byStatus['customs hold'] || 0) + (byStatus['arrived'] || 0) + (byStatus['pending'] || 0);
         setDashboardStats({
           totalShipments: shipments.length,
-          inTransit: byStatus['in transit'] || byStatus['in_transit'] || 0,
+          inTransit: activeInTransit,
           delayed: byStatus['delayed'] || 0,
           delivered: byStatus['delivered'] || 0,
           pendingBookings,

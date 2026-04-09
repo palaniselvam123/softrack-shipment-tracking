@@ -171,17 +171,21 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment, onBack 
             <span className="text-sm text-gray-700">{shipment.transport}</span>
           </div>
         );
-      case 'status':
+      case 'status': {
+        const st = shipment.status.toLowerCase();
+        const statusStyle =
+          st === 'delayed' ? 'bg-red-50 text-red-700' :
+          st.includes('transit') || st === 'departed' || st === 'loaded' ? 'bg-blue-50 text-blue-700' :
+          st === 'delivered' || st === 'arrived' ? 'bg-emerald-50 text-emerald-700' :
+          st === 'customs hold' ? 'bg-amber-50 text-amber-700' :
+          st === 'pending' ? 'bg-gray-100 text-gray-600' :
+          'bg-gray-100 text-gray-600';
         return (
-          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-md ${
-            shipment.status.toLowerCase() === 'delayed' ? 'bg-red-50 text-red-700' :
-            shipment.status.toLowerCase().includes('transit') ? 'bg-blue-50 text-blue-700' :
-            shipment.status.toLowerCase() === 'delivered' ? 'bg-emerald-50 text-emerald-700' :
-            'bg-gray-100 text-gray-600'
-          }`}>
+          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-md ${statusStyle}`}>
             {shipment.status}
           </span>
         );
+      }
       case 'shipper':
       case 'consignee':
       case 'customer':
