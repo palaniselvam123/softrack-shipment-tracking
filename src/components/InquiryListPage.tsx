@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Download, Filter, Settings, Plus, Eye, Edit, Calendar, User, Package, MapPin, ChevronUp, ChevronDown } from 'lucide-react';
+import { Search, Download, Filter, Settings, Plus, Eye, CreditCard as Edit, Calendar, User, Package, MapPin, ChevronUp, ChevronDown } from 'lucide-react';
 import ColumnCustomizer from './ColumnCustomizer';
 import InquiryForm from './InquiryForm';
 
@@ -153,19 +153,19 @@ const InquiryListPage: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'New':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-sky-100 text-sky-700';
       case 'Submitted':
-        return 'bg-cyan-100 text-cyan-800';
+        return 'bg-cyan-100 text-cyan-700';
       case 'Under Review':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-100 text-amber-700';
       case 'Quoted':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-blue-100 text-blue-700';
       case 'Accepted':
-        return 'bg-green-100 text-green-800';
+        return 'bg-emerald-100 text-emerald-700';
       case 'Rejected':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-700';
     }
   };
 
@@ -200,8 +200,8 @@ const InquiryListPage: React.FC = () => {
   const SortIcon = ({ colKey }: { colKey: string }) => {
     if (sortKey !== colKey) return <ChevronUp className="w-3 h-3 text-gray-300 ml-1" />;
     return sortDir === 'asc'
-      ? <ChevronUp className="w-3 h-3 text-blue-600 ml-1" />
-      : <ChevronDown className="w-3 h-3 text-blue-600 ml-1" />;
+      ? <ChevronUp className="w-3 h-3 text-sky-600 ml-1" />
+      : <ChevronDown className="w-3 h-3 text-sky-600 ml-1" />;
   };
 
   const getSortValue = (inquiry: Inquiry, key: string): string => {
@@ -291,81 +291,45 @@ const InquiryListPage: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="bg-white rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Inquiry Management</h1>
-              <p className="text-sm text-gray-600 mt-1">View and manage customer inquiries</p>
-            </div>
-            <button
-              onClick={() => setShowInquiryForm(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              <span>New Inquiry</span>
-            </button>
-          </div>
+    <div className="p-6 lg:p-8">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Inquiry Management</h1>
+          <p className="text-sm text-gray-500 mt-1">View and manage customer inquiries</p>
         </div>
+        <button
+          onClick={() => setShowInquiryForm(true)}
+          className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition-all shadow-sm"
+        >
+          <Plus className="w-4 h-4" />
+          <span>New Inquiry</span>
+        </button>
+      </div>
 
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="bg-white p-4 rounded-lg border">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Package className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Total</p>
-                  <p className="text-xl font-semibold text-gray-900">{statusCounts.total}</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white p-4 rounded-lg border">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Plus className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">New</p>
-                  <p className="text-xl font-semibold text-blue-600">{statusCounts.new}</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white p-4 rounded-lg border">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
-                  <Eye className="w-5 h-5 text-cyan-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Submitted</p>
-                  <p className="text-xl font-semibold text-cyan-600">{statusCounts.submitted}</p>
+      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+        <div className="hidden" />
+
+        <div className="px-5 py-4 border-b border-gray-100">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            {[
+              { label: 'Total', value: statusCounts.total, icon: Package, bg: 'bg-gray-100', iconColor: 'text-gray-600', valueColor: 'text-gray-900' },
+              { label: 'New', value: statusCounts.new, icon: Plus, bg: 'bg-sky-100', iconColor: 'text-sky-600', valueColor: 'text-sky-600' },
+              { label: 'Submitted', value: statusCounts.submitted, icon: Eye, bg: 'bg-cyan-100', iconColor: 'text-cyan-600', valueColor: 'text-cyan-600' },
+              { label: 'Quoted', value: statusCounts.quoted, icon: Package, bg: 'bg-blue-100', iconColor: 'text-sky-600', valueColor: 'text-sky-600' },
+              { label: 'Accepted', value: statusCounts.accepted, icon: Package, bg: 'bg-emerald-100', iconColor: 'text-emerald-600', valueColor: 'text-emerald-600' },
+            ].map(({ label, value, icon: Icon, bg, iconColor, valueColor }) => (
+              <div key={label} className="bg-gray-50/80 p-4 rounded-xl border border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className={`w-9 h-9 ${bg} rounded-lg flex items-center justify-center`}>
+                    <Icon className={`w-4 h-4 ${iconColor}`} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 font-medium">{label}</p>
+                    <p className={`text-lg font-bold ${valueColor}`}>{value}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="bg-white p-4 rounded-lg border">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Package className="w-5 h-5 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Quoted</p>
-                  <p className="text-xl font-semibold text-purple-600">{statusCounts.quoted}</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white p-4 rounded-lg border">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Package className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Accepted</p>
-                  <p className="text-xl font-semibold text-green-600">{statusCounts.accepted}</p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -378,13 +342,13 @@ const InquiryListPage: React.FC = () => {
                 placeholder="Search inquiries..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400 transition-all"
               />
             </div>
             <div className="flex items-center space-x-3">
               <button
                 onClick={downloadExcel}
-                className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors"
               >
                 <Download className="w-4 h-4" />
                 <span>Export</span>
@@ -392,7 +356,7 @@ const InquiryListPage: React.FC = () => {
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className={`flex items-center space-x-2 px-4 py-2 border rounded-md transition-colors ${
-                  showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 hover:bg-gray-50'
+                  showFilters ? 'bg-sky-50 border-sky-300 text-sky-700' : 'border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 <Filter className="w-4 h-4" />
@@ -400,7 +364,7 @@ const InquiryListPage: React.FC = () => {
               </button>
               <button
                 onClick={() => setShowColumnCustomizer(true)}
-                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
               >
                 <Settings className="w-4 h-4" />
                 <span>Customize Columns</span>
@@ -415,7 +379,7 @@ const InquiryListPage: React.FC = () => {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400 transition-all"
                 >
                   <option value="">All Status</option>
                   <option value="New">New</option>
@@ -462,7 +426,7 @@ const InquiryListPage: React.FC = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-100">
               {sortedInquiries.map((inquiry) => (
                 <tr key={inquiry.id} className="hover:bg-gray-50 transition-colors">
                   {columns.filter(col => col.visible).map((column) => {
@@ -471,8 +435,8 @@ const InquiryListPage: React.FC = () => {
                         return (
                           <td key={column.key} className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center space-x-2">
-                              <Package className="w-4 h-4 text-blue-600" />
-                              <span className="text-sm font-medium text-blue-600">{inquiry.inquiry_id}</span>
+                              <Package className="w-4 h-4 text-sky-600" />
+                              <span className="text-sm font-medium text-sky-600">{inquiry.inquiry_id}</span>
                             </div>
                           </td>
                         );
@@ -562,7 +526,7 @@ const InquiryListPage: React.FC = () => {
                         onClick={() => {
                           console.log('View inquiry:', inquiry.inquiry_id);
                         }}
-                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                        className="text-sky-600 hover:text-blue-800 transition-colors"
                         title="View Details"
                       >
                         <Eye className="w-4 h-4" />
@@ -572,7 +536,7 @@ const InquiryListPage: React.FC = () => {
                           setSelectedInquiry(inquiry);
                           setShowInquiryForm(true);
                         }}
-                        className="text-green-600 hover:text-green-800 transition-colors"
+                        className="text-emerald-600 hover:text-emerald-800 transition-colors"
                         title="Edit Inquiry"
                       >
                         <Edit className="w-4 h-4" />

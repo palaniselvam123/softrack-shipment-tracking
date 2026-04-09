@@ -1,25 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Plus,
-  Search,
-  Filter,
-  User,
-  Clock,
-  AlertTriangle,
-  CheckCircle,
-  MessageCircle,
-  Paperclip,
-  Calendar,
-  Star,
-  Eye,
-  Edit,
-  Trash2,
-  X,
-  BarChart3,
-  ArrowUpRight,
-  ArrowDownRight,
-  ArrowLeft
-} from 'lucide-react';
+import { Plus, Search, Filter, User, Clock, AlertTriangle, CheckCircle, MessageCircle, Paperclip, Calendar, Star, Eye, CreditCard as Edit, Trash2, X, BarChart3, ArrowUpRight, ArrowDownRight, ArrowLeft } from 'lucide-react';
 import TicketDetailModal, { type TicketData } from './TicketDetailModal';
 
 const INITIAL_TICKETS: TicketData[] = [
@@ -161,7 +141,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return 'bg-blue-100 text-blue-800';
+      case 'open': return 'bg-sky-100 text-sky-700';
       case 'in-progress': return 'bg-amber-100 text-amber-800';
       case 'resolved': return 'bg-emerald-100 text-emerald-800';
       case 'closed': return 'bg-gray-100 text-gray-800';
@@ -171,7 +151,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'open': return <AlertTriangle className="w-4 h-4 text-blue-600" />;
+      case 'open': return <AlertTriangle className="w-4 h-4 text-sky-600" />;
       case 'in-progress': return <Clock className="w-4 h-4 text-amber-600" />;
       case 'resolved': return <CheckCircle className="w-4 h-4 text-emerald-600" />;
       case 'closed': return <CheckCircle className="w-4 h-4 text-gray-500" />;
@@ -254,59 +234,56 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
   const activeFilters = [selectedStatus, selectedPriority, selectedCategory].filter(Boolean).length;
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="mb-4">
+    <div className="p-6 lg:p-8">
+      <div className="mb-6">
         <button
           onClick={onBack}
-          className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-3"
         >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
+          <ArrowLeft className="w-4 h-4" /><span>Back</span>
         </button>
+        <h1 className="text-2xl font-bold text-gray-900">Support Tickets</h1>
+        <p className="text-sm text-gray-500 mt-1">Manage and track support requests</p>
       </div>
-      <div className="grid grid-cols-4 gap-4 mb-6">
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
-          { label: 'Open', count: statusCounts.open, color: 'blue', icon: AlertTriangle },
-          { label: 'In Progress', count: statusCounts['in-progress'], color: 'amber', icon: Clock },
-          { label: 'Resolved', count: statusCounts.resolved, color: 'emerald', icon: CheckCircle },
-          { label: 'Closed', count: statusCounts.closed, color: 'gray', icon: CheckCircle }
-        ].map(({ label, count, color, icon: Icon }) => (
+          { label: 'Open', count: statusCounts.open, bg: 'bg-sky-100', iconColor: 'text-sky-600', icon: AlertTriangle },
+          { label: 'In Progress', count: statusCounts['in-progress'], bg: 'bg-amber-100', iconColor: 'text-amber-600', icon: Clock },
+          { label: 'Resolved', count: statusCounts.resolved, bg: 'bg-emerald-100', iconColor: 'text-emerald-600', icon: CheckCircle },
+          { label: 'Closed', count: statusCounts.closed, bg: 'bg-gray-100', iconColor: 'text-gray-500', icon: CheckCircle }
+        ].map(({ label, count, bg, iconColor, icon: Icon }) => (
           <button
             key={label}
             onClick={() => {
               const val = label.toLowerCase().replace(' ', '-');
               setSelectedStatus(selectedStatus === val ? '' : val);
             }}
-            className={`bg-white rounded-xl border p-4 transition-all hover:shadow-md ${
-              selectedStatus === label.toLowerCase().replace(' ', '-') ? 'border-blue-300 shadow-md ring-1 ring-blue-100' : 'border-gray-200'
+            className={`bg-white rounded-2xl border p-5 transition-all hover:shadow-md text-left ${
+              selectedStatus === label.toLowerCase().replace(' ', '-') ? 'border-sky-300 shadow-md ring-1 ring-sky-100' : 'border-gray-200'
             }`}
           >
-            <div className="flex items-center justify-between">
-              <div className={`w-10 h-10 bg-${color}-100 rounded-lg flex items-center justify-center`}>
-                <Icon className={`w-5 h-5 text-${color}-600`} />
+            <div className="flex items-center justify-between mb-2">
+              <div className={`w-10 h-10 ${bg} rounded-xl flex items-center justify-center`}>
+                <Icon className={`w-5 h-5 ${iconColor}`} />
               </div>
               <span className="text-2xl font-bold text-gray-900">{count}</span>
             </div>
-            <p className="text-sm text-gray-600 mt-2 text-left">{label} Tickets</p>
+            <p className="text-sm text-gray-500 font-medium">{label} Tickets</p>
           </button>
         ))}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">Support Tickets</h1>
-              <p className="text-sm text-gray-500 mt-0.5">{filteredTickets.length} of {tickets.length} tickets</p>
-            </div>
-            <button
-              onClick={() => setShowCreateForm(true)}
-              className="flex items-center space-x-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm"
-            >
-              <Plus className="w-4 h-4" />
-              <span>New Ticket</span>
-            </button>
-          </div>
+      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+          <p className="text-xs text-gray-500 font-medium">{filteredTickets.length} of {tickets.length} tickets</p>
+          <button
+            onClick={() => setShowCreateForm(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition-all shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Ticket</span>
+          </button>
         </div>
 
         <div className="px-6 py-3 border-b border-gray-200 bg-gray-50/50">
@@ -318,19 +295,19 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                 placeholder="Search tickets by ID, title, assignee..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400"
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`flex items-center space-x-2 px-3 py-2 border rounded-lg text-sm transition-colors ${
-                showFilters || activeFilters > 0 ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-200 hover:bg-gray-50 text-gray-700'
+                showFilters || activeFilters > 0 ? 'bg-sky-50 border-sky-300 text-sky-700' : 'border-gray-200 hover:bg-gray-50 text-gray-700'
               }`}
             >
               <Filter className="w-4 h-4" />
               <span>Filters</span>
               {activeFilters > 0 && (
-                <span className="bg-blue-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                <span className="bg-sky-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                   {activeFilters}
                 </span>
               )}
@@ -352,7 +329,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400"
                 >
                   <option value="">All Status</option>
                   {statuses.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1).replace('-', ' ')}</option>)}
@@ -363,7 +340,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                 <select
                   value={selectedPriority}
                   onChange={(e) => setSelectedPriority(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400"
                 >
                   <option value="">All Priorities</option>
                   {priorities.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
@@ -374,7 +351,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400"
                 >
                   <option value="">All Categories</option>
                   {categories.map(c => <option key={c} value={c}>{c}</option>)}
@@ -391,7 +368,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
               <p className="text-gray-500 text-sm">No tickets match your filters</p>
               <button
                 onClick={() => { setSelectedStatus(''); setSelectedPriority(''); setSelectedCategory(''); setSearchTerm(''); }}
-                className="mt-2 text-blue-600 text-sm hover:underline"
+                className="mt-2 text-sky-600 text-sm hover:underline"
               >
                 Clear all filters
               </button>
@@ -414,7 +391,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
                       {getStatusIcon(ticket.status)}
-                      <span className="font-mono text-xs text-blue-600">{ticket.id}</span>
+                      <span className="font-mono text-xs text-sky-600">{ticket.id}</span>
                       <h3 className="text-sm font-medium text-gray-900 truncate">{ticket.title}</h3>
                     </div>
 
@@ -444,7 +421,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                       </div>
 
                       {ticket.shipmentRef && (
-                        <span className="text-xs text-blue-600 font-medium">{ticket.shipmentRef}</span>
+                        <span className="text-xs text-sky-600 font-medium">{ticket.shipmentRef}</span>
                       )}
 
                       <span className="text-gray-300">|</span>
@@ -468,7 +445,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                 <div className="flex items-center space-x-1 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={(e) => { e.stopPropagation(); setSelectedTicket(ticket); }}
-                    className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    className="p-1.5 text-gray-400 hover:text-sky-600 hover:bg-blue-50 rounded-lg transition-colors"
                     title="View Details"
                   >
                     <Eye className="w-4 h-4" />
@@ -520,7 +497,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                   value={newTicket.title}
                   onChange={(e) => setNewTicket(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="Brief summary of the issue"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400"
                 />
               </div>
 
@@ -531,7 +508,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                   onChange={(e) => setNewTicket(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Detailed description of the issue..."
                   rows={4}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400 resize-none"
                 />
               </div>
 
@@ -541,7 +518,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                   <select
                     value={newTicket.priority}
                     onChange={(e) => setNewTicket(prev => ({ ...prev, priority: e.target.value as TicketData['priority'] }))}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -555,7 +532,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                   <select
                     value={newTicket.category}
                     onChange={(e) => setNewTicket(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400"
                   >
                     {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
@@ -566,7 +543,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                   <select
                     value={newTicket.assignee}
                     onChange={(e) => setNewTicket(prev => ({ ...prev, assignee: e.target.value }))}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400"
                   >
                     {ASSIGNEE_OPTIONS.map(a => <option key={a} value={a}>{a}</option>)}
                   </select>
@@ -578,7 +555,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                     type="date"
                     value={newTicket.dueDate}
                     onChange={(e) => setNewTicket(prev => ({ ...prev, dueDate: e.target.value }))}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400"
                   />
                 </div>
               </div>
@@ -590,7 +567,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                   value={newTicket.shipmentRef}
                   onChange={(e) => setNewTicket(prev => ({ ...prev, shipmentRef: e.target.value }))}
                   placeholder="e.g. MUM/SE/SHP/0001"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400"
                 />
               </div>
             </div>
@@ -607,7 +584,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
                 disabled={!newTicket.title.trim() || !newTicket.description.trim()}
                 className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   newTicket.title.trim() && newTicket.description.trim()
-                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-gray-900 text-white hover:bg-gray-800'
                     : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                 }`}
               >
@@ -631,7 +608,7 @@ const TicketingPortal: React.FC<TicketingPortalProps> = ({ onBack }) => {
               </div>
             </div>
             <p className="text-sm text-gray-700 mb-6">
-              Are you sure you want to delete ticket <span className="font-mono font-medium text-blue-600">{showDeleteConfirm}</span>?
+              Are you sure you want to delete ticket <span className="font-mono font-medium text-sky-600">{showDeleteConfirm}</span>?
             </p>
             <div className="flex items-center justify-end space-x-3">
               <button

@@ -741,7 +741,7 @@ const CustomsPage: React.FC<CustomsPageProps> = ({ onBack }) => {
                   <button
                     onClick={() => setShowFilters(!showFilters)}
                     className={`flex items-center space-x-2 px-4 py-2 text-sm font-medium border rounded transition-colors ${
-                      showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'text-gray-700 border-gray-300 hover:bg-gray-50'
+                      showFilters ? 'bg-sky-50 border-sky-300 text-sky-700' : 'text-gray-700 border-gray-300 hover:bg-gray-50'
                     }`}
                   >
                     <Filter className="w-4 h-4" />
@@ -809,7 +809,7 @@ const CustomsPage: React.FC<CustomsPageProps> = ({ onBack }) => {
                         setMilestoneFilter('');
                         setSearchTerm('');
                       }}
-                      className="w-full px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                      className="w-full px-4 py-2 text-sm font-medium bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors"
                     >
                       Clear All
                     </button>
@@ -924,7 +924,7 @@ const CustomsPage: React.FC<CustomsPageProps> = ({ onBack }) => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button
                           onClick={() => handleViewDeclaration(declaration)}
-                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          className="text-sky-600 hover:text-sky-700 transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                         </button>

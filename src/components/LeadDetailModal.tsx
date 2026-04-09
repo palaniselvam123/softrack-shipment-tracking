@@ -37,7 +37,7 @@ const LeadDetailModal: React.FC<LeadDetailModalProps> = ({ isOpen, onClose, lead
       case 'Attended':
         return 'bg-yellow-100 text-yellow-800';
       case 'Quoted':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-blue-100 text-blue-700';
       case 'Quote Accepted':
         return 'bg-green-100 text-green-800';
       case 'Closed':
@@ -73,7 +73,7 @@ const LeadDetailModal: React.FC<LeadDetailModalProps> = ({ isOpen, onClose, lead
       case 'LIQUID':
         return 'bg-teal-100 text-teal-800';
       case 'RAIL':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-blue-100 text-blue-700';
       default:
         return 'bg-gray-100 text-gray-800';
     }

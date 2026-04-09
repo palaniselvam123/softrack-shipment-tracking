@@ -55,7 +55,7 @@ const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({ isOpen, onClose
       case 'cancelled':
         return 'bg-gray-100 text-gray-800';
       case 'disputed':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-blue-100 text-blue-700';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -300,7 +300,7 @@ const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({ isOpen, onClose
               
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="flex items-center space-x-3 mb-3">
-                  <Ship className="w-5 h-5 text-indigo-600" />
+                  <Ship className="w-5 h-5 text-sky-600" />
                   <h4 className="font-medium text-gray-900">Vessel Information</h4>
                 </div>
                 <div className="space-y-2">

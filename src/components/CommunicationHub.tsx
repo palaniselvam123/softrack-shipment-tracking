@@ -373,7 +373,7 @@ const CommunicationHub: React.FC<CommunicationHubProps> = ({ onBack }) => {
                 <ArrowLeft className="w-5 h-5" />
                 <span>Back</span>
               </button>
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+              <div className="w-10 h-10 bg-sky-600 rounded-lg flex items-center justify-center shadow-sm">
                 <MessageCircle className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -424,14 +424,14 @@ const CommunicationHub: React.FC<CommunicationHubProps> = ({ onBack }) => {
                   onClick={() => handleSelectConversation(conversation.id)}
                   className={`p-4 border-b border-gray-100 cursor-pointer transition-all duration-150 ${
                     selectedConversation === conversation.id
-                      ? 'bg-blue-50 border-l-[3px] border-l-blue-600'
+                      ? 'bg-blue-50 border-l-[3px] border-l-sky-500'
                       : 'hover:bg-white border-l-[3px] border-l-transparent'
                   }`}
                 >
                   <div className="flex items-start justify-between mb-1.5">
                     <h3 className="font-medium text-gray-900 text-sm leading-tight">{conversation.title}</h3>
                     {conversation.unreadCount > 0 && (
-                      <span className="bg-blue-600 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 ml-2 flex-shrink-0">
+                      <span className="bg-sky-600 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 ml-2 flex-shrink-0">
                         {conversation.unreadCount}
                       </span>
                     )}
@@ -464,7 +464,7 @@ const CommunicationHub: React.FC<CommunicationHubProps> = ({ onBack }) => {
                         </span>
                       </div>
                       <div className="flex items-center space-x-3 mt-0.5">
-                        <span className="text-xs text-gray-500">Shipment: <span className="text-blue-600 font-medium">{selectedConv.shipmentId}</span></span>
+                        <span className="text-xs text-gray-500">Shipment: <span className="text-sky-600 font-medium">{selectedConv.shipmentId}</span></span>
                         <span className="text-gray-300">|</span>
                         <span className="text-xs text-gray-500">{selectedConv.participants.join(', ')}</span>
                       </div>
@@ -505,7 +505,7 @@ const CommunicationHub: React.FC<CommunicationHubProps> = ({ onBack }) => {
                           )}
                           <div className={`rounded-2xl px-4 py-2.5 ${
                             isOwn
-                              ? 'bg-blue-600 text-white rounded-br-md'
+                              ? 'bg-sky-600 text-white rounded-br-md'
                               : 'bg-white border border-gray-200 text-gray-800 rounded-bl-md shadow-sm'
                           }`}>
                             <p className="text-sm leading-relaxed">{message.content}</p>
@@ -569,7 +569,7 @@ const CommunicationHub: React.FC<CommunicationHubProps> = ({ onBack }) => {
                       disabled={!newMessage.trim()}
                       className={`p-2.5 rounded-xl transition-all duration-150 ${
                         newMessage.trim()
-                          ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+                          ? 'bg-sky-600 text-white hover:bg-sky-700 shadow-sm'
                           : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                       }`}
                     >

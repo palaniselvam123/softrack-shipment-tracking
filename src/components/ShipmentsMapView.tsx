@@ -399,7 +399,7 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment, onB
       case 'air':
         return <Plane className="w-4 h-4 text-pink-600" />;
       case 'sea':
-        return <Ship className="w-4 h-4 text-indigo-700" />;
+        return <Ship className="w-4 h-4 text-sky-700" />;
       default:
         return <Ship className="w-4 h-4 text-gray-700" />;
     }
@@ -412,7 +412,7 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment, onB
       case 'air':
         return 'bg-pink-100 text-pink-800';
       case 'sea':
-        return 'bg-indigo-100 text-indigo-800';
+        return 'bg-sky-100 text-sky-700';
       default:
         return 'bg-gray-100 text-gray-800';
     }

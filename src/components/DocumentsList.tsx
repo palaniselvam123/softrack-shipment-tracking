@@ -177,7 +177,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       case 'processing':
         return 'bg-blue-100 text-blue-800';
       case 'paid':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-blue-100 text-blue-700';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -188,9 +188,9 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
       'BOL': 'bg-blue-100 text-blue-800',
       'INV': 'bg-green-100 text-green-800',
       'PKL': 'bg-amber-100 text-amber-800',
-      'COO': 'bg-purple-100 text-purple-800',
+      'COO': 'bg-blue-100 text-blue-700',
       'INS': 'bg-red-100 text-red-800',
-      'EXP': 'bg-indigo-100 text-indigo-800',
+      'EXP': 'bg-slate-100 text-slate-700',
       'CUS': 'bg-yellow-100 text-yellow-800',
       'SHI': 'bg-pink-100 text-pink-800',
       'FRT': 'bg-teal-100 text-teal-800',

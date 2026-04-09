@@ -157,8 +157,8 @@ if __name__ == '__main__':
                   <h3 className="font-medium text-gray-900">Secure</h3>
                   <p className="text-sm text-gray-600">HMAC signature verification</p>
                 </div>
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <Globe className="w-8 h-8 text-purple-600 mb-2" />
+                <div className="bg-sky-50 p-4 rounded-lg">
+                  <Globe className="w-8 h-8 text-sky-600 mb-2" />
                   <h3 className="font-medium text-gray-900">Reliable</h3>
                   <p className="text-sm text-gray-600">Automatic retry mechanism</p>
                 </div>

@@ -601,8 +601,8 @@ startxref
     
     if (sortField === columnKey) {
       return sortDirection === 'asc' ? 
-        <ChevronUp className="w-4 h-4 text-blue-600" /> : 
-        <ChevronDown className="w-4 h-4 text-blue-600" />;
+        <ChevronUp className="w-4 h-4 text-sky-600" /> : 
+        <ChevronDown className="w-4 h-4 text-sky-600" />;
     }
     return <ChevronUp className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100" />;
   };
@@ -627,7 +627,7 @@ startxref
                 }`} 
               />
             </button>
-            <span className="text-sm font-medium text-blue-600">{invoice.invoiceRef}</span>
+            <span className="text-sm font-medium text-sky-600">{invoice.invoiceRef}</span>
           </div>
         );
       case 'invoiceStatus':
@@ -654,7 +654,7 @@ startxref
         );
       case 'shipmentRef':
         return (
-          <span className="text-sm font-medium text-blue-600">{invoice.shipmentRef}</span>
+          <span className="text-sm font-medium text-sky-600">{invoice.shipmentRef}</span>
         );
       case 'shipper':
       case 'consignee':
@@ -806,7 +806,7 @@ startxref
                       <div className="flex items-center gap-1.5">
                         <button onClick={(e) => { e.stopPropagation(); handleViewInvoice(invoice); }} className="p-1.5 rounded-md text-gray-400 hover:text-sky-600 hover:bg-sky-50 transition-all" title="View Invoice"><Eye className="w-4 h-4" /></button>
                         <button onClick={(e) => { e.stopPropagation(); handleDownloadPDF(invoice); }} className="p-1.5 rounded-md text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all" title="Download PDF"><Download className="w-4 h-4" /></button>
-                        <button onClick={(e) => { e.stopPropagation(); handleSendMail(invoice); }} className="p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="Send Email"><Mail className="w-4 h-4" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); handleSendMail(invoice); }} className="p-1.5 rounded-md text-gray-400 hover:text-sky-600 hover:bg-blue-50 transition-all" title="Send Email"><Mail className="w-4 h-4" /></button>
                         <button onClick={(e) => { e.stopPropagation(); handleRaiseDispute(invoice); }} className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all" title="Raise Dispute"><AlertTriangle className="w-4 h-4" /></button>
                       </div>
                     </td>
