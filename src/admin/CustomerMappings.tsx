@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Link, Plus, Search, Edit2, Trash2, X, Save, ChevronDown,
-  Building2, Truck, Package, UserCheck, ToggleLeft, ToggleRight
-} from 'lucide-react';
+import { Link, Plus, Search, CreditCard as Edit2, Trash2, X, Save, ChevronDown, Building2, Truck, Package, UserCheck, ToggleLeft, ToggleRight, AlertTriangle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { AdminUser, CustomerMapping, MappingType, MAPPING_TYPE_LABELS } from './types';
 
@@ -42,6 +39,7 @@ export default function CustomerMappings() {
   const [saving, setSaving] = useState(false);
   const [shipperSuggestions, setShipperSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [unmappedCount, setUnmappedCount] = useState(0);
 
   const defaultForm: FormData = {
     user_id: '',
@@ -58,9 +56,20 @@ export default function CustomerMappings() {
     Promise.all([
       supabase.from('profiles').select('*').order('full_name'),
       supabase.from('customer_mappings').select('*').order('created_at', { ascending: false }),
-    ]).then(([usersRes, mappingsRes]) => {
+      supabase.from('shipments').select('"Shipper"'),
+      supabase.from('shipments').select('"Consignee"'),
+    ]).then(([usersRes, mappingsRes, shippersRes, consigneesRes]) => {
       if (usersRes.data) setUsers(usersRes.data as AdminUser[]);
-      if (mappingsRes.data) setMappings(mappingsRes.data as CustomerMapping[]);
+      const allMappings = (mappingsRes.data || []) as CustomerMapping[];
+      setMappings(allMappings);
+
+      const mappedNames = new Set(allMappings.filter(m => m.is_active).map(m => m.entity_name));
+      const allEntities = new Set<string>();
+      (shippersRes.data || []).forEach((r: Record<string, string>) => { if (r['Shipper']) allEntities.add(r['Shipper']); });
+      (consigneesRes.data || []).forEach((r: Record<string, string>) => { if (r['Consignee']) allEntities.add(r['Consignee']); });
+      const unmapped = [...allEntities].filter(name => !mappedNames.has(name));
+      setUnmappedCount(unmapped.length);
+
       setLoading(false);
     });
   }, []);
@@ -213,6 +222,20 @@ export default function CustomerMappings() {
           );
         })}
       </div>
+
+      {unmappedCount > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-amber-800">
+              {unmappedCount} {unmappedCount === 1 ? 'entity' : 'entities'} in shipments data not yet mapped
+            </p>
+            <p className="text-xs text-amber-600 mt-0.5">
+              Go to "Customers Directory" tab to see all entities and quickly map them to users.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
         <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">

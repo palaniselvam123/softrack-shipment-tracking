@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import {
-  Users, Shield, Palette, Link, ClipboardList,
+  Users, Shield, Palette, Link, ClipboardList, Building2,
   ChevronLeft, Settings, Lock
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import UserManagement from './UserManagement';
 import PermissionsManager from './PermissionsManager';
 import CustomerMappings from './CustomerMappings';
+import CustomersDirectory from './CustomersDirectory';
 import ThemeCustomizer from './ThemeCustomizer';
 import AuditLog from './AuditLog';
 
@@ -14,11 +15,12 @@ interface AdminPortalProps {
   onBack: () => void;
 }
 
-type TabId = 'users' | 'permissions' | 'mappings' | 'theme' | 'audit';
+type TabId = 'users' | 'permissions' | 'customers' | 'mappings' | 'theme' | 'audit';
 
 const TABS: { id: TabId; label: string; icon: React.FC<{ className?: string }>; description: string }[] = [
   { id: 'users', label: 'User Management', icon: Users, description: 'Create and manage user accounts' },
   { id: 'permissions', label: 'Permissions', icon: Shield, description: 'Control module access per user' },
+  { id: 'customers', label: 'Customers Directory', icon: Building2, description: 'View all customers and their mapping status' },
   { id: 'mappings', label: 'Customer Mappings', icon: Link, description: 'Map users to shippers, consignees & agents' },
   { id: 'theme', label: 'Theme & Branding', icon: Palette, description: 'Customize colors, fonts & UI elements' },
   { id: 'audit', label: 'Audit Log', icon: ClipboardList, description: 'Track all admin actions' },
@@ -124,6 +126,7 @@ export default function AdminPortal({ onBack }: AdminPortalProps) {
 
             {activeTab === 'users' && <UserManagement />}
             {activeTab === 'permissions' && <PermissionsManager />}
+            {activeTab === 'customers' && <CustomersDirectory />}
             {activeTab === 'mappings' && <CustomerMappings />}
             {activeTab === 'theme' && <ThemeCustomizer />}
             {activeTab === 'audit' && <AuditLog />}
