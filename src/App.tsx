@@ -240,11 +240,13 @@ function App() {
         <InquiryForm onBack={handleDashboardNavigation} />
       ) : currentView === 'leads' ? (
         <LeadList />
-      ) : (
+      ) : currentView === 'details' ? (
         <ShipmentDetails
           shipmentNo={selectedShipment!}
           onBack={handleBackToTable}
         />
+      ) : (
+        <div />
       )}
     </div>
   );
