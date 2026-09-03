@@ -51,7 +51,7 @@ const TrackingTimeline = () => {
   ];
 
   const getIcon = (iconType: string, completed: boolean, current: boolean) => {
-    const iconClass = `w-5 h-5 ${completed ? 'text-green-500' : current ? 'text-blue-500' : 'text-gray-400'}`;
+    const iconClass = `w-5 h-5 ${completed ? 'text-green-500' : current ? 'text-brand-600' : 'text-gray-400'}`;
     
     switch (iconType) {
       case 'pickup':
@@ -68,12 +68,12 @@ const TrackingTimeline = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm">
-      <div className="p-4 border-b border-gray-200">
+    <div className="card">
+      <div className="p-4 border-b border-surface-line">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Route Details</h3>
+          <h3 className="text-[14px] font-semibold text-navy-900">Route Details</h3>
         </div>
-        <div className="mt-2 bg-blue-900 text-white p-3 rounded-lg">
+        <div className="mt-2 bg-navy-900 text-white p-3 rounded-lg">
           <div className="flex items-center space-x-2 mb-1">
             <Clock className="w-4 h-4" />
             <span className="text-sm font-medium">Estimated Delivery to Destination Port</span>
@@ -93,7 +93,7 @@ const TrackingTimeline = () => {
                 <div>
                   <p className={`text-sm font-medium ${
                     event.completed ? 'text-green-700' : 
-                    event.current ? 'text-blue-700' : 'text-gray-500'
+                    event.current ? 'text-brand-700' : 'text-gray-500'
                   }`}>
                     {event.status}
                   </p>

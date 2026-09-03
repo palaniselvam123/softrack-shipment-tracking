@@ -28,6 +28,11 @@ interface Booking {
 const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [modeFilter, setModeFilter] = useState('');
+  const [sortKey, setSortKey] = useState<keyof Booking>('bookingNo');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const [columns, setColumns] = useState<Column[]>([
     { key: 'bookingNo', label: 'Booking No', visible: true },
@@ -247,33 +252,88 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'Pending':
-        return 'bg-yellow-100 text-yellow-800 px-3 py-1 rounded text-sm font-medium';
+        return 'bg-amber-50 text-amber-700 px-3 py-1 rounded text-sm font-medium';
       case 'Approved':
-        return 'bg-green-100 text-green-800 px-3 py-1 rounded text-sm font-medium';
+        return 'bg-green-50 text-green-700 px-3 py-1 rounded text-sm font-medium';
       case 'Rejected':
-        return 'bg-red-100 text-red-800 px-3 py-1 rounded text-sm font-medium';
+        return 'bg-red-50 text-red-700 px-3 py-1 rounded text-sm font-medium';
       default:
-        return 'bg-gray-100 text-gray-800 px-3 py-1 rounded text-sm font-medium';
+        return 'bg-gray-50 text-gray-700 px-3 py-1 rounded text-sm font-medium';
     }
   };
 
-  const filteredBookings = mockBookings.filter(booking =>
-    Object.values(booking).some(value =>
-      value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+  const statuses = [...new Set(mockBookings.map(b => b.status))];
+  const modes = [...new Set(mockBookings.map(b => b.transportMode))];
+
+  const filteredBookings = mockBookings
+    .filter(booking =>
+      Object.values(booking).some(value =>
+        value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
     )
-  );
+    .filter(booking => !statusFilter || booking.status === statusFilter)
+    .filter(booking => !modeFilter || booking.transportMode === modeFilter)
+    .sort((a, b) => {
+      const av = String(a[sortKey] ?? '');
+      const bv = String(b[sortKey] ?? '');
+      return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+    });
+
+  const toggleSort = () => {
+    /* Cycle the sort column through the visible ones, flipping direction each
+       time the cycle wraps, so the single button stays useful. */
+    const keys = visibleColumns.map(c => c.key as keyof Booking);
+    const at = keys.indexOf(sortKey);
+    const next = keys[(at + 1) % keys.length];
+    if (at === keys.length - 1) setSortDir(d => (d === 'asc' ? 'desc' : 'asc'));
+    setSortKey(next ?? 'bookingNo');
+  };
+
+  const exportCsv = () => {
+    const head = visibleColumns.map(c => c.label);
+    const rows = filteredBookings.map(b =>
+      visibleColumns.map(c => String(b[c.key as keyof Booking] ?? ''))
+    );
+    const esc = (v: string) => '"' + v.replace(/"/g, '""') + '"';
+    const csv = [head, ...rows].map(r => r.map(esc).join(',')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'bookings.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportPdf = () => {
+    /* Hand the rows to the browser's print dialog (Save as PDF) rather than
+       hand-rolling a PDF byte stream. */
+    const win = window.open('', '_blank');
+    if (!win) return;
+    const head = visibleColumns.map(c => '<th>' + c.label + '</th>').join('');
+    const body = filteredBookings
+      .map(b => '<tr>' + visibleColumns.map(c => '<td>' + String(b[c.key as keyof Booking] ?? '') + '</td>').join('') + '</tr>')
+      .join('');
+    win.document.write(
+      '<title>Bookings</title><style>body{font:12px system-ui;padding:24px}' +
+      'table{border-collapse:collapse;width:100%}th,td{border:1px solid #e3e6eb;padding:6px 8px;text-align:left}' +
+      'th{background:#f7f8fa}</style>' +
+      '<h1 style="font-size:16px">Bookings</h1><table><thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody></table>'
+    );
+    win.document.close();
+    win.print();
+  };
 
   const visibleColumns = columns.filter(col => col.visible);
 
   return (
     <>
-      <div className="flex flex-col p-4 bg-gray-50 min-h-screen">
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="px-6 py-5 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-900">Book</h1>
+      <div className="page flex flex-col">
+        <div className="card">
+          <div className="px-6 py-5 border-b border-surface-line">
+            <h1 className="page-title">Bookings</h1>
           </div>
 
-          <div className="px-6 py-4 border-b border-gray-200 bg-white">
+          <div className="px-6 py-4 border-b border-surface-line bg-white">
             <div className="flex items-center justify-between">
               <div className="relative w-80">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -282,7 +342,7 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
                   placeholder="Search"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300 text-sm"
+                  className="w-full pl-10 pr-4 py-2 border border-surface-line rounded focus:outline-none focus:ring-1 focus:ring-brand-600 text-sm"
                 />
               </div>
               <div className="flex items-center space-x-3">
@@ -293,44 +353,66 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
                   <span className="text-lg">+</span>
                   <span>New Booking</span>
                 </button>
-                <button
-                  className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm"
-                >
+                <button onClick={exportCsv} className="btn-secondary">
                   <FileSpreadsheet className="w-4 h-4" />
                   <span>Excel</span>
                 </button>
-                <button
-                  className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm"
-                >
+                <button onClick={exportPdf} className="btn-secondary">
                   <FileText className="w-4 h-4" />
                   <span>PDF</span>
                 </button>
-                <button
-                  className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm"
-                >
+                <button onClick={toggleSort} className="btn-secondary" title={'Sorted by ' + sortKey + ' (' + sortDir + ')'}>
                   <span>Sort</span>
                   <ChevronDown className="w-4 h-4" />
                 </button>
                 <button
-                  className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm"
+                  onClick={() => setShowFilters(v => !v)}
+                  className={showFilters ? 'btn-primary' : 'btn-secondary'}
                 >
                   <Filter className="w-4 h-4" />
                   <span>Filters</span>
                 </button>
                 <button
                   onClick={() => setShowColumnCustomizer(true)}
-                  className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm"
+                  className="flex items-center space-x-2 px-3 py-2 border border-surface-line rounded hover:bg-surface-head transition-colors text-sm"
                 >
                   <Settings2 className="w-4 h-4" />
                   <span>Customise Columns</span>
                 </button>
               </div>
             </div>
+
+            {showFilters && (
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-surface-tile rounded-md animate-fade-in">
+                <div>
+                  <label className="field-label">Status</label>
+                  <select className="select-field" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+                    <option value="">All statuses</option>
+                    {statuses.map(v => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="field-label">Transport Mode</label>
+                  <select className="select-field" value={modeFilter} onChange={e => setModeFilter(e.target.value)}>
+                    <option value="">All modes</option>
+                    {modes.map(v => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                </div>
+                <div className="flex items-end">
+                  <button
+                    onClick={() => { setStatusFilter(''); setModeFilter(''); }}
+                    className="btn-secondary"
+                  >
+                    Clear filters
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-surface-head border-b border-surface-line">
                 <tr>
                   {visibleColumns.map((column) => (
                     <th
@@ -342,32 +424,32 @@ const BookingsList: React.FC<BookingsListProps> = ({ onViewBooking, onNewBooking
                   ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-surface-soft">
                 {filteredBookings.map((booking, index) => (
                   <tr
                     key={index}
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
                     onClick={() => onViewBooking(booking.bookingNo)}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-blue-600 font-medium">{booking.bookingNo}</span>
+                    <td className="px-4 py-2.5 whitespace-nowrap">
+                      <span className="text-sm text-brand-600 font-medium">{booking.bookingNo}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <span className="text-sm text-gray-900">{booking.date}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <span className="text-sm text-gray-900">{booking.jobOrderNo}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <span className="text-sm text-gray-900">{booking.serviceProvider}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
                         {getTransportIcon(booking.transportMode)}
                         <span className="text-sm text-gray-900">{booking.transportMode}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <span className={getStatusBadgeClass(booking.status)}>
                         {booking.status}
                       </span>

@@ -13,7 +13,7 @@ interface Props {
 
 const badge: Record<CustomerInsight["status"], string> = {
   "On track": "bg-green-100 text-green-700",
-  "Minor delay": "bg-yellow-100 text-yellow-700",
+  "Minor delay": "bg-amber-50 text-amber-700",
   "Delayed": "bg-red-100 text-red-700"
 };
 

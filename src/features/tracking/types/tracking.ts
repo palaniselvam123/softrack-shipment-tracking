@@ -4,8 +4,11 @@ export interface TrackedShipment {
   status: 'IN_TRANSIT' | 'DELAYED' | 'DELIVERED';
   origin: string;
   destination: string;
-  current_lat: number;
-  current_lng: number;
-  last_updated: string;
+  transport_mode: string | null;
+  /* The shipments table stores no position, so these are null until a
+     coordinate source exists. Markers are only drawn when both are set. */
+  current_lat: number | null;
+  current_lng: number | null;
+  last_updated: string | null;
   eta: string | null;
 }

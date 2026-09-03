@@ -375,7 +375,7 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
 
   // Create custom marker icon with count
   const createMarkerIcon = (count: number, color: string = '#3B82F6', isCountry: boolean = false) => {
-    const size = isCountry ? [50, 50] : [40, 40];
+    const size: [number, number] = isCountry ? [50, 50] : [40, 40];
     const fontSize = isCountry ? '14' : '12';
     
     return new Icon({
@@ -396,9 +396,9 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
       case 'road':
         return <Truck className="w-4 h-4 text-green-700" />;
       case 'air':
-        return <Plane className="w-4 h-4 text-pink-600" />;
+        return <Plane className="w-4 h-4 text-navy-700" />;
       case 'sea':
-        return <Ship className="w-4 h-4 text-indigo-700" />;
+        return <Ship className="w-4 h-4 text-navy-700" />;
       default:
         return <Ship className="w-4 h-4 text-gray-700" />;
     }
@@ -407,30 +407,30 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
   const getTransportColor = (mode: string) => {
     switch (mode.toLowerCase()) {
       case 'road':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'air':
-        return 'bg-pink-100 text-pink-800';
+        return 'bg-surface-tile text-navy-700';
       case 'sea':
-        return 'bg-indigo-100 text-indigo-800';
+        return 'bg-surface-tile text-navy-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'in transit':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
       case 'loaded on vessel':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'customs clearance':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'billing':
-        return 'bg-amber-100 text-amber-800';
+        return 'bg-amber-50 text-amber-700';
       case 'delivered':
-        return 'bg-emerald-100 text-emerald-800';
+        return 'bg-surface-tile text-navy-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
@@ -467,21 +467,21 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
   const totalShipments = Object.values(groupedShipments).reduce((sum, shipments) => sum + shipments.length, 0);
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="bg-white rounded-lg shadow-sm">
+    <div className="page">
+      <div className="card">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-surface-line">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Shipments Overview</h1>
-              <p className="text-sm text-gray-600 mt-1">Global shipment tracking with location-based grouping</p>
+              <h1 className="page-title">Shipments Overview</h1>
+              <p className="text-field text-gray-500 mt-0.5">Global shipment tracking with location-based grouping</p>
             </div>
             <div className="flex items-center space-x-3">
               <div className="flex items-center bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('map')}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
-                    viewMode === 'map' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                    viewMode === 'map' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   <Globe className="w-4 h-4" />
@@ -490,7 +490,7 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
                 <button
                   onClick={() => setViewMode('list')}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
-                    viewMode === 'list' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                    viewMode === 'list' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   <List className="w-4 h-4" />
@@ -502,7 +502,7 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
         </div>
 
         {/* Search and Filters */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-surface-line">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -511,7 +511,7 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
                 placeholder="Search shipments..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
               />
             </div>
             <div className="flex items-center space-x-3">
@@ -525,7 +525,7 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
               <button 
                 onClick={() => setShowFilters(!showFilters)}
                 className={`flex items-center space-x-2 px-4 py-2 border rounded-md transition-colors ${
-                  showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 hover:bg-gray-50'
+                  showFilters ? 'bg-surface-tile border-surface-line text-brand-700' : 'border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 <Filter className="w-4 h-4" />
@@ -535,13 +535,13 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
           </div>
 
           {showFilters && (
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-surface-tile rounded-md">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
                 <select 
                   value={selectedCountry}
                   onChange={(e) => setSelectedCountry(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                 >
                   <option value="">All Countries</option>
                   {countries.map(country => (
@@ -554,7 +554,7 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
                 <select 
                   value={selectedTransport}
                   onChange={(e) => setSelectedTransport(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                 >
                   <option value="">All Modes</option>
                   <option value="sea">Sea</option>
@@ -567,7 +567,7 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
                 <select 
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                 >
                   <option value="">All Status</option>
                   <option value="in transit">In Transit</option>
@@ -598,7 +598,7 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
                       handleBackToCountryView();
                     }
                   }}
-                  className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                  className="w-full px-4 py-2 border border-surface-line text-navy-900 rounded-md hover:bg-surface-head transition-colors"
                 >
                   Clear All
                 </button>
@@ -608,15 +608,15 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
         </div>
 
         {/* Results Summary */}
-        <div className="px-6 py-3 bg-yellow-50 border-b border-yellow-200">
+        <div className="px-6 py-3 bg-amber-50 border-b border-amber-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-              <span className="text-sm font-medium text-yellow-800">
+              <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+              <span className="text-sm font-medium text-amber-700">
                 {mapView === 'country' ? 'Country View' : `Location View - ${selectedCountryCode || 'Unknown'}`} - Showing {totalShipments} of {mockShipments.length} Shipments
               </span>
             </div>
-            <div className="text-sm text-yellow-700">
+            <div className="text-sm text-amber-700">
               {Object.keys(groupedShipments).length} {mapView === 'country' ? 'countries' : 'locations'}
             </div>
           </div>
@@ -662,7 +662,7 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
                             <p className="text-sm text-gray-600 mb-2">{shipments.length} shipments</p>
                             <button
                               onClick={() => handleCountryClick(countryCode)}
-                              className="flex items-center space-x-1 px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
+                              className="flex items-center space-x-1 px-3 py-1 bg-navy-900 text-white rounded text-sm hover:bg-navy-800 transition-colors"
                             >
                               <ZoomIn className="w-3 h-3" />
                               <span>View Locations</span>
@@ -731,35 +731,35 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
         {/* Shipments Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-surface-head border-b border-surface-line">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-label font-semibold text-navy-900">
                   House Bill
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-label font-semibold text-navy-900">
                   Route
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-label font-semibold text-navy-900">
                   Origin Port
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-label font-semibold text-navy-900">
                   Destination Port
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-label font-semibold text-navy-900">
                   Mode
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-label font-semibold text-navy-900">
                   ETA
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-label font-semibold text-navy-900">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-label font-semibold text-navy-900">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-surface-soft">
               {Object.entries(groupedShipments).map(([location, shipments]) =>
                 shipments.map((shipment, index) => (
                   <tr 
@@ -767,49 +767,49 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
                     onClick={() => onViewShipment(shipment.shipmentNo)}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-medium text-blue-600">{shipment.houseNo || shipment.shipmentNo}</span>
+                    <td className="px-4 py-2.5 whitespace-nowrap">
+                      <span className="text-sm font-medium text-brand-600">{shipment.houseNo || shipment.shipmentNo}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <span className="text-sm text-gray-900">
                         {extractLocation(shipment.departure)} → {extractLocation(shipment.arrivalPort)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <div className="flex items-center space-x-1">
                         <MapPin className="w-4 h-4 text-gray-400" />
                         <span className="text-sm text-gray-900">{extractLocation(shipment.departure)}</span>
                         <span className="text-xs text-gray-500">({shipment.departure.split(',').pop()?.trim()})</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <div className="flex items-center space-x-1">
                         <MapPin className="w-4 h-4 text-gray-400" />
                         <span className="text-sm text-gray-900">{extractLocation(shipment.arrivalPort)}</span>
                         <span className="text-xs text-gray-500">({shipment.arrivalPort.split(',').pop()?.trim()})</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <div className={`flex items-center space-x-2 px-3 py-1 rounded-full ${getTransportColor(shipment.transport)}`}>
                         {getTransportIcon(shipment.transport)}
                         <span className="text-sm font-medium">{shipment.transport}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <span className="text-sm text-gray-900">{shipment.eta}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(shipment.status)}`}>
                         {shipment.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onViewShipment(shipment.shipmentNo);
                         }}
-                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                        className="text-brand-600 hover:text-navy-900 transition-colors"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
@@ -822,7 +822,7 @@ const ShipmentsMapView: React.FC<ShipmentsMapViewProps> = ({ onViewShipment }) =
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200">
+        <div className="px-6 py-4 border-t border-surface-line">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
               Showing {totalShipments} shipments across {Object.keys(groupedShipments).length} {mapView === 'country' ? 'countries' : 'locations'}

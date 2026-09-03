@@ -124,10 +124,10 @@ const WorldMap: React.FC<WorldMapProps> = ({ shipmentNo, isModal = false, onClos
   }, []);
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm ${isModal ? 'w-full h-full' : ''}`}>
-      <div className="p-4 border-b border-gray-200">
+    <div className={`card ${isModal ? 'w-full h-full' : ''}`}>
+      <div className="p-4 border-b border-surface-line">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Live Tracking</h3>
+          <h3 className="text-[14px] font-semibold text-navy-900">Live Tracking</h3>
           <div className="flex items-center space-x-2">
             {!isModal && (
               <button 
@@ -172,7 +172,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ shipmentNo, isModal = false, onClos
               onClick={toggleTracking}
               className={`p-1 rounded transition-colors ${
                 isTracking 
-                  ? 'bg-blue-100 text-blue-600' 
+                  ? 'bg-surface-tile text-brand-600' 
                   : 'hover:bg-gray-100 text-gray-500'
               }`}
               title="Track Vessel"
@@ -226,9 +226,9 @@ const WorldMap: React.FC<WorldMapProps> = ({ shipmentNo, isModal = false, onClos
                     </p>
                   )}
                   <div className={`inline-block px-2 py-1 rounded-full text-xs font-medium mt-2 ${
-                    port.status === 'completed' ? 'bg-green-100 text-green-800' :
-                    port.status === 'current' ? 'bg-blue-100 text-blue-800' :
-                    'bg-yellow-100 text-yellow-800'
+                    port.status === 'completed' ? 'bg-green-50 text-green-700' :
+                    port.status === 'current' ? 'bg-surface-tile text-brand-700' :
+                    'bg-amber-50 text-amber-700'
                   }`}>
                     {port.status === 'completed' ? 'Completed' :
                      port.status === 'current' ? 'In Transit' : 'Pending'}
@@ -240,15 +240,15 @@ const WorldMap: React.FC<WorldMapProps> = ({ shipmentNo, isModal = false, onClos
         </MapContainer>
         
         {/* Live tracking status */}
-        <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs flex items-center space-x-2">
+        <div className="absolute top-4 right-4 bg-navy-900 text-white px-3 py-1 rounded-full text-xs flex items-center space-x-2">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
           <span>Live Tracking Active</span>
         </div>
         
         {/* Vessel info overlay */}
-        <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+        <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 backdrop-blur-sm rounded-lg p-3 shadow-card">
           <div className="flex items-center space-x-2 mb-2">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-navy-700 rounded-full"></div>
             <span className="text-sm font-medium text-gray-900">MSC Alabama III</span>
           </div>
           <div className="text-xs text-gray-600 space-y-1">

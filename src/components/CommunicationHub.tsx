@@ -92,7 +92,7 @@ const CommunicationHub: React.FC = () => {
     }
   ];
 
-  const messages: { [key: string]: Message[] } = {
+  const [messages, setMessages] = useState<{ [key: string]: Message[] }>({
     conv1: [
       {
         id: 'msg1',
@@ -120,7 +120,7 @@ const CommunicationHub: React.FC = () => {
         type: 'text'
       }
     ]
-  };
+  });
 
   const shipmentDetails: { [key: string]: ShipmentDetails } = {
     SH001: {
@@ -161,33 +161,33 @@ const CommunicationHub: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'escalated':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700';
       case 'resolved':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
       default:
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'low':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
   const getShipmentStatusColor = (status: string) => {
     switch (status) {
       case 'in transit':
-        return 'text-blue-600';
+        return 'text-brand-600';
       case 'delayed':
         return 'text-red-600';
       case 'delivered':
@@ -213,13 +213,10 @@ const CommunicationHub: React.FC = () => {
         type: 'text'
       };
       
-      // Update messages for current conversation
-      if (!messages[selectedConversation]) {
-        messages[selectedConversation] = [];
-      }
-      messages[selectedConversation].push(newMsg);
-      
-      console.log('Message sent:', newMsg);
+      setMessages(prev => ({
+        ...prev,
+        [selectedConversation]: [...(prev[selectedConversation] || []), newMsg]
+      }));
       setNewMessage('');
     }
   };
@@ -229,17 +226,17 @@ const CommunicationHub: React.FC = () => {
   const currentShipment = selectedConv ? shipmentDetails[selectedConv.shipmentId] : null;
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="bg-white rounded-lg shadow-sm h-[calc(100vh-8rem)]">
+    <div className="page">
+      <div className="card h-[calc(100vh-8rem)]">
         {/* Communication Hub Header */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-surface-line">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-navy-900 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">FF</span>
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">Communication Hub</h1>
+                <h1 className="text-[15px] font-semibold text-navy-900">Communication Hub</h1>
                 <p className="text-sm text-gray-600">Freight Forwarding Collaboration Platform</p>
               </div>
             </div>
@@ -248,7 +245,7 @@ const CommunicationHub: React.FC = () => {
                 <select 
                   value={selectedUser}
                   onChange={(e) => setSelectedUser(e.target.value)}
-                  className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="appearance-none bg-white border border-surface-line rounded-md px-4 py-2 pr-8 focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                 >
                   <option>John Smith (customer)</option>
                   <option>Sarah Johnson (staff)</option>
@@ -258,7 +255,7 @@ const CommunicationHub: React.FC = () => {
               </div>
               <Bell className="w-5 h-5 text-gray-500" />
               <Settings className="w-5 h-5 text-gray-500" />
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-navy-900 rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-medium">JS</span>
               </div>
             </div>
@@ -268,9 +265,9 @@ const CommunicationHub: React.FC = () => {
         {/* Main Content */}
         <div className="flex h-[calc(100%-5rem)]">
         {/* Conversations List */}
-        <div className="w-80 border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Conversations</h2>
+        <div className="w-80 border-r border-surface-line flex flex-col">
+          <div className="p-4 border-b border-surface-line">
+            <h2 className="text-[14px] font-semibold text-navy-900 mb-4">Conversations</h2>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
@@ -278,7 +275,7 @@ const CommunicationHub: React.FC = () => {
                 placeholder="Search conversations..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
               />
             </div>
           </div>
@@ -288,17 +285,17 @@ const CommunicationHub: React.FC = () => {
               <div
                 key={conversation.id}
                 onClick={() => setSelectedConversation(conversation.id)}
-                className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                  selectedConversation === conversation.id ? 'bg-blue-50 border-l-4 border-l-blue-600' : ''
+                className={`p-4 border-b border-surface-soft cursor-pointer hover:bg-gray-50 transition-colors ${
+                  selectedConversation === conversation.id ? 'bg-surface-tile border-l-4 border-l-blue-600' : ''
                 }`}
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center space-x-2">
-                    <MessageCircle className="w-4 h-4 text-blue-600" />
+                    <MessageCircle className="w-4 h-4 text-brand-600" />
                     <h3 className="font-medium text-gray-900 text-sm">{conversation.title}</h3>
                   </div>
                   {conversation.unreadCount > 0 && (
-                    <span className="bg-sky-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                    <span className="bg-brand-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
                       {conversation.unreadCount}
                     </span>
                   )}
@@ -327,10 +324,10 @@ const CommunicationHub: React.FC = () => {
           {selectedConv && (
             <>
               {/* Chat Header */}
-              <div className="border-b border-gray-200 p-4">
+              <div className="border-b border-surface-line p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{selectedConv.title}</h3>
+                    <h3 className="text-[14px] font-semibold text-navy-900">{selectedConv.title}</h3>
                     <div className="flex items-center space-x-4 mt-1">
                       <span className="text-sm text-gray-600">Shipment: {selectedConv.shipmentId}</span>
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(selectedConv.status)}`}>
@@ -341,8 +338,12 @@ const CommunicationHub: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <X className="w-5 h-5" />
+                  <button
+                    onClick={() => setSelectedConversation('')}
+                    aria-label="Close conversation"
+                    className="p-1.5 rounded-md text-gray-400 hover:text-navy-900 hover:bg-surface-head transition-colors"
+                  >
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -365,28 +366,10 @@ const CommunicationHub: React.FC = () => {
                     </div>
                   </div>
                 ))}
-                
-                {/* Show user's typed messages */}
-                {newMessage && (
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-medium">You</span>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span className="font-medium text-gray-900">You</span>
-                        <span className="text-xs text-gray-500">typing...</span>
-                      </div>
-                      <div className="bg-blue-100 rounded-lg p-3">
-                        <p className="text-gray-800">{newMessage}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Message Input */}
-              <div className="border-t border-gray-200 p-4">
+              <div className="border-t border-surface-line p-4">
                 <div className="flex items-center space-x-3">
                   <button className="text-gray-400 hover:text-gray-600">
                     <Paperclip className="w-5 h-5" />
@@ -397,13 +380,13 @@ const CommunicationHub: React.FC = () => {
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       placeholder="Type your message..."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-4 py-2 border border-surface-line rounded-lg focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                       onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                     />
                   </div>
                   <button
                     onClick={handleSendMessage}
-                    className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="bg-navy-900 text-white p-2 rounded-lg hover:bg-navy-800 transition-colors"
                   >
                     <Send className="w-5 h-5" />
                   </button>
@@ -415,8 +398,8 @@ const CommunicationHub: React.FC = () => {
 
         {/* Shipment Details Sidebar */}
         <div className="w-80 border-l border-gray-200">
-          <div className="p-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Shipment Details</h3>
+          <div className="p-4 border-b border-surface-line">
+            <h3 className="text-[14px] font-semibold text-navy-900">Shipment Details</h3>
           </div>
           
           {currentShipment && (
@@ -459,7 +442,7 @@ const CommunicationHub: React.FC = () => {
                   </div>
                   <div className="ml-1 border-l-2 border-gray-200 h-4"></div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-navy-700 rounded-full"></div>
                     <span className="text-sm text-gray-900">{currentShipment.route.destination}</span>
                   </div>
                 </div>

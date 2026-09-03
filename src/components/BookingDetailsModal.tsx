@@ -423,10 +423,10 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
 
   if (!booking) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="fixed inset-0 bg-navy-950/40 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg w-full max-w-2xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">Booking Not Found</h2>
+            <h2 className="text-[15px] font-semibold text-navy-900">Booking Not Found</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
               <X className="w-6 h-6" />
             </button>
@@ -440,24 +440,24 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'Approved':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'Rejected':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div className="fixed inset-0 bg-navy-950/40 flex items-center justify-center z-50 p-4 overflow-y-auto">
       <div className="bg-white rounded-lg w-full max-w-4xl my-8">
-        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+        <div className="p-6 border-b border-surface-line flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">{booking.bookingNo}</h2>
-              <p className="text-sm text-gray-600 mt-1">Job Order: {booking.jobOrderNo}</p>
+              <h2 className="text-[17px] font-semibold text-navy-900">{booking.bookingNo}</h2>
+              <p className="text-field text-gray-500 mt-0.5">Job Order: {booking.jobOrderNo}</p>
             </div>
             <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(booking.status)}`}>
               {booking.status}
@@ -466,7 +466,7 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
           <div className="flex items-center space-x-2">
             <button
               onClick={onEdit}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+              className="flex items-center space-x-2 px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors text-sm"
             >
               <Edit className="w-4 h-4" />
               <span>Edit</span>
@@ -477,12 +477,12 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
           </div>
         </div>
 
-        <div className="flex border-b border-gray-200">
+        <div className="flex border-b border-surface-line">
           <button
             onClick={() => setActiveTab('overview')}
             className={`px-6 py-4 text-sm font-medium border-b-2 ${
               activeTab === 'overview'
-                ? 'text-blue-600 border-blue-600'
+                ? 'text-brand-600 border-navy-900'
                 : 'text-gray-600 border-transparent hover:text-gray-900'
             }`}
           >
@@ -492,7 +492,7 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
             onClick={() => setActiveTab('tracking')}
             className={`px-6 py-4 text-sm font-medium border-b-2 ${
               activeTab === 'tracking'
-                ? 'text-blue-600 border-blue-600'
+                ? 'text-brand-600 border-navy-900'
                 : 'text-gray-600 border-transparent hover:text-gray-900'
             }`}
           >
@@ -502,7 +502,7 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
             onClick={() => setActiveTab('documents')}
             className={`px-6 py-4 text-sm font-medium border-b-2 ${
               activeTab === 'documents'
-                ? 'text-blue-600 border-blue-600'
+                ? 'text-brand-600 border-navy-900'
                 : 'text-gray-600 border-transparent hover:text-gray-900'
             }`}
           >
@@ -513,17 +513,17 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
         <div className="p-6 max-h-[calc(100vh-300px)] overflow-y-auto">
           {activeTab === 'overview' && (
             <div className="space-y-6">
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="p-4 bg-surface-tile border border-surface-line rounded-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-blue-600">ETA: <span className="font-semibold">{booking.eta}</span></p>
-                    <p className="text-sm text-blue-600 mt-1">Current Location: <span className="font-semibold">{booking.location}</span></p>
+                    <p className="text-sm text-brand-600">ETA: <span className="font-semibold">{booking.eta}</span></p>
+                    <p className="text-sm text-brand-600 mt-1">Current Location: <span className="font-semibold">{booking.location}</span></p>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="p-4 bg-surface-tile rounded-md">
                   <h3 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
                     <Package className="w-4 h-4" />
                     <span>Service Details</span>
@@ -536,7 +536,7 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
                   </div>
                 </div>
 
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="p-4 bg-surface-tile rounded-md">
                   <h3 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
                     <MapPin className="w-4 h-4" />
                     <span>Route</span>
@@ -549,28 +549,28 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
                   </div>
                 </div>
 
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="p-4 bg-surface-tile rounded-md">
                   <h3 className="font-semibold text-gray-900 mb-3">Shipper</h3>
                   <div className="space-y-1 text-sm">
                     <p className="font-medium">{booking.shipper}</p>
                     <p className="text-gray-600">{booking.shipperAddress}</p>
                     <p className="text-gray-600">{booking.shipperContact}</p>
-                    <p className="text-blue-600">{booking.shipperEmail}</p>
+                    <p className="text-brand-600">{booking.shipperEmail}</p>
                   </div>
                 </div>
 
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="p-4 bg-surface-tile rounded-md">
                   <h3 className="font-semibold text-gray-900 mb-3">Consignee</h3>
                   <div className="space-y-1 text-sm">
                     <p className="font-medium">{booking.consignee}</p>
                     <p className="text-gray-600">{booking.consigneeAddress}</p>
                     <p className="text-gray-600">{booking.consigneeContact}</p>
-                    <p className="text-blue-600">{booking.consigneeEmail}</p>
+                    <p className="text-brand-600">{booking.consigneeEmail}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4 bg-surface-tile rounded-md">
                 <h3 className="font-semibold text-gray-900 mb-3">Cargo Summary</h3>
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
@@ -589,8 +589,8 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
               </div>
 
               {booking.remarks && (
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-900"><span className="font-semibold">Remarks:</span> {booking.remarks}</p>
+                <div className="p-4 bg-surface-tile border border-surface-line rounded-lg">
+                  <p className="text-sm text-navy-900"><span className="font-semibold">Remarks:</span> {booking.remarks}</p>
                 </div>
               )}
             </div>
@@ -600,12 +600,12 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
             <div className="space-y-4">
               {booking.trackingEvents.length > 0 ? (
                 <div className="relative">
-                  <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-blue-200" />
+                  <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-surface-line" />
                   <div className="space-y-6 pl-12">
                     {booking.trackingEvents.map((event, index) => (
                       <div key={index} className="relative">
-                        <div className="absolute -left-8 mt-1 w-6 h-6 bg-blue-600 rounded-full border-4 border-white" />
-                        <div className="p-4 bg-gray-50 rounded-lg">
+                        <div className="absolute -left-8 mt-1 w-6 h-6 bg-navy-900 rounded-full border-4 border-white" />
+                        <div className="p-4 bg-surface-tile rounded-md">
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900">{event.event}</h4>
                             <span className="text-sm text-gray-600">{event.time}</span>
@@ -630,15 +630,15 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
               {booking.documents.length > 0 ? (
                 <div className="space-y-3">
                   {booking.documents.map((doc) => (
-                    <div key={doc.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div key={doc.id} className="flex items-center justify-between p-4 border border-surface-line rounded-lg hover:bg-gray-50 transition-colors">
                       <div className="flex items-center space-x-3">
-                        <FileText className="w-5 h-5 text-blue-600" />
+                        <FileText className="w-5 h-5 text-brand-600" />
                         <div>
                           <p className="font-medium text-gray-900">{doc.name}</p>
                           <p className="text-xs text-gray-600">{doc.type} • Uploaded {doc.uploadedDate}</p>
                         </div>
                       </div>
-                      <button className="px-3 py-2 text-blue-600 hover:bg-blue-50 rounded text-sm font-medium">
+                      <button className="px-3 py-2 text-brand-600 hover:bg-surface-tile rounded text-sm font-medium">
                         <Download className="w-4 h-4" />
                       </button>
                     </div>
@@ -654,16 +654,16 @@ const BookingDetailsModal: React.FC<BookingDetailsProps> = ({ bookingNo, onClose
           )}
         </div>
 
-        <div className="p-6 border-t border-gray-200 flex items-center justify-end space-x-3">
+        <div className="p-6 border-t border-surface-line flex items-center justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-sm font-medium"
+            className="px-4 py-2 border border-surface-line text-navy-900 rounded-md hover:bg-surface-head transition-colors text-sm font-medium"
           >
             Close
           </button>
           <button
             onClick={onEdit}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+            className="flex items-center space-x-2 px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors text-sm font-medium"
           >
             <Edit className="w-4 h-4" />
             <span>Edit Booking</span>

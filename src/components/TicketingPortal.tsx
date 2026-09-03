@@ -4,7 +4,7 @@ import {
   Plus, 
   Search, 
   Filter, 
-  Settings, 
+
   User, 
   Clock, 
   AlertTriangle, 
@@ -35,6 +35,130 @@ interface TicketData {
   comments: number;
 }
 
+interface TicketEditorProps {
+  mode: 'view' | 'edit' | 'create';
+  ticket: TicketData;
+  onClose: () => void;
+  onSave: (ticket: TicketData) => void;
+}
+
+const TicketEditor: React.FC<TicketEditorProps> = ({ mode, ticket, onClose, onSave }) => {
+  const [draft, setDraft] = useState<TicketData>(ticket);
+  const readOnly = mode === 'view';
+  const set = (key: keyof TicketData, value: string) =>
+    setDraft(prev => ({ ...prev, [key]: value }));
+
+  return (
+    <div className="fixed inset-0 bg-navy-950/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-card border border-surface-line shadow-pop w-full max-w-lg">
+        <header className="px-4 py-3 border-b border-surface-line flex items-center justify-between">
+          <h2 className="card-title">
+            {mode === 'create' ? 'New Ticket' : mode === 'edit' ? 'Edit ' + draft.id : draft.id}
+          </h2>
+          <button onClick={onClose} className="btn-ghost px-2" aria-label="Close">×</button>
+        </header>
+
+        <div className="p-4 space-y-3 max-h-[60vh] overflow-y-auto">
+          <div>
+            <label className="field-label">Title</label>
+            <input
+              className="input-field"
+              value={draft.title}
+              readOnly={readOnly}
+              onChange={e => set('title', e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="field-label">Description</label>
+            <textarea
+              className="input-field h-24 resize-none"
+              value={draft.description}
+              readOnly={readOnly}
+              onChange={e => set('description', e.target.value)}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="field-label">Priority</label>
+              <select
+                className="select-field"
+                value={draft.priority}
+                disabled={readOnly}
+                onChange={e => set('priority', e.target.value)}
+              >
+                {['low', 'medium', 'high', 'urgent'].map(v => <option key={v} value={v}>{v}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="field-label">Status</label>
+              <select
+                className="select-field"
+                value={draft.status}
+                disabled={readOnly}
+                onChange={e => set('status', e.target.value)}
+              >
+                {['open', 'in-progress', 'resolved', 'closed'].map(v => <option key={v} value={v}>{v}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="field-label">Category</label>
+              <input
+                className="input-field"
+                value={draft.category}
+                readOnly={readOnly}
+                onChange={e => set('category', e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="field-label">Assignee</label>
+              <input
+                className="input-field"
+                value={draft.assignee}
+                readOnly={readOnly}
+                onChange={e => set('assignee', e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="field-label">Due date</label>
+              <input
+                type="date"
+                className="input-field"
+                value={draft.dueDate}
+                readOnly={readOnly}
+                onChange={e => set('dueDate', e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="field-label">Shipment Ref.</label>
+              <input
+                className="input-field"
+                value={draft.shipmentRef || ''}
+                readOnly={readOnly}
+                onChange={e => set('shipmentRef', e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        <footer className="px-4 py-3 border-t border-surface-line flex items-center justify-end gap-2">
+          <button onClick={onClose} className="btn-secondary">
+            {readOnly ? 'Close' : 'Cancel'}
+          </button>
+          {!readOnly && (
+            <button
+              onClick={() => onSave(draft)}
+              disabled={!draft.title.trim()}
+              className="btn-primary"
+            >
+              Save
+            </button>
+          )}
+        </footer>
+      </div>
+    </div>
+  );
+};
+
 const TicketingPortal: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -42,8 +166,12 @@ const TicketingPortal: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set(['TKT-2026-001', 'TKT-2026-005']));
+  const [page, setPage] = useState(1);
+  /* view = read-only detail, edit = existing ticket, create = blank ticket */
+  const [editor, setEditor] = useState<{ mode: 'view' | 'edit' | 'create'; ticket: TicketData } | null>(null);
+  const PAGE_SIZE = 5;
 
-  const tickets: TicketData[] = [
+  const seedTickets: TicketData[] = [
     {
       id: 'TKT-2026-001',
       title: 'Container Damage Report - MEDU6997206',
@@ -143,39 +271,39 @@ const TicketingPortal: React.FC = () => {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-red-50 text-red-700 border-red-200';
       case 'high':
         return 'bg-rose-100 text-rose-800 border-rose-200';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-amber-50 text-amber-700 border-amber-200';
       case 'low':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-green-50 text-green-700 border-green-200';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'open':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
       case 'in-progress':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'resolved':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'closed':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'open':
-        return <AlertTriangle className="w-4 h-4 text-blue-600" />;
+        return <AlertTriangle className="w-4 h-4 text-brand-600" />;
       case 'in-progress':
-        return <Clock className="w-4 h-4 text-yellow-600" />;
+        return <Clock className="w-4 h-4 text-amber-600" />;
       case 'resolved':
         return <CheckCircle className="w-4 h-4 text-green-600" />;
       case 'closed':
@@ -195,6 +323,38 @@ const TicketingPortal: React.FC = () => {
     setFavorites(newFavorites);
   };
 
+  const [tickets, setTickets] = useState<TicketData[]>(seedTickets);
+
+  const blankTicket = (): TicketData => ({
+    id: 'TKT-' + new Date().getFullYear() + '-' + String(tickets.length + 1).padStart(3, '0'),
+    title: '',
+    description: '',
+    priority: 'medium',
+    status: 'open',
+    category: 'General',
+    assignee: '',
+    reporter: '',
+    created: new Date().toISOString().slice(0, 16).replace('T', ' '),
+    updated: new Date().toISOString().slice(0, 16).replace('T', ' '),
+    dueDate: '',
+    attachments: 0,
+    comments: 0
+  });
+
+  const saveTicket = (ticket: TicketData) => {
+    setTickets(prev =>
+      prev.some(t => t.id === ticket.id)
+        ? prev.map(t => (t.id === ticket.id ? { ...ticket, updated: new Date().toISOString().slice(0, 16).replace('T', ' ') } : t))
+        : [ticket, ...prev]
+    );
+    setEditor(null);
+  };
+
+  const deleteTicket = (id: string) => {
+    if (!window.confirm('Delete ticket ' + id + '? This cannot be undone.')) return;
+    setTickets(prev => prev.filter(t => t.id !== id));
+  };
+
   const filteredTickets = tickets.filter(ticket => {
     const matchesSearch = Object.values(ticket).some(value =>
       value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -206,21 +366,28 @@ const TicketingPortal: React.FC = () => {
     return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
   });
 
+  const totalPages = Math.max(1, Math.ceil(filteredTickets.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pagedTickets = filteredTickets.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
   const categories = [...new Set(tickets.map(ticket => ticket.category))];
   const statuses = ['open', 'in-progress', 'resolved', 'closed'];
   const priorities = ['low', 'medium', 'high', 'urgent'];
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="bg-white rounded-lg shadow-sm">
+    <div className="page">
+      <div className="card">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-surface-line">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Ticketing Portal</h1>
-              <p className="text-sm text-gray-600 mt-1">Manage support tickets and customer issues</p>
+              <h1 className="page-title">Ticketing Portal</h1>
+              <p className="text-field text-gray-500 mt-0.5">Manage support tickets and customer issues</p>
             </div>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            <button
+              onClick={() => setEditor({ mode: 'create', ticket: blankTicket() })}
+              className="btn-primary"
+            >
               <Plus className="w-4 h-4" />
               <span>New Ticket</span>
             </button>
@@ -228,7 +395,7 @@ const TicketingPortal: React.FC = () => {
         </div>
 
         {/* Search and Filters */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-surface-line">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -237,34 +404,31 @@ const TicketingPortal: React.FC = () => {
                 placeholder="Search tickets..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
               />
             </div>
             <div className="flex items-center space-x-3">
               <button 
                 onClick={() => setShowFilters(!showFilters)}
                 className={`flex items-center space-x-2 px-4 py-2 border rounded-md transition-colors ${
-                  showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 hover:bg-gray-50'
+                  showFilters ? 'bg-surface-tile border-surface-line text-brand-700' : 'border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 <Filter className="w-4 h-4" />
                 <span>Filters</span>
               </button>
-              <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                <Settings className="w-4 h-4" />
-                <span>Settings</span>
-              </button>
+
             </div>
           </div>
 
           {showFilters && (
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-surface-tile rounded-md">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select 
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                 >
                   <option value="">All Status</option>
                   {statuses.map(status => (
@@ -277,7 +441,7 @@ const TicketingPortal: React.FC = () => {
                 <select 
                   value={selectedPriority}
                   onChange={(e) => setSelectedPriority(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                 >
                   <option value="">All Priorities</option>
                   {priorities.map(priority => (
@@ -290,7 +454,7 @@ const TicketingPortal: React.FC = () => {
                 <select 
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                 >
                   <option value="">All Categories</option>
                   {categories.map(category => (
@@ -306,7 +470,7 @@ const TicketingPortal: React.FC = () => {
                     setSelectedCategory('');
                     setSearchTerm('');
                   }}
-                  className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                  className="w-full px-4 py-2 border border-surface-line text-navy-900 rounded-md hover:bg-surface-head transition-colors"
                 >
                   Clear All
                 </button>
@@ -316,19 +480,19 @@ const TicketingPortal: React.FC = () => {
         </div>
 
         {/* Tickets List */}
-        <div className="divide-y divide-gray-200">
-          {filteredTickets.map((ticket) => (
+        <div className="divide-y divide-surface-soft">
+          {pagedTickets.map((ticket) => (
             <div key={ticket.id} className="p-6 hover:bg-gray-50 transition-colors">
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-4 flex-1">
                   <button
                     onClick={() => toggleFavorite(ticket.id)}
-                    className="text-gray-400 hover:text-yellow-500 transition-colors mt-1"
+                    className="text-gray-400 hover:text-amber-500 transition-colors mt-1"
                   >
                     <Star 
                       className={`w-4 h-4 ${
                         favorites.has(ticket.id) 
-                          ? 'fill-yellow-400 text-yellow-400' 
+                          ? 'fill-yellow-400 text-amber-400' 
                           : ''
                       }`} 
                     />
@@ -352,7 +516,7 @@ const TicketingPortal: React.FC = () => {
                       <div className="space-y-1">
                         <div className="flex items-center space-x-2">
                           <span className="text-gray-500">ID:</span>
-                          <span className="font-mono text-blue-600">{ticket.id}</span>
+                          <span className="font-mono text-brand-600">{ticket.id}</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <span className="text-gray-500">Category:</span>
@@ -361,7 +525,7 @@ const TicketingPortal: React.FC = () => {
                         {ticket.shipmentRef && (
                           <div className="flex items-center space-x-2">
                             <span className="text-gray-500">Shipment:</span>
-                            <span className="text-blue-600 font-medium">{ticket.shipmentRef}</span>
+                            <span className="text-brand-600 font-medium">{ticket.shipmentRef}</span>
                           </div>
                         )}
                       </div>
@@ -394,13 +558,25 @@ const TicketingPortal: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center space-x-2 ml-4">
-                  <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                  <button
+                    onClick={() => setEditor({ mode: 'view', ticket })}
+                    aria-label={'View ' + ticket.id}
+                    className="p-2 text-gray-400 hover:text-navy-900 hover:bg-surface-head rounded-md transition-colors"
+                  >
                     <Eye className="w-4 h-4" />
                   </button>
-                  <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
+                  <button
+                    onClick={() => setEditor({ mode: 'edit', ticket })}
+                    aria-label={'Edit ' + ticket.id}
+                    className="p-2 text-gray-400 hover:text-navy-900 hover:bg-surface-head rounded-md transition-colors"
+                  >
                     <Edit className="w-4 h-4" />
                   </button>
-                  <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                  <button
+                    onClick={() => deleteTicket(ticket.id)}
+                    aria-label={'Delete ' + ticket.id}
+                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                  >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -409,14 +585,37 @@ const TicketingPortal: React.FC = () => {
           ))}
         </div>
 
+        {editor && (
+          <TicketEditor
+            mode={editor.mode}
+            ticket={editor.ticket}
+            onClose={() => setEditor(null)}
+            onSave={saveTicket}
+          />
+        )}
+
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200">
+        <div className="px-6 py-4 border-t border-surface-line">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500">Showing {filteredTickets.length} of {tickets.length} tickets</p>
-            <nav className="flex items-center space-x-2">
-              <button className="px-3 py-1 text-sm border rounded hover:bg-gray-50">‹ Previous</button>
-              <span className="px-3 py-1 text-sm">Page 1 of 1</span>
-              <button className="px-3 py-1 text-sm border rounded hover:bg-gray-50">Next ›</button>
+            <p className="text-field text-gray-500">
+              Showing {pagedTickets.length} of {filteredTickets.length} tickets
+            </p>
+            <nav className="flex items-center gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={currentPage <= 1}
+                className="btn-secondary px-3 py-1"
+              >
+                Previous
+              </button>
+              <span className="text-field text-gray-600">Page {currentPage} of {totalPages}</span>
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
+                className="btn-secondary px-3 py-1"
+              >
+                Next
+              </button>
             </nav>
           </div>
         </div>

@@ -166,9 +166,9 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
   const getPortIcon = (port: Port) => {
     switch (port.type) {
       case 'seaport':
-        return <Ship className="w-4 h-4 text-blue-600" />;
+        return <Ship className="w-4 h-4 text-brand-600" />;
       case 'airport':
-        return <Plane className="w-4 h-4 text-pink-600" />;
+        return <Plane className="w-4 h-4 text-navy-700" />;
       case 'city':
         return <Building className="w-4 h-4 text-green-600" />;
       default:
@@ -213,7 +213,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
           onBlur={handleInputBlur}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className={`w-full pl-10 pr-10 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+          className={`w-full pl-10 pr-10 py-2 border rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600 ${
             !isValidSelection && value ? 'border-red-300 bg-red-50' : 'border-gray-300'
           }`}
           required={required}
@@ -240,7 +240,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
       {isOpen && (
         <div 
           ref={dropdownRef}
-          className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-white border border-surface-line rounded-md shadow-card max-h-60 overflow-y-auto"
         >
           {filteredPorts.length > 0 ? (
             <div className="py-1">
@@ -251,7 +251,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
                   onClick={() => handlePortSelect(port)}
                   className={`w-full px-4 py-2 text-left focus:outline-none ${
                     index === highlightedIndex 
-                      ? 'bg-blue-100 text-blue-900' 
+                      ? 'bg-surface-tile text-navy-900' 
                       : 'hover:bg-gray-100 focus:bg-gray-100'
                   }`}
                   onMouseEnter={() => setHighlightedIndex(index)}
@@ -277,7 +277,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
           )}
           
           {searchQuery && filteredPorts.length > 0 && (
-            <div className="px-4 py-2 text-xs text-gray-400 border-t border-gray-200">
+            <div className="px-4 py-2 text-xs text-gray-400 border-t border-surface-line">
               {filteredPorts.length} location{filteredPorts.length !== 1 ? 's' : ''} found
             </div>
           )}

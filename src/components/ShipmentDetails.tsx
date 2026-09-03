@@ -1,63 +1,152 @@
-interface RouteLeg {
-  load_port?: string;
-  discharge_port?: string;
-  origin?: string;
-  destination?: string;
-  ["Load Port"]?: string;
-  ["Discharge Port"]?: string;
+import React, { useCallback, useEffect, useState } from 'react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import { supabase, type SupabaseShipment } from '../lib/supabase';
+import SideMenu from './SideMenu';
+import ShipmentOverview from './ShipmentOverview';
+import TrackingTimeline from './TrackingTimeline';
+import DocumentsList from './DocumentsList';
+import NotesList from './NotesList';
+import InvoicesList from './InvoicesList';
+import ActivityList from './ActivityList';
+
+interface ShipmentDetailsProps {
+  shipmentNo: string;
+  onBack: () => void;
 }
 
-interface Props {
-  shipment: any;
-  routes: RouteLeg[];
-}
+const statusTone = (status: string) => {
+  const s = status.toLowerCase();
+  if (s.includes('deliver') || s.includes('complete')) return 'badge-success';
+  if (s.includes('delay') || s.includes('hold')) return 'badge-danger';
+  if (s.includes('pending') || s.includes('await')) return 'badge-warning';
+  return 'badge-info';
+};
 
-function getRouteSummary(routes: RouteLeg[]) {
-  if (!routes || routes.length === 0) {
-    return "N/A → N/A";
-  }
+const ShipmentDetails: React.FC<ShipmentDetailsProps> = ({ shipmentNo, onBack }) => {
+  const [shipment, setShipment] = useState<SupabaseShipment | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('overview');
 
-  const first = routes[0];
-  const last = routes[routes.length - 1];
+  const fetchShipment = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  const origin =
-    first.load_port ||
-    first.origin ||
-    first["Load Port"] ||
-    "N/A";
+      const { data, error: fetchError } = await supabase
+        .from('shipments')
+        .select('*')
+        .eq('Shipment Number', shipmentNo)
+        .maybeSingle();
 
-  const destination =
-    last.discharge_port ||
-    last.destination ||
-    last["Discharge Port"] ||
-    "N/A";
+      if (fetchError) throw fetchError;
+      if (!data) {
+        setShipment(null);
+        setError(`No shipment found for ${shipmentNo}.`);
+        return;
+      }
 
-  return `${origin} → ${destination}`;
-}
+      setShipment(data as SupabaseShipment);
+    } catch (err) {
+      console.error('Error fetching shipment:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load this shipment');
+    } finally {
+      setLoading(false);
+    }
+  }, [shipmentNo]);
 
-export default function ShipmentDetails({ shipment, routes }: Props) {
-  const routeText = getRouteSummary(routes);
+  useEffect(() => {
+    fetchShipment();
+  }, [fetchShipment]);
+
+  const renderTab = () => {
+    if (!shipment) return null;
+
+    switch (activeTab) {
+      case 'documents':
+        return <DocumentsList shipmentNo={shipmentNo} />;
+      case 'notes':
+        return <NotesList shipmentNo={shipmentNo} />;
+      case 'invoices':
+        return <InvoicesList shipmentNo={shipmentNo} />;
+      case 'activity':
+        return <ActivityList shipmentNo={shipmentNo} />;
+      default:
+        return (
+          <div className="space-y-4">
+            <ShipmentOverview shipmentNo={shipmentNo} shipmentData={shipment} />
+            <div className="card p-4">
+              <h2 className="card-title mb-4">Tracking</h2>
+              <TrackingTimeline />
+            </div>
+          </div>
+        );
+    }
+  };
 
   return (
-    <div className="border rounded-lg bg-white p-4">
-      <h3 className="font-semibold mb-3">Shipment Details</h3>
-
-      <div className="grid grid-cols-2 gap-y-3 text-sm">
-        <div className="text-slate-500">Route</div>
-        <div className="font-medium">{routeText}</div>
-
-        <div className="text-slate-500">Type</div>
-        <div>{shipment?.type ?? "N/A"}</div>
-
-        <div className="text-slate-500">Shipper</div>
-        <div>{shipment?.shipper ?? "N/A"}</div>
-
-        <div className="text-slate-500">Consignee</div>
-        <div>{shipment?.consignee ?? "N/A"}</div>
-
-        <div className="text-slate-500">Primary Mode</div>
-        <div>{shipment?.primary_mode ?? "N/A"}</div>
+    <div className="page">
+      {/* Page header */}
+      <div className="flex items-center gap-3 mb-4">
+        <button
+          onClick={onBack}
+          className="p-1.5 -ml-1.5 rounded-md text-gray-500 hover:text-navy-900 hover:bg-surface-head transition-colors duration-150"
+          aria-label="Back to shipments"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </button>
+        <div className="min-w-0">
+          <h1 className="page-title truncate">{shipmentNo}</h1>
+          {shipment && (
+            <p className="text-field text-gray-500 truncate">
+              {shipment['Origin'] || 'N/A'} → {shipment['Destination'] || 'N/A'}
+            </p>
+          )}
+        </div>
+        {shipment?.shipment_status && (
+          <span className={`badge ${statusTone(shipment.shipment_status)} ml-1`}>
+            {shipment.shipment_status}
+          </span>
+        )}
       </div>
+
+      {loading && (
+        <div className="card">
+          <div className="flex items-center justify-center py-24">
+            <div className="text-center">
+              <Loader2 className="w-7 h-7 text-navy-600 animate-spin mx-auto mb-3" />
+              <p className="text-field text-gray-500">Loading shipment...</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!loading && error && (
+        <div className="card">
+          <div className="flex items-center justify-center py-24">
+            <div className="text-center">
+              <div className="w-10 h-10 bg-red-50 rounded-md flex items-center justify-center mx-auto mb-3">
+                <span className="text-red-600 text-lg font-semibold">!</span>
+              </div>
+              <p className="text-navy-900 font-semibold mb-1">Could not load this shipment</p>
+              <p className="text-field text-gray-500 mb-4 max-w-md mx-auto">{error}</p>
+              <div className="flex items-center justify-center gap-2">
+                <button onClick={fetchShipment} className="btn-primary">Retry</button>
+                <button onClick={onBack} className="btn-secondary">Back to list</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && shipment && (
+        <div className="card flex items-stretch overflow-hidden">
+          <SideMenu activeTab={activeTab} onTabChange={setActiveTab} />
+          <div className="flex-1 min-w-0 bg-surface-page p-4">{renderTab()}</div>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default ShipmentDetails;

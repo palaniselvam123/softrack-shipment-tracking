@@ -8,36 +8,16 @@ interface SideMenuProps {
 
 const SideMenu: React.FC<SideMenuProps> = ({ activeTab, onTabChange }) => {
   const menuItems = [
-    {
-      id: 'overview',
-      label: 'Overview',
-      icon: Grid3X3
-    },
-    {
-      id: 'documents',
-      label: 'Documents',
-      icon: FileText
-    },
-    {
-      id: 'notes',
-      label: 'Notes',
-      icon: StickyNote
-    },
-    {
-      id: 'invoices',
-      label: 'Invoices',
-      icon: Receipt
-    },
-    {
-      id: 'activity',
-      label: 'Activity',
-      icon: Activity
-    }
+    { id: 'overview', label: 'Overview', icon: Grid3X3 },
+    { id: 'documents', label: 'Documents', icon: FileText },
+    { id: 'notes', label: 'Notes', icon: StickyNote },
+    { id: 'invoices', label: 'Invoices', icon: Receipt },
+    { id: 'activity', label: 'Activity', icon: Activity }
   ];
 
   return (
-    <div className="bg-gradient-to-b from-gray-900 to-gray-800 text-white w-64 min-h-screen border-r border-gray-700/50 shadow-2xl">
-      <nav className="py-6 px-3 space-y-2">
+    <div className="bg-white w-56 shrink-0 min-h-full border-r border-surface-line">
+      <nav className="py-3 px-2 space-y-0.5">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -46,20 +26,14 @@ const SideMenu: React.FC<SideMenuProps> = ({ activeTab, onTabChange }) => {
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
-              className={`w-full flex items-center px-4 py-3.5 text-left transition-all duration-200 rounded-xl group ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2 text-left rounded-md text-field transition-colors duration-150 ${
                 isActive
-                  ? 'bg-gradient-to-r from-sky-500 to-sky-600 text-white shadow-lg shadow-sky-500/30'
-                  : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+                  ? 'bg-surface-tile text-navy-900 font-semibold'
+                  : 'text-gray-600 font-normal hover:bg-surface-head hover:text-navy-900'
               }`}
             >
-              <div className={`p-2 rounded-lg mr-3 transition-all duration-200 ${
-                isActive
-                  ? 'bg-white/20'
-                  : 'bg-gray-700/50 group-hover:bg-gray-600/50'
-              }`}>
-                <Icon className="w-5 h-5" />
-              </div>
-              <span className="font-semibold text-sm">{item.label}</span>
+              <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-navy-700' : 'text-gray-400'}`} />
+              <span>{item.label}</span>
             </button>
           );
         })}

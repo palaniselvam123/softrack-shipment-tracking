@@ -43,37 +43,37 @@ const NotesList: React.FC<NotesListProps> = ({ shipmentNo }) => {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'warning':
-        return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
+        return <AlertTriangle className="w-5 h-5 text-amber-600" />;
       case 'success':
         return <CheckCircle className="w-5 h-5 text-green-600" />;
       case 'info':
       default:
-        return <Info className="w-5 h-5 text-blue-600" />;
+        return <Info className="w-5 h-5 text-brand-600" />;
     }
   };
 
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'warning':
-        return 'border-l-yellow-400 bg-yellow-50';
+        return 'border-l-yellow-400 bg-amber-50';
       case 'success':
         return 'border-l-green-400 bg-green-50';
       case 'info':
       default:
-        return 'border-l-blue-400 bg-blue-50';
+        return 'border-l-blue-400 bg-surface-tile';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'low':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
@@ -87,13 +87,13 @@ const NotesList: React.FC<NotesListProps> = ({ shipmentNo }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm">
-      <div className="px-6 py-4 border-b border-gray-200">
+    <div className="card">
+      <div className="px-6 py-4 border-b border-surface-line">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Notes ({notes.length})</h2>
+          <h2 className="text-[14px] font-semibold text-navy-900">Notes ({notes.length})</h2>
           <button 
             onClick={() => setShowAddNote(!showAddNote)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+            className="flex items-center space-x-2 px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Add Note</span>
@@ -102,14 +102,14 @@ const NotesList: React.FC<NotesListProps> = ({ shipmentNo }) => {
       </div>
 
       {showAddNote && (
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div className="px-6 py-4 border-b border-surface-line bg-gray-50">
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Note Type</label>
               <select 
                 value={noteType}
                 onChange={(e) => setNoteType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
               >
                 <option value="info">Information</option>
                 <option value="warning">Warning</option>
@@ -123,19 +123,19 @@ const NotesList: React.FC<NotesListProps> = ({ shipmentNo }) => {
                 onChange={(e) => setNewNote(e.target.value)}
                 placeholder="Enter your note here..."
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
               />
             </div>
             <div className="flex items-center space-x-3">
               <button 
                 onClick={handleAddNote}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                className="px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors text-sm"
               >
                 Save Note
               </button>
               <button 
                 onClick={() => setShowAddNote(false)}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-sm"
+                className="px-4 py-2 border border-surface-line text-navy-900 rounded-md hover:bg-surface-head transition-colors text-sm"
               >
                 Cancel
               </button>
@@ -144,7 +144,7 @@ const NotesList: React.FC<NotesListProps> = ({ shipmentNo }) => {
         </div>
       )}
 
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y divide-surface-soft">
         {notes.map((note) => (
           <div key={note.id} className={`p-6 border-l-4 ${getTypeColor(note.type)}`}>
             <div className="flex items-start justify-between mb-3">
@@ -178,7 +178,7 @@ const NotesList: React.FC<NotesListProps> = ({ shipmentNo }) => {
           <p className="text-gray-500 mb-4">Add your first note to keep track of important information.</p>
           <button 
             onClick={() => setShowAddNote(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors"
           >
             Add First Note
           </button>

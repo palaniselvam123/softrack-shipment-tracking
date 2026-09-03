@@ -170,10 +170,10 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-surface-page flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mx-auto"></div>
-          <p className="mt-4 text-slate-600">Loading...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-surface-line border-t-navy-900 mx-auto"></div>
+          <p className="mt-3 text-field text-gray-500">Loading...</p>
         </div>
       </div>
     );
@@ -186,12 +186,11 @@ function App() {
   /* 🔹 MAIN RENDER */
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface-page">
       <Header
         onDashboardClick={handleDashboardNavigation}
         onShipmentsClick={handleShipmentsNavigation}
         onBookingsClick={handleBookingsNavigation}
-        onBookingClick={handleBookingNavigation}
         onMapViewClick={handleMapViewNavigation}
         onInvoicesClick={handleInvoicesNavigation}
         onCommunicationClick={handleCommunicationNavigation}
@@ -212,9 +211,7 @@ function App() {
       ) : currentView === 'booking' ? (
         <BookingWizard
           bookingNo={selectedBooking || undefined}
-          onDashboard={handleDashboardNavigation}
-          onShipments={handleShipmentsNavigation}
-          onBookings={handleBookingsNavigation}
+          onBack={handleBookingsNavigation}
         />
       ) : currentView === 'bookings' ? (
         <BookingsList

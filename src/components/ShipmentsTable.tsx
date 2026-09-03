@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Download, Filter, Settings, Star, Truck, Plane, Ship, MessageCircle, Loader2 } from 'lucide-react';
 import { supabase, type SupabaseShipment } from '../lib/supabase';
 import ColumnCustomizer from './ColumnCustomizer';
+import TableScrollSlider from './TableScrollSlider';
 
 interface ShipmentsTableProps {
   onViewShipment: (shipmentNo: string) => void;
@@ -31,6 +32,7 @@ interface Shipment {
 }
 
 const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
+  const tableScrollRef = React.useRef<HTMLDivElement>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
@@ -123,34 +125,34 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
   const getTransportColor = (mode: string) => {
     switch (mode.toLowerCase()) {
       case 'road':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'air':
-        return 'bg-pink-100 text-pink-800';
+        return 'bg-surface-tile text-navy-700';
       case 'sea':
-        return 'bg-indigo-100 text-indigo-800';
+        return 'bg-surface-tile text-navy-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'export':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
       case 's/b filed':
-        return <Plane className="w-4 h-4 text-pink-600" />;
+        return <Plane className="w-4 h-4 text-navy-700" />;
       case 'billing':
-        return 'bg-amber-100 text-amber-800';
+        return 'bg-amber-50 text-amber-700';
       case 'can sent':
-        return 'bg-cyan-100 text-cyan-800';
+        return 'bg-surface-tile text-navy-700';
       case 'goods r...':
       case 'goods received':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'loaded ...':
       case 'loaded':
-        return 'bg-emerald-100 text-emerald-800';
+        return 'bg-surface-tile text-navy-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
@@ -236,19 +238,19 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
               <Star
                 className={`w-4 h-4 ${
                   favorites.has(shipment.shipmentNo)
-                    ? 'fill-gray-900 text-gray-900'
+                    ? 'fill-amber-400 text-amber-400'
                     : ''
                 }`}
               />
             </button>
-            <span className="text-sm text-gray-900">{shipment.shipmentNo}</span>
+            <span className="text-field font-medium text-navy-900">{shipment.shipmentNo}</span>
           </div>
         );
       case 'transport':
         return (
           <div className="flex items-center space-x-1">
             {getTransportIcon(shipment.transport)}
-            <span className="text-sm text-gray-700">{shipment.transport}</span>
+            <span className="text-field text-gray-700">{shipment.transport}</span>
           </div>
         );
       case 'status':
@@ -260,22 +262,20 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
       case 'shipper':
       case 'consignee':
       case 'customer':
-        return <span className="text-sm text-logitrack-blue-600">{shipment[columnKey] || ''}</span>;
+        return <span className="text-field text-brand-600">{shipment[columnKey] || ''}</span>;
       default:
-        return <span className="text-sm text-gray-700">{shipment[columnKey] || ''}</span>;
+        return <span className="text-field text-gray-700">{shipment[columnKey] || ''}</span>;
     }
   };
   if (loading) {
     return (
-      <div className="p-8 bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Shipments</h1>
-        </div>
+      <div className="page">
+        <h1 className="page-title mb-4">Shipments</h1>
         <div className="card">
-          <div className="flex items-center justify-center py-32">
+          <div className="flex items-center justify-center py-24">
             <div className="text-center">
-              <Loader2 className="w-16 h-16 text-sky-600 animate-spin mx-auto mb-6" />
-              <p className="text-gray-600 font-medium">Loading shipments...</p>
+              <Loader2 className="w-7 h-7 text-navy-600 animate-spin mx-auto mb-3" />
+              <p className="text-field text-gray-500">Loading shipments...</p>
             </div>
           </div>
         </div>
@@ -285,18 +285,16 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
 
   if (error) {
     return (
-      <div className="p-8 bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Shipments</h1>
-        </div>
+      <div className="page">
+        <h1 className="page-title mb-4">Shipments</h1>
         <div className="card">
-          <div className="flex items-center justify-center py-32">
+          <div className="flex items-center justify-center py-24">
             <div className="text-center">
-              <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <span className="text-red-600 text-3xl font-bold">!</span>
+              <div className="w-10 h-10 bg-red-50 rounded-md flex items-center justify-center mx-auto mb-3">
+                <span className="text-red-600 text-lg font-semibold">!</span>
               </div>
-              <p className="text-red-600 font-bold mb-2 text-lg">Error loading shipments</p>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">{error}</p>
+              <p className="text-navy-900 font-semibold mb-1">Error loading shipments</p>
+              <p className="text-field text-gray-500 mb-4 max-w-md mx-auto">{error}</p>
               <button
                 onClick={fetchShipments}
                 className="btn-primary"
@@ -312,54 +310,41 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
 
   return (
     <>
-      <div className="p-8 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 min-h-screen">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Shipments</h1>
-          <p className="text-gray-600 mt-2 text-lg">Track and manage all your shipments in one place</p>
+      <div className="page">
+        <div className="mb-4">
+          <h1 className="page-title">Shipments</h1>
+          <p className="text-field text-gray-500 mt-0.5">Track and manage all your shipments in one place</p>
         </div>
 
-        <div className="card shadow-xl border border-gray-200/50">
-          <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-purple-50/20">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 gap-4">
+        <div className="card">
+          <div className="px-4 py-3 border-b border-surface-line">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="text"
                   placeholder="Search shipments..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="input-field pl-12 shadow-sm"
+                  className="input-field pl-9"
                 />
               </div>
-              <div className="flex items-center space-x-3">
-                <button
-                  onClick={downloadExcel}
-                  className="btn-secondary flex items-center space-x-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 shadow-sm hover:shadow-md"
-                >
+              <div className="flex items-center gap-2">
+                <button onClick={downloadExcel} className="btn-secondary">
                   <Download className="w-4 h-4" />
                   <span>Export</span>
                 </button>
-                <button
-                  onClick={() => setSortField('')}
-                  className="btn-secondary flex items-center space-x-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 shadow-sm hover:shadow-md"
-                >
+                <button onClick={() => setSortField('')} className="btn-secondary">
                   <span>Sort</span>
                 </button>
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-semibold border-2 transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md ${
-                    showFilters
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 border-blue-600 text-white'
-                      : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50'
-                  }`}
+                  className={showFilters ? 'btn-primary' : 'btn-secondary'}
                 >
                   <Filter className="w-4 h-4" />
                   <span>Filters</span>
                 </button>
-                <button
-                  onClick={() => setShowColumnCustomizer(true)}
-                  className="btn-secondary flex items-center space-x-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 shadow-sm hover:shadow-md"
-                >
+                <button onClick={() => setShowColumnCustomizer(true)} className="btn-secondary">
                   <Settings className="w-4 h-4" />
                   <span>Columns</span>
                 </button>
@@ -368,8 +353,8 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
           </div>
 
           {showFilters && (
-            <div className="px-6 py-5 border-b border-gray-100 bg-sky-50/30 animate-fade-in">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="px-4 py-4 border-b border-surface-line bg-surface-head animate-fade-in">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Transport Mode</label>
                   <select className="input-field">
@@ -406,21 +391,21 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
             </div>
           )}
 
-          <div className="overflow-x-auto rounded-b-lg">
-            <table className="w-full">
-              <thead className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 border-b-2 border-indigo-700">
+          <div ref={tableScrollRef} className="overflow-x-auto scrollbar-hide">
+            <table className="data-table">
+              <thead>
                 <tr>
                   {visibleColumns.map((column) => (
                     <th
                       key={column.key}
-                      className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider cursor-pointer hover:bg-indigo-700/50 transition-all duration-200 group"
+                      className="cursor-pointer hover:bg-surface-soft transition-colors duration-100 group"
                       onClick={() => handleSort(column.key)}
                     >
-                      <div className="flex items-center space-x-2">
-                        {column.key === 'shipmentNo' && <Star className="w-3.5 h-3.5 text-blue-200 group-hover:text-white" />}
+                      <div className="flex items-center gap-1.5">
+                        {column.key === 'shipmentNo' && <Star className="w-3 h-3 text-gray-400 group-hover:text-navy-600" />}
                         <span>{column.label}</span>
                         {sortField === column.key && (
-                          <span className="text-yellow-300 font-bold">
+                          <span className="text-navy-600">
                             {sortDirection === 'asc' ? '↑' : '↓'}
                           </span>
                         )}
@@ -429,19 +414,19 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
                   ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-100">
+              <tbody>
                 {sortedShipments.map((shipment) => (
                   <tr
                     key={shipment.shipmentNo}
-                    className={`cursor-pointer transition-all duration-200 ${
+                    className={`cursor-pointer ${
                       shipment.status.toLowerCase() === 'delayed'
-                        ? 'bg-yellow-50/30 hover:bg-yellow-50 border-l-4 border-yellow-500 hover:shadow-md'
-                        : 'hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-indigo-50/30 hover:shadow-sm'
+                        ? 'bg-amber-50/60 hover:bg-amber-50'
+                        : ''
                     }`}
                     onClick={() => onViewShipment(shipment.shipmentNo)}
                   >
                     {visibleColumns.map((column) => (
-                      <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                      <td key={column.key} className="whitespace-nowrap">
                         {renderCellContent(shipment, column.key)}
                       </td>
                     ))}
@@ -451,8 +436,10 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
             </table>
           </div>
         </div>
+
+        <TableScrollSlider targetRef={tableScrollRef} deps={visibleColumns.length} />
       </div>
-      
+
       <ColumnCustomizer
         isOpen={showColumnCustomizer}
         onClose={() => setShowColumnCustomizer(false)}

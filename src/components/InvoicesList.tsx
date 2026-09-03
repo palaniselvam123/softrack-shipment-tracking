@@ -38,15 +38,15 @@ const InvoicesList: React.FC<InvoicesListProps> = ({ shipmentNo }) => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'paid':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'overdue':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700';
       case 'processing':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
@@ -55,7 +55,7 @@ const InvoicesList: React.FC<InvoicesListProps> = ({ shipmentNo }) => {
       case 'paid':
         return <div className="w-2 h-2 bg-green-500 rounded-full"></div>;
       case 'pending':
-        return <AlertCircle className="w-4 h-4 text-yellow-500" />;
+        return <AlertCircle className="w-4 h-4 text-amber-500" />;
       case 'overdue':
         return <AlertCircle className="w-4 h-4 text-red-500" />;
       default:
@@ -75,33 +75,33 @@ const InvoicesList: React.FC<InvoicesListProps> = ({ shipmentNo }) => {
   const pendingAmount = totalAmount - paidAmount;
 
   return (
-    <div className="bg-white rounded-lg shadow-sm">
-      <div className="px-6 py-4 border-b border-gray-200">
+    <div className="card">
+      <div className="px-6 py-4 border-b border-surface-line">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Invoices ({invoices.length})</h2>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm">
+          <h2 className="text-[14px] font-semibold text-navy-900">Invoices ({invoices.length})</h2>
+          <button className="px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors text-sm">
             Generate Invoice
           </button>
         </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+      <div className="px-6 py-4 border-b border-surface-line bg-gray-50">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white p-4 rounded-lg border">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-blue-600" />
+              <div className="w-9 h-9 bg-surface-tile rounded-md flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-brand-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Total Amount</p>
-                <p className="text-lg font-semibold text-gray-900">{formatCurrency(totalAmount, 'USD')}</p>
+                <p className="text-[14px] font-semibold text-navy-900">{formatCurrency(totalAmount, 'USD')}</p>
               </div>
             </div>
           </div>
           <div className="bg-white p-4 rounded-lg border">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <div className="w-9 h-9 bg-surface-tile rounded-md flex items-center justify-center">
                 <DollarSign className="w-5 h-5 text-green-600" />
               </div>
               <div>
@@ -112,25 +112,25 @@ const InvoicesList: React.FC<InvoicesListProps> = ({ shipmentNo }) => {
           </div>
           <div className="bg-white p-4 rounded-lg border">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-yellow-600" />
+              <div className="w-9 h-9 bg-surface-tile rounded-md flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-amber-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Pending Amount</p>
-                <p className="text-lg font-semibold text-yellow-600">{formatCurrency(pendingAmount, 'USD')}</p>
+                <p className="text-lg font-semibold text-amber-600">{formatCurrency(pendingAmount, 'USD')}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y divide-surface-soft">
         {invoices.map((invoice) => (
           <div key={invoice.id} className="p-6 hover:bg-gray-50 transition-colors">
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Receipt className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-surface-tile rounded-lg flex items-center justify-center">
+                  <Receipt className="w-6 h-6 text-brand-600" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
@@ -158,7 +158,7 @@ const InvoicesList: React.FC<InvoicesListProps> = ({ shipmentNo }) => {
               </div>
               <div className="flex items-center space-x-2">
                 {getStatusIcon(invoice.status)}
-                <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                <button className="p-2 text-gray-400 hover:text-brand-600 hover:bg-surface-tile rounded-lg transition-colors">
                   <Eye className="w-4 h-4" />
                 </button>
                 <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
@@ -178,7 +178,7 @@ const InvoicesList: React.FC<InvoicesListProps> = ({ shipmentNo }) => {
         </div>
       )}
 
-      <div className="px-6 py-4 border-t border-gray-200">
+      <div className="px-6 py-4 border-t border-surface-line">
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">Showing {invoices.length} invoices</p>
           <nav className="flex items-center space-x-2">

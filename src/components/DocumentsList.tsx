@@ -132,55 +132,55 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'approved':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'pending review':
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'processing':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
       case 'paid':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-surface-tile text-navy-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
   const getTypeColor = (type: string) => {
     const colors = {
-      'BOL': 'bg-blue-100 text-blue-800',
-      'INV': 'bg-green-100 text-green-800',
-      'PKL': 'bg-amber-100 text-amber-800',
-      'COO': 'bg-purple-100 text-purple-800',
-      'INS': 'bg-red-100 text-red-800',
-      'EXP': 'bg-indigo-100 text-indigo-800',
-      'CUS': 'bg-yellow-100 text-yellow-800',
-      'SHI': 'bg-pink-100 text-pink-800',
-      'FRT': 'bg-teal-100 text-teal-800',
-      'DEL': 'bg-cyan-100 text-cyan-800',
+      'BOL': 'bg-surface-tile text-brand-700',
+      'INV': 'bg-green-50 text-green-700',
+      'PKL': 'bg-amber-50 text-amber-700',
+      'COO': 'bg-surface-tile text-navy-700',
+      'INS': 'bg-red-50 text-red-700',
+      'EXP': 'bg-surface-tile text-navy-700',
+      'CUS': 'bg-amber-50 text-amber-700',
+      'SHI': 'bg-surface-tile text-navy-700',
+      'FRT': 'bg-surface-tile text-navy-700',
+      'DEL': 'bg-surface-tile text-navy-700',
       'QUA': 'bg-lime-100 text-lime-800',
-      'PHY': 'bg-emerald-100 text-emerald-800'
+      'PHY': 'bg-surface-tile text-navy-700'
     };
-    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[type as keyof typeof colors] || 'bg-gray-50 text-gray-700';
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm">
-      <div className="px-6 py-4 border-b border-gray-200">
+    <div className="card">
+      <div className="px-6 py-4 border-b border-surface-line">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Documents ({documents.length})</h2>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm">
+          <h2 className="text-[14px] font-semibold text-navy-900">Documents ({documents.length})</h2>
+          <button className="px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors text-sm">
             Upload Document
           </button>
         </div>
       </div>
 
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y divide-surface-soft">
         {documents.map((doc) => (
           <div key={doc.id} className="p-6 hover:bg-gray-50 transition-colors">
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-surface-tile rounded-lg flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-brand-600" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
@@ -207,7 +207,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                <button className="p-2 text-gray-400 hover:text-brand-600 hover:bg-surface-tile rounded-lg transition-colors">
                   <Eye className="w-4 h-4" />
                 </button>
                 <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
@@ -219,7 +219,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ shipmentNo }) => {
         ))}
       </div>
 
-      <div className="px-6 py-4 border-t border-gray-200">
+      <div className="px-6 py-4 border-t border-surface-line">
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">Showing {documents.length} documents</p>
           <nav className="flex items-center space-x-2">

@@ -339,19 +339,19 @@ const InvoiceListPage: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'open':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
       case 'paid':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'overdue':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700';
       case 'processing':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'cancelled':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
       case 'disputed':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-surface-tile text-navy-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
@@ -562,7 +562,7 @@ BT
 0 -20 Td
 (Amount: ${formatCurrency(invoice.amount, invoice.currency)} ${invoice.currency}) Tj
 0 -20 Td
-(Status: ${invoice.status}) Tj
+(Status: ${invoice.invoiceStatus}) Tj
 0 -20 Td
 (Vendor: ${invoice.vendor}) Tj
 0 -20 Td
@@ -597,8 +597,8 @@ startxref
     
     if (sortField === columnKey) {
       return sortDirection === 'asc' ? 
-        <ChevronUp className="w-4 h-4 text-blue-600" /> : 
-        <ChevronDown className="w-4 h-4 text-blue-600" />;
+        <ChevronUp className="w-4 h-4 text-brand-600" /> : 
+        <ChevronDown className="w-4 h-4 text-brand-600" />;
     }
     return <ChevronUp className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100" />;
   };
@@ -613,17 +613,17 @@ startxref
                 e.stopPropagation();
                 toggleFavorite(invoice.invoiceRef);
               }}
-              className="text-gray-400 hover:text-yellow-500 transition-colors"
+              className="text-gray-400 hover:text-amber-500 transition-colors"
             >
               <Star 
                 className={`w-4 h-4 ${
                   favorites.has(invoice.invoiceRef) 
-                    ? 'fill-yellow-400 text-yellow-400' 
+                    ? 'fill-yellow-400 text-amber-400' 
                     : ''
                 }`} 
               />
             </button>
-            <span className="text-sm font-medium text-blue-600">{invoice.invoiceRef}</span>
+            <span className="text-sm font-medium text-brand-600">{invoice.invoiceRef}</span>
           </div>
         );
       case 'invoiceStatus':
@@ -650,7 +650,7 @@ startxref
         );
       case 'shipmentRef':
         return (
-          <span className="text-sm font-medium text-blue-600">{invoice.shipmentRef}</span>
+          <span className="text-sm font-medium text-brand-600">{invoice.shipmentRef}</span>
         );
       case 'shipper':
       case 'consignee':
@@ -682,12 +682,12 @@ startxref
   return (
     <>
       <div className="p-6">
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h1 className="text-2xl font-semibold text-gray-900">Invoices</h1>
+        <div className="card">
+          <div className="px-6 py-4 border-b border-surface-line">
+            <h1 className="page-title">Invoices</h1>
           </div>
           
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4 border-b border-surface-line">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -696,7 +696,7 @@ startxref
                   placeholder="Search invoices..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full pl-10 pr-4 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                 />
               </div>
               <div className="flex items-center space-x-3">
@@ -709,14 +709,14 @@ startxref
                 </button>
                 <button 
                   onClick={clearAllFilters}
-                  className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                  className="flex items-center space-x-2 px-4 py-2 border border-surface-line rounded-md hover:bg-surface-head transition-colors"
                 >
                   <span>Clear All</span>
                 </button>
                 <button 
                   onClick={() => setShowFilters(!showFilters)}
                   className={`flex items-center space-x-2 px-4 py-2 border rounded-md transition-colors ${
-                    showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 hover:bg-gray-50'
+                    showFilters ? 'bg-surface-tile border-surface-line text-brand-700' : 'border-gray-300 hover:bg-gray-50'
                   }`}
                 >
                   <Filter className="w-4 h-4" />
@@ -724,7 +724,7 @@ startxref
                 </button>
                 <button 
                   onClick={() => setShowColumnCustomizer(true)}
-                  className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                  className="flex items-center space-x-2 px-4 py-2 border border-surface-line rounded-md hover:bg-surface-head transition-colors"
                 >
                   <Settings className="w-4 h-4" />
                   <span className="hidden sm:inline">Columns</span>
@@ -733,13 +733,13 @@ startxref
             </div>
 
             {showFilters && (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-surface-tile rounded-md">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <select 
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                   >
                     <option value="">All Status</option>
                     {uniqueStatuses.map(status => (
@@ -752,7 +752,7 @@ startxref
                   <select 
                     value={currencyFilter}
                     onChange={(e) => setCurrencyFilter(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                   >
                     <option value="">All Currencies</option>
                     {uniqueCurrencies.map(currency => (
@@ -766,7 +766,7 @@ startxref
                     type="date"
                     value={dateRangeFilter.from}
                     onChange={(e) => setDateRangeFilter(prev => ({ ...prev, from: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                   />
                 </div>
                 <div>
@@ -775,7 +775,7 @@ startxref
                     type="date"
                     value={dateRangeFilter.to}
                     onChange={(e) => setDateRangeFilter(prev => ({ ...prev, to: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                   />
                 </div>
               </div>
@@ -783,18 +783,18 @@ startxref
           </div>
 
           {selectedInvoices.size > 0 && (
-            <div className="px-6 py-3 bg-blue-50 border-b border-blue-200">
+            <div className="px-6 py-3 bg-surface-tile border-b border-surface-line">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-blue-800">
+                <span className="text-sm font-medium text-navy-900">
                   {selectedInvoices.size} invoice{selectedInvoices.size !== 1 ? 's' : ''} selected
                 </span>
                 <div className="flex items-center space-x-2">
-                  <button className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">
+                  <button className="px-3 py-1 bg-navy-900 text-white rounded text-sm hover:bg-navy-800 transition-colors">
                     Bulk Actions
                   </button>
                   <button 
                     onClick={() => setSelectedInvoices(new Set())}
-                    className="px-3 py-1 border border-blue-300 text-blue-700 rounded text-sm hover:bg-blue-100 transition-colors"
+                    className="px-3 py-1 border border-surface-line text-brand-700 rounded text-sm hover:bg-surface-tile transition-colors"
                   >
                     Clear Selection
                   </button>
@@ -805,20 +805,20 @@ startxref
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-surface-head border-b border-surface-line">
                 <tr>
                   <th className="px-6 py-3 text-left">
                     <input
                       type="checkbox"
                       checked={selectedInvoices.size === filteredInvoices.length && filteredInvoices.length > 0}
                       onChange={toggleSelectAll}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-brand-600 focus:ring-brand-600"
                     />
                   </th>
                   {visibleColumns.map((column) => (
                     <th 
                       key={column.key}
-                      className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider group ${
+                      className={`px-4 py-2.5 text-left text-label font-semibold text-navy-900 group ${
                         column.sortable ? 'cursor-pointer hover:bg-gray-100' : ''
                       } transition-colors`}
                       onClick={() => column.sortable && handleSort(column.key)}
@@ -830,40 +830,40 @@ startxref
                       </div>
                     </th>
                   ))}
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-2.5 text-left text-label font-semibold text-navy-900">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-surface-soft">
                 {filteredInvoices.map((invoice) => (
                   <tr 
                     key={invoice.id} 
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
                     onClick={() => handleInvoiceClick(invoice)}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <input
                         type="checkbox"
                         checked={selectedInvoices.has(invoice.id)}
                         onChange={() => toggleSelectInvoice(invoice.id)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="rounded border-gray-300 text-brand-600 focus:ring-brand-600"
                         onClick={(e) => e.stopPropagation()}
                       />
                     </td>
                     {visibleColumns.map((column) => (
-                      <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                      <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                         {renderCellContent(invoice, column.key)}
                       </td>
                     ))}
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleViewInvoice(invoice);
                           }}
-                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          className="text-brand-600 hover:text-navy-900 transition-colors"
                           title="View Invoice"
                         >
                           <Eye className="w-4 h-4" />
@@ -883,7 +883,7 @@ startxref
                             e.stopPropagation();
                             handleSendMail(invoice);
                           }}
-                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          className="text-brand-600 hover:text-navy-900 transition-colors"
                           title="Send Email"
                         >
                           <Mail className="w-4 h-4" />
@@ -906,7 +906,7 @@ startxref
             </table>
           </div>
 
-          <div className="px-6 py-4 border-t border-gray-200">
+          <div className="px-6 py-4 border-t border-surface-line">
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-500">
                 Showing {filteredInvoices.length} of {mockInvoices.length} invoices

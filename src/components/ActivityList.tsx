@@ -114,36 +114,36 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
     
     switch (icon) {
       case 'success':
-        return <CheckCircle className={`${iconClass} text-blue-600`} />;
+        return <CheckCircle className={`${iconClass} text-brand-600`} />;
       case 'warning':
-        return <AlertTriangle className={`${iconClass} text-yellow-600`} />;
+        return <AlertTriangle className={`${iconClass} text-amber-600`} />;
       case 'info':
       default:
-        return <Info className={`${iconClass} text-blue-600`} />;
+        return <Info className={`${iconClass} text-brand-600`} />;
     }
   };
 
   const getActivityColor = (icon: string) => {
     switch (icon) {
       case 'success':
-        return 'border-blue-200 bg-blue-50';
+        return 'border-surface-line bg-surface-tile';
       case 'warning':
-        return 'border-yellow-200 bg-yellow-50';
+        return 'border-amber-200 bg-amber-50';
       case 'info':
       default:
-        return 'border-blue-200 bg-blue-50';
+        return 'border-surface-line bg-surface-tile';
     }
   };
 
   const getTimelineColor = (icon: string) => {
     switch (icon) {
       case 'success':
-        return 'bg-blue-500';
+        return 'bg-navy-700';
       case 'warning':
-        return 'bg-yellow-500';
+        return 'bg-amber-500';
       case 'info':
       default:
-        return 'bg-blue-500';
+        return 'bg-navy-700';
     }
   };
 
@@ -163,10 +163,10 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm">
-      <div className="px-6 py-4 border-b border-gray-200">
+    <div className="card">
+      <div className="px-6 py-4 border-b border-surface-line">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Activity Timeline ({activities.length})</h2>
+          <h2 className="text-[14px] font-semibold text-navy-900">Activity Timeline ({activities.length})</h2>
           <div className="flex items-center space-x-2">
             <Activity className="w-5 h-5 text-gray-400" />
             <span className="text-sm text-gray-500">Live Updates</span>
@@ -217,10 +217,10 @@ const ActivityList: React.FC<ActivityListProps> = ({ shipmentNo }) => {
         </div>
       </div>
 
-      <div className="px-6 py-4 border-t border-gray-200">
+      <div className="px-6 py-4 border-t border-surface-line">
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">Showing {activities.length} activities</p>
-          <button className="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors">
+          <button className="px-4 py-2 text-sm text-brand-600 hover:text-navy-900 hover:bg-surface-tile rounded-md transition-colors">
             Load More Activities
           </button>
         </div>

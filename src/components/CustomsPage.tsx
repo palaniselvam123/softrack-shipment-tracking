@@ -467,21 +467,21 @@ const CustomsPage: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'cleared':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'submitted':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
       case 'under-review':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'hold':
-        return 'bg-amber-100 text-amber-800';
+        return 'bg-amber-50 text-amber-700';
       case 'delayed':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700';
       case 'rejected':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
@@ -491,7 +491,7 @@ const CustomsPage: React.FC = () => {
         return <CheckCircle className="w-4 h-4 text-green-600" />;
       case 'submitted':
       case 'under-review':
-        return <Clock className="w-4 h-4 text-yellow-600" />;
+        return <Clock className="w-4 h-4 text-amber-600" />;
       case 'delayed':
         return <AlertTriangle className="w-4 h-4 text-red-600" />;
       case 'hold':
@@ -503,7 +503,7 @@ const CustomsPage: React.FC = () => {
   };
 
   const getTypeColor = (type: string) => {
-    return type === 'import' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
+    return type === 'import' ? 'bg-surface-tile text-brand-700' : 'bg-green-50 text-green-700';
   };
 
   const formatCurrency = (amount: number, currency: string) => {
@@ -578,13 +578,13 @@ const CustomsPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="bg-white rounded shadow-sm border border-gray-200">
+    <div className="page">
+      <div className="card border border-surface-line">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-surface-line">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Customs Jobs & Milestones</h1>
+              <h1 className="page-title">Customs Jobs & Milestones</h1>
             </div>
             <div className="flex items-center space-x-3">
               <select
@@ -594,7 +594,7 @@ const CustomsPage: React.FC = () => {
                   setMilestoneFilter('');
                   setStatusFilter('');
                 }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="px-4 py-2 text-sm font-medium text-gray-700 border border-surface-line rounded focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
               >
                 <option value="AIR IMPORT">AIR IMPORT</option>
                 <option value="SEA IMPORT">SEA IMPORT</option>
@@ -638,9 +638,9 @@ const CustomsPage: React.FC = () => {
           /* Dashboard View */
           <div className="p-6">
             {/* Color Legend */}
-            <div className="mb-6 flex items-center justify-center space-x-8 p-4 bg-gray-50 rounded border border-gray-200">
+            <div className="mb-6 flex items-center justify-center space-x-8 p-4 bg-gray-50 rounded border border-surface-line">
               <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded bg-yellow-500"></div>
+                <div className="w-4 h-4 rounded bg-amber-500"></div>
                 <span className="text-sm text-gray-700">Pending</span>
               </div>
               <div className="flex items-center space-x-2">
@@ -658,8 +658,8 @@ const CustomsPage: React.FC = () => {
                 const stats = getMilestoneStats(milestone.key);
 
                 return (
-                  <div key={milestone.id} className="border border-gray-200 rounded">
-                    <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                  <div key={milestone.id} className="border border-surface-line rounded">
+                    <div className="px-4 py-3 border-b border-surface-line flex items-center justify-between">
                       <h3 className="text-sm font-semibold text-gray-900">{milestone.name}</h3>
                       <span className="text-xs text-gray-500">Milestone</span>
                     </div>
@@ -667,10 +667,10 @@ const CustomsPage: React.FC = () => {
                       <div className="grid grid-cols-3 gap-2">
                         <button
                           onClick={() => handleMilestoneClick(milestone.key, 'pending')}
-                          className="bg-yellow-50 rounded p-3 text-left hover:bg-yellow-100 transition-colors"
+                          className="bg-amber-50 rounded p-3 text-left hover:bg-amber-50 transition-colors"
                         >
                           <div className="text-xs text-gray-600 mb-1">Pending</div>
-                          <div className="text-2xl font-semibold text-yellow-700 mb-1">{stats.pending}</div>
+                          <div className="text-2xl font-semibold text-amber-700 mb-1">{stats.pending}</div>
                           <div className="text-xs text-gray-500">active</div>
                         </button>
                         <button
@@ -706,7 +706,7 @@ const CustomsPage: React.FC = () => {
           /* List View */
           <>
             {/* Search and Filters */}
-            <div className="px-6 py-4 border-b border-gray-200">
+            <div className="px-6 py-4 border-b border-surface-line">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                 <div className="relative flex-1 max-w-xs">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -715,13 +715,13 @@ const CustomsPage: React.FC = () => {
                     placeholder="Search"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full pl-10 pr-4 py-2 text-sm border border-surface-line rounded focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                   />
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={downloadExcel}
-                    className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                    className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 border border-surface-line rounded hover:bg-surface-head transition-colors"
                   >
                     <Download className="w-4 h-4" />
                     <span>Excel</span>
@@ -729,7 +729,7 @@ const CustomsPage: React.FC = () => {
                   <button
                     onClick={() => setShowFilters(!showFilters)}
                     className={`flex items-center space-x-2 px-4 py-2 text-sm font-medium border rounded transition-colors ${
-                      showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'text-gray-700 border-gray-300 hover:bg-gray-50'
+                      showFilters ? 'bg-surface-tile border-surface-line text-brand-700' : 'text-gray-700 border-gray-300 hover:bg-gray-50'
                     }`}
                   >
                     <Filter className="w-4 h-4" />
@@ -737,7 +737,7 @@ const CustomsPage: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setShowColumnCustomizer(true)}
-                    className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                    className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 border border-surface-line rounded hover:bg-surface-head transition-colors"
                   >
                     <Settings className="w-4 h-4" />
                     <span>Customise Columns</span>
@@ -752,7 +752,7 @@ const CustomsPage: React.FC = () => {
                     <select
                       value={milestoneFilter}
                       onChange={(e) => setMilestoneFilter(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 text-sm border border-surface-line rounded focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     >
                       <option value="">All Milestones</option>
                       {milestones.map(m => (
@@ -765,7 +765,7 @@ const CustomsPage: React.FC = () => {
                     <select
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 text-sm border border-surface-line rounded focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     >
                       <option value="">All Status</option>
                       <option value="pending">Pending</option>
@@ -782,7 +782,7 @@ const CustomsPage: React.FC = () => {
                     <select
                       value={typeFilter}
                       onChange={(e) => setTypeFilter(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 text-sm border border-surface-line rounded focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     >
                       <option value="">All Types</option>
                       <option value="import">Import</option>
@@ -797,7 +797,7 @@ const CustomsPage: React.FC = () => {
                         setMilestoneFilter('');
                         setSearchTerm('');
                       }}
-                      className="w-full px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                      className="w-full px-4 py-2 text-sm font-medium bg-navy-900 text-white rounded hover:bg-navy-800 transition-colors"
                     >
                       Clear All
                     </button>
@@ -809,8 +809,8 @@ const CustomsPage: React.FC = () => {
             {/* Declarations Table */}
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr className="border-b border-gray-200">
+                <thead className="bg-surface-head border-b border-surface-line">
+                  <tr className="border-b border-surface-line">
                     {columns.filter(col => col.visible).map((column) => (
                       <th key={column.key} className="px-6 py-3 text-left text-sm font-semibold text-black">
                         {column.label}
@@ -821,32 +821,32 @@ const CustomsPage: React.FC = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-surface-soft">
                   {filteredDeclarations.map((declaration) => (
                     <tr key={declaration.id} className="hover:bg-gray-50 cursor-pointer transition-colors">
                       {columns.filter(col => col.visible).map((column) => {
                         switch (column.key) {
                           case 'declarationNo':
                             return (
-                              <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                              <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                                 <span className="text-sm text-black font-medium">{declaration.declarationNo}</span>
                               </td>
                             );
                           case 'shipmentRef':
                             return (
-                              <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                              <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                                 <span className="text-sm text-black font-medium">{declaration.shipmentRef}</span>
                               </td>
                             );
                           case 'milestone':
                             return (
-                              <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                              <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                                 <span className="text-sm text-black">{declaration.milestone}</span>
                               </td>
                             );
                           case 'status':
                             return (
-                              <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                              <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                                 <span className={`inline-flex px-3 py-1 text-sm font-medium rounded ${getStatusColor(declaration.status)}`}>
                                   {declaration.status.charAt(0).toUpperCase() + declaration.status.slice(1).replace('-', ' ')}
                                 </span>
@@ -854,7 +854,7 @@ const CustomsPage: React.FC = () => {
                             );
                           case 'type':
                             return (
-                              <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                              <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                                 <span className={`inline-flex px-3 py-1 text-sm font-medium rounded ${getTypeColor(declaration.declarationType)}`}>
                                   {declaration.declarationType.charAt(0).toUpperCase() + declaration.declarationType.slice(1)}
                                 </span>
@@ -862,13 +862,13 @@ const CustomsPage: React.FC = () => {
                             );
                           case 'submissionDate':
                             return (
-                              <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                              <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                                 <span className="text-sm text-black">{declaration.submissionDate}</span>
                               </td>
                             );
                           case 'dueDate':
                             return (
-                              <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                              <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                                 {(declaration.status === 'pending' || declaration.status === 'delayed' || declaration.status === 'submitted' || declaration.status === 'under-review' || declaration.status === 'hold') ? (
                                   <span className={`text-sm ${declaration.status === 'delayed' ? 'text-red-700 font-semibold' : 'text-black'}`}>
                                     {declaration.dueDate}
@@ -880,7 +880,7 @@ const CustomsPage: React.FC = () => {
                             );
                           case 'dutyAmount':
                             return (
-                              <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                              <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                                 <span className="text-sm text-black">
                                   {formatCurrency(declaration.dutyAmount, declaration.currency)}
                                 </span>
@@ -888,7 +888,7 @@ const CustomsPage: React.FC = () => {
                             );
                           case 'commodity':
                             return (
-                              <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                              <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                                 <div>
                                   <div className="text-sm text-black">{declaration.commodityCode}</div>
                                   <div className="text-xs text-gray-500 truncate max-w-32" title={declaration.commodityDescription}>
@@ -899,7 +899,7 @@ const CustomsPage: React.FC = () => {
                             );
                           case 'value':
                             return (
-                              <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                              <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                                 <span className="text-sm text-black">
                                   {formatCurrency(declaration.value, declaration.currency)}
                                 </span>
@@ -909,10 +909,10 @@ const CustomsPage: React.FC = () => {
                             return null;
                         }
                       })}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-2.5 whitespace-nowrap">
                         <button
                           onClick={() => handleViewDeclaration(declaration)}
-                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          className="text-brand-600 hover:text-navy-900 transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
@@ -924,7 +924,7 @@ const CustomsPage: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-gray-200">
+            <div className="px-6 py-4 border-t border-surface-line">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-gray-500">
                   Showing {filteredDeclarations.length} of {customsDeclarations.filter(d => d.lob === selectedLOB).length} declarations

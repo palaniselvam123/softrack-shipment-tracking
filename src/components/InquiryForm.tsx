@@ -181,11 +181,11 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="page">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm">
+        <div className="card">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4 border-b border-surface-line">
             <div className="flex items-center space-x-4">
               <button
                 onClick={onBack}
@@ -195,8 +195,8 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                 <span>Back</span>
               </button>
               <div>
-                <h1 className="text-2xl font-semibold text-gray-900">Create New Inquiry</h1>
-                <p className="text-sm text-gray-600 mt-1">Submit your shipping requirements for quotation</p>
+                <h1 className="page-title">Create New Inquiry</h1>
+                <p className="text-field text-gray-500 mt-0.5">Submit your shipping requirements for quotation</p>
               </div>
             </div>
           </div>
@@ -205,7 +205,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
           <form onSubmit={handleSubmit} className="p-6 space-y-8">
             {/* Customer Information */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Customer Information</h2>
+              <h2 className="text-[14px] font-semibold text-navy-900 mb-4">Customer Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -216,7 +216,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                     type="text"
                     value={formData.customer_name}
                     onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     required
                   />
                 </div>
@@ -229,7 +229,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                     type="text"
                     value={formData.company_name}
                     onChange={(e) => setFormData(prev => ({ ...prev, company_name: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     required
                   />
                 </div>
@@ -242,7 +242,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                     type="email"
                     value={formData.contact_email}
                     onChange={(e) => setFormData(prev => ({ ...prev, contact_email: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     required
                   />
                 </div>
@@ -255,7 +255,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                     type="tel"
                     value={formData.contact_phone}
                     onChange={(e) => setFormData(prev => ({ ...prev, contact_phone: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     required
                   />
                 </div>
@@ -264,7 +264,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
 
             {/* Line of Business */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Line of Business *</h2>
+              <h2 className="text-[14px] font-semibold text-navy-900 mb-4">Line of Business *</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {lobOptions.map((lob) => (
                   <label key={lob.code} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -272,7 +272,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                       type="checkbox"
                       checked={formData.lob.includes(lob.code)}
                       onChange={(e) => handleLobChange(lob.code, e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-brand-600 focus:ring-brand-600"
                     />
                     <span className="text-sm font-medium text-gray-900">{lob.label}</span>
                   </label>
@@ -282,7 +282,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
 
             {/* Movement Type */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Movement Type *</h2>
+              <h2 className="text-[14px] font-semibold text-navy-900 mb-4">Movement Type *</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {movementTypes.map((type) => (
                   <label key={type.code} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -292,7 +292,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                       value={type.code}
                       checked={formData.movement_type === type.code}
                       onChange={(e) => setFormData(prev => ({ ...prev, movement_type: e.target.value }))}
-                      className="text-blue-600 focus:ring-blue-500"
+                      className="text-brand-600 focus:ring-brand-600"
                     />
                     <span className="text-sm font-medium text-gray-900">{type.label}</span>
                   </label>
@@ -302,7 +302,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
 
             {/* Ports */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Route Information</h2>
+              <h2 className="text-[14px] font-semibold text-navy-900 mb-4">Route Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <LocationSelector
                   label="Port of Receipt (POR)"
@@ -357,7 +357,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
             {/* Container Information (Conditional) */}
             {showContainer && (
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Container Information *</h2>
+                <h2 className="text-[14px] font-semibold text-navy-900 mb-4">Container Information *</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Container Type *</label>
@@ -371,7 +371,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                           count: prev.container_info?.count || 1
                         }
                       }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                       required
                     >
                       <option value="">Select Container Type</option>
@@ -394,7 +394,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                           count: parseInt(e.target.value) || 1
                         }
                       }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                       required
                     />
                   </div>
@@ -404,7 +404,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
 
             {/* Additional Services */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Additional Services</h2>
+              <h2 className="text-[14px] font-semibold text-navy-900 mb-4">Additional Services</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {serviceOptions.map((service) => (
                   <label key={service.code} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -412,7 +412,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                       type="checkbox"
                       checked={formData.services.includes(service.code)}
                       onChange={(e) => handleServiceChange(service.code, e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-brand-600 focus:ring-brand-600"
                     />
                     <span className="text-sm font-medium text-gray-900">{service.label}</span>
                   </label>
@@ -422,14 +422,14 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
 
             {/* Customs Requirements */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Customs Requirements</h2>
+              <h2 className="text-[14px] font-semibold text-navy-900 mb-4">Customs Requirements</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <label className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={formData.customs_origin_required}
                     onChange={(e) => setFormData(prev => ({ ...prev, customs_origin_required: e.target.checked }))}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-300 text-brand-600 focus:ring-brand-600"
                   />
                   <span className="text-sm font-medium text-gray-900">Customs Clearance at Origin</span>
                 </label>
@@ -438,7 +438,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                     type="checkbox"
                     checked={formData.customs_destination_required}
                     onChange={(e) => setFormData(prev => ({ ...prev, customs_destination_required: e.target.checked }))}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-300 text-brand-600 focus:ring-brand-600"
                   />
                   <span className="text-sm font-medium text-gray-900">Customs Clearance at Destination</span>
                 </label>
@@ -447,7 +447,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
 
             {/* Additional Information */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h2>
+              <h2 className="text-[14px] font-semibold text-navy-900 mb-4">Additional Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Goods Description</label>
@@ -455,7 +455,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                     value={formData.goods_description}
                     onChange={(e) => setFormData(prev => ({ ...prev, goods_description: e.target.value }))}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     placeholder="Describe the goods to be shipped..."
                   />
                 </div>
@@ -465,25 +465,25 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onBack, onSubmit }) => {
                     type="date"
                     value={formData.ready_date || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, ready_date: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                   />
                 </div>
               </div>
             </div>
 
             {/* Submit Button */}
-            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-surface-line">
               <button
                 type="button"
                 onClick={onBack}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                className="px-6 py-2 border border-surface-line text-navy-900 rounded-md hover:bg-surface-head transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={!validateForm() || isSubmitting}
-                className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center space-x-2 px-6 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isSubmitting ? (
                   <>

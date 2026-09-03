@@ -114,15 +114,15 @@ if __name__ == '__main__':
     app.run(port=3000)`;
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="page">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
+        <div className="card">
+          <div className="px-6 py-4 border-b border-surface-line">
             <div className="flex items-center space-x-3">
-              <Book className="w-6 h-6 text-blue-600" />
+              <Book className="w-6 h-6 text-brand-600" />
               <div>
-                <h1 className="text-2xl font-semibold text-gray-900">Webhook Documentation</h1>
-                <p className="text-sm text-gray-600 mt-1">Learn how to integrate LogiTRACK webhooks</p>
+                <h1 className="page-title">Webhook Documentation</h1>
+                <p className="text-field text-gray-500 mt-0.5">Learn how to integrate LogiTRACK webhooks</p>
               </div>
             </div>
           </div>
@@ -130,14 +130,14 @@ if __name__ == '__main__':
           <div className="p-6 space-y-8">
             {/* Overview */}
             <section>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Overview</h2>
+              <h2 className="text-[15px] font-semibold text-navy-900 mb-4">Overview</h2>
               <p className="text-gray-600 mb-4">
                 LogiTRACK webhooks allow you to receive real-time notifications about events in your freight forwarding operations. 
                 When an event occurs (like a shipment status change or new invoice), LogiTRACK will send an HTTP POST request to your configured endpoint.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <Zap className="w-8 h-8 text-blue-600 mb-2" />
+                <div className="bg-surface-tile p-4 rounded-lg">
+                  <Zap className="w-8 h-8 text-brand-600 mb-2" />
                   <h3 className="font-medium text-gray-900">Real-time</h3>
                   <p className="text-sm text-gray-600">Instant notifications when events occur</p>
                 </div>
@@ -146,8 +146,8 @@ if __name__ == '__main__':
                   <h3 className="font-medium text-gray-900">Secure</h3>
                   <p className="text-sm text-gray-600">HMAC signature verification</p>
                 </div>
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <Globe className="w-8 h-8 text-purple-600 mb-2" />
+                <div className="bg-surface-tile p-4 rounded-lg">
+                  <Globe className="w-8 h-8 text-navy-700 mb-2" />
                   <h3 className="font-medium text-gray-900">Reliable</h3>
                   <p className="text-sm text-gray-600">Automatic retry mechanism</p>
                 </div>
@@ -156,7 +156,7 @@ if __name__ == '__main__':
 
             {/* Available Events */}
             <section>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Available Events</h2>
+              <h2 className="text-[15px] font-semibold text-navy-900 mb-4">Available Events</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-medium text-gray-900 mb-2">Shipment Events</h3>
@@ -187,7 +187,7 @@ if __name__ == '__main__':
 
             {/* Payload Structure */}
             <section>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Payload Structure</h2>
+              <h2 className="text-[15px] font-semibold text-navy-900 mb-4">Payload Structure</h2>
               <p className="text-gray-600 mb-4">
                 All webhook payloads follow a consistent structure with event type, timestamp, and event-specific data.
               </p>
@@ -206,13 +206,13 @@ if __name__ == '__main__':
 
             {/* Security */}
             <section>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Security</h2>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+              <h2 className="text-[15px] font-semibold text-navy-900 mb-4">Security</h2>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
                 <div className="flex items-start space-x-3">
-                  <Key className="w-5 h-5 text-yellow-600 mt-0.5" />
+                  <Key className="w-5 h-5 text-amber-600 mt-0.5" />
                   <div>
-                    <h3 className="font-medium text-yellow-800">Webhook Signatures</h3>
-                    <p className="text-sm text-yellow-700 mt-1">
+                    <h3 className="font-medium text-amber-700">Webhook Signatures</h3>
+                    <p className="text-sm text-amber-700 mt-1">
                       Configure a secret to enable HMAC-SHA256 signature verification for enhanced security.
                     </p>
                   </div>
@@ -230,7 +230,7 @@ if __name__ == '__main__':
 
             {/* Implementation Examples */}
             <section>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Implementation Examples</h2>
+              <h2 className="text-[15px] font-semibold text-navy-900 mb-4">Implementation Examples</h2>
               
               <div className="space-y-6">
                 <div>
@@ -267,26 +267,26 @@ if __name__ == '__main__':
 
             {/* Best Practices */}
             <section>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Best Practices</h2>
+              <h2 className="text-[15px] font-semibold text-navy-900 mb-4">Best Practices</h2>
               <div className="space-y-3 text-sm text-gray-600">
                 <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-navy-700 rounded-full mt-2"></div>
                   <p><strong>Idempotency:</strong> Handle duplicate webhook deliveries gracefully</p>
                 </div>
                 <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-navy-700 rounded-full mt-2"></div>
                   <p><strong>Response Time:</strong> Respond with 200 status within 10 seconds</p>
                 </div>
                 <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-navy-700 rounded-full mt-2"></div>
                   <p><strong>Error Handling:</strong> Return appropriate HTTP status codes</p>
                 </div>
                 <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-navy-700 rounded-full mt-2"></div>
                   <p><strong>Logging:</strong> Log webhook events for debugging and monitoring</p>
                 </div>
                 <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-navy-700 rounded-full mt-2"></div>
                   <p><strong>Security:</strong> Always verify signatures when using secrets</p>
                 </div>
               </div>
@@ -294,7 +294,7 @@ if __name__ == '__main__':
 
             {/* Testing */}
             <section>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Testing</h2>
+              <h2 className="text-[15px] font-semibold text-navy-900 mb-4">Testing</h2>
               <p className="text-gray-600 mb-4">
                 Use the "Test" button in the webhook management interface to send a test payload to your endpoint. 
                 This helps verify your webhook handler is working correctly.

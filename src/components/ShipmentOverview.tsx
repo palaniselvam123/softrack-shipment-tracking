@@ -44,7 +44,7 @@ const ShipmentOverview: React.FC<ShipmentOverviewProps> = ({ shipmentNo, shipmen
   return (
     <div className="space-y-6">
       {/* Progress Bar */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="card p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-4">
             <div className={`px-3 py-1 rounded text-sm font-medium ${
@@ -53,7 +53,7 @@ const ShipmentOverview: React.FC<ShipmentOverviewProps> = ({ shipmentNo, shipmen
               {shipmentData.shipment_status || 'Planning'}
             </div>
             {shipmentData['Transport Mode'] && (
-              <div className="flex items-center space-x-2 px-3 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium">
+              <div className="flex items-center space-x-2 px-3 py-1 bg-surface-tile text-brand-700 rounded text-sm font-medium">
                 {getTransportIcon(shipmentData['Transport Mode'])}
                 <span>{shipmentData['Transport Mode']}</span>
               </div>
@@ -71,9 +71,9 @@ const ShipmentOverview: React.FC<ShipmentOverviewProps> = ({ shipmentNo, shipmen
       </div>
 
       {/* Shipment Details */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Shipment Details</h2>
+          <h2 className="text-[14px] font-semibold text-navy-900">Shipment Details</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -139,8 +139,8 @@ const ShipmentOverview: React.FC<ShipmentOverviewProps> = ({ shipmentNo, shipmen
       </div>
 
       {/* Transit Details */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Transit Information</h2>
+      <div className="card p-6">
+        <h2 className="text-[14px] font-semibold text-navy-900 mb-4">Transit Information</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
@@ -196,8 +196,8 @@ const ShipmentOverview: React.FC<ShipmentOverviewProps> = ({ shipmentNo, shipmen
       </div>
 
       {/* Cargo Details */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Cargo Details</h2>
+      <div className="card p-6">
+        <h2 className="text-[14px] font-semibold text-navy-900 mb-4">Cargo Details</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>

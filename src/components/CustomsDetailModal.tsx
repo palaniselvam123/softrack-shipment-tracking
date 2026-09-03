@@ -5,7 +5,7 @@ interface CustomsDeclaration {
   id: string;
   declarationNo: string;
   shipmentRef: string;
-  status: 'pending' | 'submitted' | 'under-review' | 'cleared' | 'hold' | 'rejected';
+  status: 'pending' | 'submitted' | 'under-review' | 'cleared' | 'hold' | 'rejected' | 'delayed';
   declarationType: 'import' | 'export';
   submissionDate: string;
   clearanceDate?: string;
@@ -35,19 +35,19 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'cleared':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'submitted':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
       case 'under-review':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'pending':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
       case 'hold':
-        return 'bg-amber-100 text-amber-800';
+        return 'bg-amber-50 text-amber-700';
       case 'rejected':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
@@ -57,7 +57,7 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
         return <CheckCircle className="w-5 h-5 text-green-600" />;
       case 'submitted':
       case 'under-review':
-        return <Clock className="w-5 h-5 text-yellow-600" />;
+        return <Clock className="w-5 h-5 text-amber-600" />;
       case 'hold':
       case 'rejected':
         return <AlertTriangle className="w-5 h-5 text-red-600" />;
@@ -67,7 +67,7 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
   };
 
   const getTypeColor = (type: string) => {
-    return type === 'import' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
+    return type === 'import' ? 'bg-surface-tile text-brand-700' : 'bg-green-50 text-green-700';
   };
 
   const formatCurrency = (amount: number, currency: string) => {
@@ -92,24 +92,24 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-navy-950/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-surface-line">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-surface-tile rounded-lg flex items-center justify-center">
+                <FileText className="w-6 h-6 text-brand-600" />
               </div>
               <div>
-                <h2 className="text-2xl font-semibold text-gray-900">Customs Declaration</h2>
+                <h2 className="page-title">Customs Declaration</h2>
                 <p className="text-gray-600">{declaration.declarationNo}</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <button
                 onClick={handleDownloadDeclaration}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors"
               >
                 <Download className="w-4 h-4" />
                 <span>Download</span>
@@ -128,7 +128,7 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
         <div className="p-6">
           {/* Status and Type */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-surface-tile rounded-md p-4">
               <div className="flex items-center space-x-3">
                 {getStatusIcon(declaration.status)}
                 <div>
@@ -139,7 +139,7 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
                 </div>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-surface-tile rounded-md p-4">
               <div className="flex items-center space-x-3">
                 <Globe className="w-5 h-5 text-green-600" />
                 <div>
@@ -150,12 +150,12 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
                 </div>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-surface-tile rounded-md p-4">
               <div className="flex items-center space-x-3">
-                <DollarSign className="w-5 h-5 text-yellow-600" />
+                <DollarSign className="w-5 h-5 text-amber-600" />
                 <div>
                   <p className="text-sm text-gray-500">Duty Amount</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-[14px] font-semibold text-navy-900">
                     {formatCurrency(declaration.dutyAmount, declaration.currency)}
                   </p>
                 </div>
@@ -166,7 +166,7 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
           {/* Declaration Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Declaration Information</h3>
+              <h3 className="text-[14px] font-semibold text-navy-900 mb-4">Declaration Information</h3>
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <FileText className="w-5 h-5 text-gray-400" />
@@ -179,7 +179,7 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
                   <Package className="w-5 h-5 text-gray-400" />
                   <div>
                     <p className="text-sm text-gray-500">Shipment Reference</p>
-                    <p className="font-medium text-blue-600">{declaration.shipmentRef}</p>
+                    <p className="font-medium text-brand-600">{declaration.shipmentRef}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -211,7 +211,7 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Party Information</h3>
+              <h3 className="text-[14px] font-semibold text-navy-900 mb-4">Party Information</h3>
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <Building className="w-5 h-5 text-gray-400" />
@@ -247,13 +247,13 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
 
           {/* Commodity Information */}
           <div className="mt-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Commodity Information</h3>
+            <h3 className="text-[14px] font-semibold text-navy-900 mb-4">Commodity Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-surface-tile rounded-md p-4">
                 <div className="space-y-3">
                   <div>
                     <p className="text-sm text-gray-500">Commodity Code (HS Code)</p>
-                    <p className="font-mono text-lg font-semibold text-gray-900">{declaration.commodityCode}</p>
+                    <p className="font-mono text-[14px] font-semibold text-navy-900">{declaration.commodityCode}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Description</p>
@@ -261,11 +261,11 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
                   </div>
                 </div>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-surface-tile rounded-md p-4">
                 <div className="space-y-3">
                   <div>
                     <p className="text-sm text-gray-500">Declared Value</p>
-                    <p className="text-lg font-semibold text-gray-900">
+                    <p className="text-[14px] font-semibold text-navy-900">
                       {formatCurrency(declaration.value, declaration.currency)}
                     </p>
                   </div>
@@ -281,8 +281,8 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
           {/* Remarks */}
           {declaration.remarks && (
             <div className="mt-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Remarks</h3>
-              <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="text-[14px] font-semibold text-navy-900 mb-4">Remarks</h3>
+              <div className="bg-surface-tile rounded-md p-4">
                 <p className="text-gray-700">{declaration.remarks}</p>
               </div>
             </div>
@@ -290,11 +290,11 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
 
           {/* Processing Timeline */}
           <div className="mt-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Processing Timeline</h3>
+            <h3 className="text-[14px] font-semibold text-navy-900 mb-4">Processing Timeline</h3>
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-blue-600" />
+                <div className="w-8 h-8 bg-surface-tile rounded-full flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-brand-600" />
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">Declaration Submitted</p>
@@ -303,8 +303,8 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
               </div>
               {declaration.status !== 'pending' && (
                 <div className="flex items-center space-x-4">
-                  <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-yellow-600" />
+                  <div className="w-8 h-8 bg-amber-50 rounded-full flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-amber-600" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">Under Review</p>
@@ -328,7 +328,7 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div className="px-6 py-4 border-t border-surface-line bg-gray-50">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
               Declaration submitted on {declaration.submissionDate}
@@ -336,13 +336,13 @@ const CustomsDetailModal: React.FC<CustomsDetailModalProps> = ({ isOpen, onClose
             <div className="flex items-center space-x-3">
               <button
                 onClick={onClose}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-surface-line text-navy-900 rounded-md hover:bg-surface-head transition-colors"
               >
                 Close
               </button>
               <button
                 onClick={handleDownloadDeclaration}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors"
               >
                 Download Declaration
               </button>

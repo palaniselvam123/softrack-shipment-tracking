@@ -51,9 +51,11 @@ import LocationSelector from './LocationSelector';
 
 interface BookingWizardProps {
   bookingNo?: string;
+  /** Return to the Bookings list — the wizard is reached from there now. */
+  onBack?: () => void;
 }
 
-const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
+const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo, onBack }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showTemplates, setShowTemplates] = useState(false);
   const [bookingData, setBookingData] = useState<BookingData>({
@@ -834,7 +836,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
               step.id < currentStep 
                 ? 'bg-green-500 border-green-500 text-white' 
                 : step.id === currentStep
-                ? 'bg-blue-500 border-blue-500 text-white'
+                ? 'bg-navy-900 border-navy-900 text-white'
                 : 'bg-gray-200 border-gray-300 text-gray-500'
             }`}>
               {step.id < currentStep ? <Check className="w-5 h-5" /> : step.id}
@@ -846,7 +848,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
             >
               <p className={`text-sm font-medium transition-colors ${
                 step.id <= currentStep ? 'text-gray-900' : 'text-gray-500'
-              } hover:text-blue-600`}>
+              } hover:text-brand-600`}>
                 {step.title}
               </p>
               <p className="text-xs text-gray-500 hover:text-gray-700 transition-colors">{step.description}</p>
@@ -878,7 +880,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                   <select
                     value={bookingData.serviceProvider}
                     onChange={(e) => updateBookingData('serviceProvider', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     required
                   >
                     <option value="">Select a provider</option>
@@ -958,7 +960,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                 <select
                   value={bookingData.movementType}
                   onChange={(e) => updateBookingData('movementType', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                   required
                 >
                   <option value="">Select movement type</option>
@@ -984,7 +986,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                 <select
                   value={bookingData.consigneeId}
                   onChange={(e) => handleConsigneeSelection(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                   required
                 >
                   <option value="">Choose from existing consignees or add new</option>
@@ -1006,9 +1008,9 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                     type="text"
                     value={bookingData.consigneeName}
                     onChange={(e) => updateBookingData('consigneeName', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     placeholder="Enter consignee name"
-                    disabled={bookingData.consigneeId && bookingData.consigneeId !== 'new'}
+                    disabled={!!bookingData.consigneeId && bookingData.consigneeId !== 'new'}
                     required
                   />
                 </div>
@@ -1021,9 +1023,9 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                     type="tel"
                     value={bookingData.consigneeContact}
                     onChange={(e) => updateBookingData('consigneeContact', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     placeholder="Enter contact number"
-                    disabled={bookingData.consigneeId && bookingData.consigneeId !== 'new'}
+                    disabled={!!bookingData.consigneeId && bookingData.consigneeId !== 'new'}
                     required
                   />
                 </div>
@@ -1036,9 +1038,9 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                     type="email"
                     value={bookingData.consigneeEmail}
                     onChange={(e) => updateBookingData('consigneeEmail', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     placeholder="Enter email address"
-                    disabled={bookingData.consigneeId && bookingData.consigneeId !== 'new'}
+                    disabled={!!bookingData.consigneeId && bookingData.consigneeId !== 'new'}
                     required
                   />
                 </div>
@@ -1051,9 +1053,9 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                     value={bookingData.consigneeAddress}
                     onChange={(e) => updateBookingData('consigneeAddress', e.target.value)}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     placeholder="Enter complete address"
-                    disabled={bookingData.consigneeId && bookingData.consigneeId !== 'new'}
+                    disabled={!!bookingData.consigneeId && bookingData.consigneeId !== 'new'}
                     required
                   />
                 </div>
@@ -1137,7 +1139,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                       type="date"
                       value={bookingData.pickupDate}
                       onChange={(e) => updateBookingData('pickupDate', e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full pl-10 pr-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                       required
                     />
                   </div>
@@ -1153,7 +1155,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                       type="date"
                       value={bookingData.deliveryDate}
                       onChange={(e) => updateBookingData('deliveryDate', e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full pl-10 pr-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                       required
                     />
                   </div>
@@ -1177,7 +1179,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                   <select
                     value={bookingData.cargoType}
                     onChange={(e) => updateBookingData('cargoType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     required
                   >
                     <option value="">Select cargo type</option>
@@ -1193,7 +1195,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                   <h4 className="text-md font-medium text-gray-900">Goods Details</h4>
                   <button
                     onClick={addGoodsItem}
-                    className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    className="flex items-center space-x-2 px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add Goods</span>
@@ -1226,7 +1228,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                               type="text"
                               value={item.description}
                               onChange={(e) => updateGoodsItem(item.id, 'description', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                               placeholder="Describe the goods"
                               required
                             />
@@ -1239,7 +1241,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                               type="number"
                               value={item.packages}
                               onChange={(e) => updateGoodsItem(item.id, 'packages', parseInt(e.target.value) || 0)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                               placeholder="0"
                               min="0"
                               required
@@ -1253,7 +1255,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                               type="number"
                               value={item.weight}
                               onChange={(e) => updateGoodsItem(item.id, 'weight', parseFloat(e.target.value) || 0)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                               placeholder="0.00"
                               min="0"
                               step="0.01"
@@ -1278,7 +1280,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                 <h3 className="text-lg font-semibold">Document Upload</h3>
                 <button
                   onClick={addDocument}
-                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  className="flex items-center space-x-2 px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Document</span>
@@ -1311,7 +1313,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                           <select
                             value={doc.type}
                             onChange={(e) => updateDocument(doc.id, 'type', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                           >
                             <option value="">Select type</option>
                             {documentTypes.map(type => (
@@ -1327,7 +1329,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                             type="text"
                             value={doc.name}
                             onChange={(e) => updateDocument(doc.id, 'name', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                             placeholder="Enter document name"
                           />
                         </div>
@@ -1338,7 +1340,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                           <input
                             type="file"
                             onChange={(e) => updateDocument(doc.id, 'file', e.target.files?.[0])}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                           />
                         </div>
                       </div>
@@ -1358,7 +1360,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
               
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="p-4 bg-surface-tile rounded-md">
                     <h4 className="font-medium text-gray-900 mb-2">Service Details</h4>
                     <div className="space-y-1 text-sm">
                       <p><span className="text-gray-600">Provider:</span> {bookingData.serviceProvider}</p>
@@ -1368,7 +1370,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                     </div>
                   </div>
 
-                  <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="p-4 bg-surface-tile rounded-md">
                     <h4 className="font-medium text-gray-900 mb-2">Consignee</h4>
                     <div className="space-y-1 text-sm">
                       <p><span className="text-gray-600">Name:</span> {bookingData.consigneeName}</p>
@@ -1377,7 +1379,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                     </div>
                   </div>
 
-                  <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="p-4 bg-surface-tile rounded-md">
                     <h4 className="font-medium text-gray-900 mb-2">Route & Dates</h4>
                     <div className="space-y-1 text-sm">
                       <p><span className="text-gray-600">From:</span> {bookingData.originLocation}</p>
@@ -1387,7 +1389,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                     </div>
                   </div>
 
-                  <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="p-4 bg-surface-tile rounded-md">
                     <h4 className="font-medium text-gray-900 mb-2">Cargo Details</h4>
                     <div className="space-y-1 text-sm">
                       <p><span className="text-gray-600">Type:</span> {bookingData.cargoType}</p>
@@ -1398,13 +1400,13 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                   </div>
                 </div>
 
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="p-4 bg-surface-tile rounded-md">
                   <h4 className="font-medium text-gray-900 mb-2">Additional Remarks</h4>
                   <textarea
                     value={bookingData.remarks}
                     onChange={(e) => updateBookingData('remarks', e.target.value)}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                     placeholder="Enter any additional remarks or special instructions..."
                   />
                 </div>
@@ -1419,17 +1421,23 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+    <div className="page">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-5">
+          {onBack && (
+            <button onClick={onBack} className="btn-ghost -ml-3 mb-1">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Bookings
+            </button>
+          )}
+          <h1 className="page-title">
             {(() => {
               const urlParams = new URLSearchParams(window.location.search);
               const editBookingNo = urlParams.get('edit') || bookingNo;
               return editBookingNo ? `Edit Booking - ${editBookingNo}` : 'Book New Shipment';
             })()}
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-0.5 text-field text-gray-500">
             {(() => {
               const urlParams = new URLSearchParams(window.location.search);
               const editBookingNo = urlParams.get('edit') || bookingNo;
@@ -1438,26 +1446,17 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                 : 'Fill in the details below to initiate a new cargo booking. Required fields are marked with *';
             })()}
           </p>
-          
-          {/* Debug info - remove in production */}
-          <div className="mt-2 p-2 bg-yellow-100 border border-yellow-300 rounded text-xs">
-            <p>Debug Info:</p>
-            <p>Booking No Prop: {bookingNo || 'null'}</p>
-            <p>URL Edit Param: {new URLSearchParams(window.location.search).get('edit') || 'null'}</p>
-            <p>Service Provider: {bookingData.serviceProvider || 'empty'}</p>
-            <p>Consignee Name: {bookingData.consigneeName || 'empty'}</p>
-          </div>
-          
-          <div className="mt-4 flex items-center space-x-4">
+
+          <div className="mt-4 flex items-center gap-2">
             <button
               onClick={() => setShowTemplates(true)}
-              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors text-sm"
+              className="btn-secondary"
             >
               Use Template
             </button>
             <button
               onClick={() => setShowTemplates(true)}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm"
+              className="btn-secondary"
             >
               Reuse Previous Booking
             </button>
@@ -1482,7 +1481,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
           </button>
 
           <div className="flex items-center space-x-4">
-            <button className="px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
+            <button className="px-6 py-3 border border-surface-line text-navy-900 rounded-md hover:bg-surface-head transition-colors">
               Save as Draft
             </button>
             
@@ -1501,7 +1500,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
             ) : (
               <button
                 onClick={nextStep}
-                className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="flex items-center space-x-2 px-6 py-3 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors"
               >
                 <span>Next</span>
                 <ArrowRight className="w-4 h-4" />
@@ -1513,11 +1512,11 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
 
       {/* Templates and Reuse Modal */}
       {showTemplates && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-navy-950/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-surface-line">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">Choose Template or Reuse Booking</h2>
+                <h2 className="text-[15px] font-semibold text-navy-900">Choose Template or Reuse Booking</h2>
                 <button
                   onClick={() => setShowTemplates(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -1539,7 +1538,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                           <h4 className="font-medium text-gray-900">{template.name}</h4>
                           <button
                             onClick={() => applyTemplate(template)}
-                            className="px-3 py-1 bg-purple-600 text-white rounded text-sm hover:bg-purple-700 transition-colors"
+                            className="btn-primary px-3 py-1"
                           >
                             Use Template
                           </button>
@@ -1565,7 +1564,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ bookingNo }) => {
                           <h4 className="font-medium text-gray-900">{booking.id}</h4>
                           <button
                             onClick={() => reuseBooking(booking)}
-                            className="px-3 py-1 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 transition-colors"
+                            className="btn-primary px-3 py-1"
                           >
                             Reuse Booking
                           </button>

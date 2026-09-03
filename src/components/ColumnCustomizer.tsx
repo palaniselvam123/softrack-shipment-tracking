@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Eye, EyeOff, GripVertical, RotateCcw } from 'lucide-react';
 
+/* Generic over the caller's column shape: callers carry extra fields (the
+   invoice grid adds `sortable`) and reordering here must not strip them. */
 interface Column {
   key: string;
   label: string;
@@ -8,28 +10,36 @@ interface Column {
   width?: string;
 }
 
-interface ColumnCustomizerProps {
+interface ColumnCustomizerProps<T extends Column> {
   isOpen: boolean;
   onClose: () => void;
-  columns: Column[];
-  onColumnsChange: (columns: Column[]) => void;
+  columns: T[];
+  onColumnsChange: (columns: T[]) => void;
 }
 
-const ColumnCustomizer: React.FC<ColumnCustomizerProps> = ({
+function ColumnCustomizer<T extends Column>({
   isOpen,
   onClose,
   columns,
   onColumnsChange
-}) => {
-  const [localColumns, setLocalColumns] = useState<Column[]>(columns);
+}: ColumnCustomizerProps<T>) {
+  const [localColumns, setLocalColumns] = useState<T[]>(columns);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  /* Re-seed each time it opens; otherwise the initial useState value sticks
+     and a second open shows the column set from the first. */
+  useEffect(() => {
+    if (isOpen) setLocalColumns(columns);
+  }, [isOpen, columns]);
 
   if (!isOpen) return null;
 
   const handleToggleVisibility = (index: number) => {
-    const updatedColumns = [...localColumns];
-    updatedColumns[index].visible = !updatedColumns[index].visible;
-    setLocalColumns(updatedColumns);
+    /* Replace the entry rather than mutating it - the objects belong to the
+       caller's state and were being edited in place before Apply. */
+    setLocalColumns(prev =>
+      prev.map((col, i) => (i === index ? { ...col, visible: !col.visible } : col))
+    );
   };
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
@@ -73,11 +83,11 @@ const ColumnCustomizer: React.FC<ColumnCustomizerProps> = ({
   const visibleCount = localColumns.filter(col => col.visible).length;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-navy-950/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-surface-line">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Customize Columns</h2>
+            <h2 className="text-[14px] font-semibold text-navy-900">Customize Columns</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -100,7 +110,7 @@ const ColumnCustomizer: React.FC<ColumnCustomizerProps> = ({
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, index)}
                 className={`flex items-center space-x-3 p-3 border rounded-lg cursor-move transition-colors ${
-                  draggedIndex === index ? 'bg-blue-50 border-blue-200' : 'hover:bg-gray-50'
+                  draggedIndex === index ? 'bg-surface-tile border-surface-line' : 'hover:bg-gray-50'
                 }`}
               >
                 <GripVertical className="w-4 h-4 text-gray-400" />
@@ -109,7 +119,7 @@ const ColumnCustomizer: React.FC<ColumnCustomizerProps> = ({
                   onClick={() => handleToggleVisibility(index)}
                   className={`flex items-center justify-center w-8 h-8 rounded transition-colors ${
                     column.visible 
-                      ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' 
+                      ? 'bg-surface-tile text-brand-600 hover:bg-surface-head' 
                       : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
                   }`}
                 >
@@ -128,7 +138,7 @@ const ColumnCustomizer: React.FC<ColumnCustomizerProps> = ({
           </div>
         </div>
 
-        <div className="p-6 border-t border-gray-200">
+        <div className="p-6 border-t border-surface-line">
           <div className="flex items-center justify-between">
             <button
               onClick={handleReset}
@@ -141,13 +151,13 @@ const ColumnCustomizer: React.FC<ColumnCustomizerProps> = ({
             <div className="flex items-center space-x-3">
               <button
                 onClick={onClose}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-surface-line text-navy-900 rounded-md hover:bg-surface-head transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleApply}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors"
               >
                 Apply Changes
               </button>
@@ -157,6 +167,6 @@ const ColumnCustomizer: React.FC<ColumnCustomizerProps> = ({
       </div>
     </div>
   );
-};
+}
 
 export default ColumnCustomizer;

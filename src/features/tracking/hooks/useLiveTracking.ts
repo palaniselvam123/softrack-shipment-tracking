@@ -7,10 +7,22 @@ export function useLiveTracking() {
   const [shipments, setShipments] = useState<TrackedShipment[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [error, setError] = useState<string | null>(null);
+
   async function load() {
     setLoading(true);
-    setShipments(await trackingService.listActive());
-    setLoading(false);
+    try {
+      setShipments(await trackingService.listActive());
+      setError(null);
+    } catch (err) {
+      /* Without this the promise rejected unhandled, setLoading(false) never
+         ran and the page sat on "Loading live tracking..." forever. */
+      console.error('Live tracking load failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load tracking data');
+      setShipments([]);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -30,5 +42,5 @@ export function useLiveTracking() {
     };
   }, []);
 
-  return { shipments, loading };
+  return { shipments, loading, error, reload: load };
 }

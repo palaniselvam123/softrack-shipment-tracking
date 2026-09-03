@@ -149,38 +149,38 @@ const InquiryListPage: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'New':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
       case 'Submitted':
-        return 'bg-cyan-100 text-cyan-800';
+        return 'bg-surface-tile text-navy-700';
       case 'Under Review':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'Quoted':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-surface-tile text-navy-700';
       case 'Accepted':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'Rejected':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
   const getLobBadgeColor = (lob: string) => {
     switch (lob) {
       case 'SEA_FCL':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
       case 'SEA_LCL':
-        return 'bg-cyan-100 text-cyan-800';
+        return 'bg-surface-tile text-navy-700';
       case 'AIR_FREIGHT':
-        return 'bg-pink-100 text-pink-800';
+        return 'bg-surface-tile text-navy-700';
       case 'ROAD_TRANSPORT':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'LIQUID':
-        return 'bg-teal-100 text-teal-800';
+        return 'bg-surface-tile text-navy-700';
       case 'RAIL':
-        return 'bg-slate-100 text-slate-800';
+        return 'bg-slate-50 text-slate-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
@@ -252,17 +252,17 @@ const InquiryListPage: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="bg-white rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-200">
+    <div className="page">
+      <div className="card">
+        <div className="px-6 py-4 border-b border-surface-line">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Inquiry Management</h1>
-              <p className="text-sm text-gray-600 mt-1">View and manage customer inquiries</p>
+              <h1 className="page-title">Inquiry Management</h1>
+              <p className="text-field text-gray-500 mt-0.5">View and manage customer inquiries</p>
             </div>
             <button
               onClick={() => setShowInquiryForm(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors"
             >
               <Plus className="w-4 h-4" />
               <span>New Inquiry</span>
@@ -270,55 +270,55 @@ const InquiryListPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div className="px-6 py-4 border-b border-surface-line bg-gray-50">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="bg-white p-4 rounded-lg border">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Package className="w-5 h-5 text-blue-600" />
+                <div className="w-9 h-9 bg-surface-tile rounded-md flex items-center justify-center">
+                  <Package className="w-5 h-5 text-brand-600" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Total</p>
-                  <p className="text-xl font-semibold text-gray-900">{statusCounts.total}</p>
+                  <p className="text-[15px] font-semibold text-navy-900">{statusCounts.total}</p>
                 </div>
               </div>
             </div>
             <div className="bg-white p-4 rounded-lg border">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Plus className="w-5 h-5 text-blue-600" />
+                <div className="w-9 h-9 bg-surface-tile rounded-md flex items-center justify-center">
+                  <Plus className="w-5 h-5 text-brand-600" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">New</p>
-                  <p className="text-xl font-semibold text-blue-600">{statusCounts.new}</p>
+                  <p className="text-xl font-semibold text-brand-600">{statusCounts.new}</p>
                 </div>
               </div>
             </div>
             <div className="bg-white p-4 rounded-lg border">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
-                  <Eye className="w-5 h-5 text-cyan-600" />
+                <div className="w-9 h-9 bg-surface-tile rounded-md flex items-center justify-center">
+                  <Eye className="w-4 h-4 text-navy-600" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Submitted</p>
-                  <p className="text-xl font-semibold text-cyan-600">{statusCounts.submitted}</p>
+                  <p className="text-[15px] font-semibold text-navy-900">{statusCounts.submitted}</p>
                 </div>
               </div>
             </div>
             <div className="bg-white p-4 rounded-lg border">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Package className="w-5 h-5 text-purple-600" />
+                <div className="w-9 h-9 bg-surface-tile rounded-md flex items-center justify-center">
+                  <Package className="w-4 h-4 text-navy-600" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Quoted</p>
-                  <p className="text-xl font-semibold text-purple-600">{statusCounts.quoted}</p>
+                  <p className="text-[15px] font-semibold text-navy-900">{statusCounts.quoted}</p>
                 </div>
               </div>
             </div>
             <div className="bg-white p-4 rounded-lg border">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <div className="w-9 h-9 bg-surface-tile rounded-md flex items-center justify-center">
                   <Package className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
@@ -330,7 +330,7 @@ const InquiryListPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-surface-line">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -339,7 +339,7 @@ const InquiryListPage: React.FC = () => {
                 placeholder="Search inquiries..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
               />
             </div>
             <div className="flex items-center space-x-3">
@@ -353,7 +353,7 @@ const InquiryListPage: React.FC = () => {
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className={`flex items-center space-x-2 px-4 py-2 border rounded-md transition-colors ${
-                  showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 hover:bg-gray-50'
+                  showFilters ? 'bg-surface-tile border-surface-line text-brand-700' : 'border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 <Filter className="w-4 h-4" />
@@ -361,7 +361,7 @@ const InquiryListPage: React.FC = () => {
               </button>
               <button
                 onClick={() => setShowColumnCustomizer(true)}
-                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 border border-surface-line rounded-md hover:bg-surface-head transition-colors"
               >
                 <Settings className="w-4 h-4" />
                 <span>Customize Columns</span>
@@ -370,13 +370,13 @@ const InquiryListPage: React.FC = () => {
           </div>
 
           {showFilters && (
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-surface-tile rounded-md">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-surface-line rounded-md focus:ring-1 focus:ring-brand-600 focus:border-brand-600"
                 >
                   <option value="">All Status</option>
                   <option value="New">New</option>
@@ -393,7 +393,7 @@ const InquiryListPage: React.FC = () => {
                     setStatusFilter('');
                     setSearchTerm('');
                   }}
-                  className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                  className="w-full px-4 py-2 border border-surface-line text-navy-900 rounded-md hover:bg-surface-head transition-colors"
                 >
                   Clear All
                 </button>
@@ -404,35 +404,35 @@ const InquiryListPage: React.FC = () => {
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-surface-head border-b border-surface-line">
               <tr>
                 {columns.filter(col => col.visible).map((column) => (
-                  <th key={column.key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th key={column.key} className="px-4 py-2.5 text-left text-label font-semibold text-navy-900">
                     {column.label}
                   </th>
                 ))}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-label font-semibold text-navy-900">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-surface-soft">
               {filteredInquiries.map((inquiry) => (
                 <tr key={inquiry.id} className="hover:bg-gray-50 transition-colors">
                   {columns.filter(col => col.visible).map((column) => {
                     switch (column.key) {
                       case 'inquiry_id':
                         return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                             <div className="flex items-center space-x-2">
-                              <Package className="w-4 h-4 text-blue-600" />
-                              <span className="text-sm font-medium text-blue-600">{inquiry.inquiry_id}</span>
+                              <Package className="w-4 h-4 text-brand-600" />
+                              <span className="text-sm font-medium text-brand-600">{inquiry.inquiry_id}</span>
                             </div>
                           </td>
                         );
                       case 'customer':
                         return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                             <div className="flex items-center space-x-2">
                               <User className="w-4 h-4 text-gray-400" />
                               <div>
@@ -444,7 +444,7 @@ const InquiryListPage: React.FC = () => {
                         );
                       case 'lob':
                         return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                             <div className="flex flex-wrap gap-1">
                               {inquiry.lob.map((lobItem, index) => (
                                 <span key={index} className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getLobBadgeColor(lobItem)}`}>
@@ -456,7 +456,7 @@ const InquiryListPage: React.FC = () => {
                         );
                       case 'route':
                         return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                             <div className="flex items-center space-x-1">
                               <MapPin className="w-4 h-4 text-gray-400" />
                               <div>
@@ -467,7 +467,7 @@ const InquiryListPage: React.FC = () => {
                         );
                       case 'status':
                         return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                             <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(inquiry.status)}`}>
                               {inquiry.status}
                             </span>
@@ -475,13 +475,13 @@ const InquiryListPage: React.FC = () => {
                         );
                       case 'movement_type':
                         return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                             <span className="text-sm text-gray-900">{inquiry.movement_type.replace('_', ' ')}</span>
                           </td>
                         );
                       case 'contact':
                         return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                             <div>
                               <div className="text-sm text-gray-900">{inquiry.contact_email}</div>
                               <div className="text-xs text-gray-500">{inquiry.contact_phone}</div>
@@ -490,7 +490,7 @@ const InquiryListPage: React.FC = () => {
                         );
                       case 'created_at':
                         return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                             <div className="flex items-center space-x-1">
                               <Calendar className="w-4 h-4 text-gray-400" />
                               <span className="text-sm text-gray-900">{inquiry.created_at}</span>
@@ -499,7 +499,7 @@ const InquiryListPage: React.FC = () => {
                         );
                       case 'updated_at':
                         return (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                          <td key={column.key} className="px-4 py-2.5 whitespace-nowrap">
                             <div className="flex items-center space-x-1">
                               <Calendar className="w-4 h-4 text-gray-400" />
                               <span className="text-sm text-gray-900">{inquiry.updated_at}</span>
@@ -510,13 +510,13 @@ const InquiryListPage: React.FC = () => {
                         return null;
                     }
                   })}
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-4 py-2.5 whitespace-nowrap">
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => {
                           console.log('View inquiry:', inquiry.inquiry_id);
                         }}
-                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                        className="text-brand-600 hover:text-navy-900 transition-colors"
                         title="View Details"
                       >
                         <Eye className="w-4 h-4" />
@@ -539,7 +539,7 @@ const InquiryListPage: React.FC = () => {
           </table>
         </div>
 
-        <div className="px-6 py-4 border-t border-gray-200">
+        <div className="px-6 py-4 border-t border-surface-line">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
               Showing {filteredInquiries.length} of {mockInquiries.length} inquiries

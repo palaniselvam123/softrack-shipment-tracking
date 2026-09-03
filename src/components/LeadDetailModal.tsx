@@ -33,49 +33,49 @@ const LeadDetailModal: React.FC<LeadDetailModalProps> = ({ isOpen, onClose, lead
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'New':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
       case 'Attended':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'Quoted':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-surface-tile text-navy-700';
       case 'Quote Accepted':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'Closed':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'High':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700';
       case 'Medium':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       case 'Low':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
   const getLobBadgeColor = (lob: string) => {
     switch (lob) {
       case 'SEA_FCL':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-surface-tile text-brand-700';
       case 'SEA_LCL':
-        return 'bg-cyan-100 text-cyan-800';
+        return 'bg-surface-tile text-navy-700';
       case 'AIR_FREIGHT':
-        return 'bg-pink-100 text-pink-800';
+        return 'bg-surface-tile text-navy-700';
       case 'ROAD_TRANSPORT':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-50 text-green-700';
       case 'LIQUID':
-        return 'bg-teal-100 text-teal-800';
+        return 'bg-surface-tile text-navy-700';
       case 'RAIL':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-surface-tile text-navy-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700';
     }
   };
 
@@ -87,12 +87,12 @@ const LeadDetailModal: React.FC<LeadDetailModalProps> = ({ isOpen, onClose, lead
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-navy-950/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-white border-b border-surface-line px-6 py-4 flex items-center justify-between z-10">
           <div>
-            <h2 className="text-2xl font-semibold text-gray-900">Lead Details</h2>
-            <p className="text-sm text-gray-600 mt-1">{lead.lead_id}</p>
+            <h2 className="page-title">Lead Details</h2>
+            <p className="text-field text-gray-500 mt-0.5">{lead.lead_id}</p>
           </div>
           <button
             onClick={onClose}
@@ -129,7 +129,7 @@ const LeadDetailModal: React.FC<LeadDetailModalProps> = ({ isOpen, onClose, lead
                 </div>
                 <div>
                   <label className="text-xs text-gray-500">Customer ID</label>
-                  <p className="text-sm font-medium text-blue-600">{lead.customer_id}</p>
+                  <p className="text-sm font-medium text-brand-600">{lead.customer_id}</p>
                 </div>
               </div>
             </div>
@@ -142,11 +142,11 @@ const LeadDetailModal: React.FC<LeadDetailModalProps> = ({ isOpen, onClose, lead
               <div className="space-y-2">
                 <div>
                   <label className="text-xs text-gray-500">Lead ID</label>
-                  <p className="text-sm font-medium text-blue-600">{lead.lead_id}</p>
+                  <p className="text-sm font-medium text-brand-600">{lead.lead_id}</p>
                 </div>
                 <div>
                   <label className="text-xs text-gray-500">Inquiry ID</label>
-                  <p className="text-sm font-medium text-blue-600">{lead.inquiry_id}</p>
+                  <p className="text-sm font-medium text-brand-600">{lead.inquiry_id}</p>
                 </div>
                 <div>
                   <label className="text-xs text-gray-500">Assigned To</label>
@@ -195,7 +195,7 @@ const LeadDetailModal: React.FC<LeadDetailModalProps> = ({ isOpen, onClose, lead
               </h3>
               <div>
                 <label className="text-xs text-gray-500">Estimated Value</label>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-[14px] font-semibold text-navy-900">
                   {formatCurrency(lead.estimated_value, lead.currency || 'USD')}
                 </p>
               </div>
@@ -219,17 +219,17 @@ const LeadDetailModal: React.FC<LeadDetailModalProps> = ({ isOpen, onClose, lead
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+          <div className="flex justify-end space-x-3 pt-4 border-t border-surface-line">
             <button
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-surface-line text-navy-900 rounded-md hover:bg-surface-head transition-colors"
             >
               Close
             </button>
             <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
               Convert to Booking
             </button>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            <button className="px-4 py-2 bg-navy-900 text-white rounded-md hover:bg-navy-800 transition-colors">
               Create Quote
             </button>
           </div>
