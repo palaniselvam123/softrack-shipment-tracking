@@ -262,7 +262,7 @@ const ShipmentsTable: React.FC<ShipmentsTableProps> = ({ onViewShipment }) => {
       case 'shipper':
       case 'consignee':
       case 'customer':
-        return <span className="text-field text-brand-600">{shipment[columnKey] || ''}</span>;
+        return <span className="text-field text-black font-medium">{shipment[columnKey] || ''}</span>;
       default:
         return <span className="text-field text-gray-700">{shipment[columnKey] || ''}</span>;
     }
