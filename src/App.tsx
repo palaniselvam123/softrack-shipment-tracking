@@ -106,6 +106,12 @@ function App() {
     window.history.pushState({}, '', '/book');
   };
 
+  const handleViewBooking = (bookingNo: string) => {
+    setSelectedBooking(bookingNo);
+    setCurrentView('booking');
+    window.history.pushState({}, '', `/bookings/${bookingNo}`);
+  };
+
   const handleBookingsNavigation = () => {
     setCurrentView('bookings');
     window.history.pushState({}, '', '/bookings');
@@ -215,7 +221,7 @@ function App() {
         />
       ) : currentView === 'bookings' ? (
         <BookingsList
-          onViewBooking={setSelectedBooking}
+          onViewBooking={handleViewBooking}
           onNewBooking={handleBookingNavigation}
         />
       ) : currentView === 'table' ? (
